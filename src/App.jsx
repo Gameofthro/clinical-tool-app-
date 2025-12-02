@@ -283,7 +283,7 @@ export default function ClinicalTool() {
   // Handle admin authentication
   const handleAdminAuth = () => {
     // In a real app, use proper authentication
-    if (adminPassword === "admin123") {
+    if (adminPassword === import.meta.env.VITE_ADMIN_PASSWORD) {
       setIsAuthenticated(true);
       setIsAdmin(true);
       setShowAuthDialog(false);
