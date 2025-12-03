@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Stethoscope, Star, Baby, Activity, Mail, LogOut, User } from "lucide-react";
+import { Search, Stethoscope, Star, Baby, Activity, Mail, LogOut } from "lucide-react";
 
-// --- IMPORT YOUR LOCAL FILES ---
-// Ensure these files exist in your folders exactly as written:
+// --- IMPORTS (Connecting to the files you created) ---
 import { diseaseDatabase } from "./data/diseases";
 import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
@@ -11,52 +10,45 @@ import DiseaseModal from "./components/DiseaseModal";
 const FAVORITES_STORAGE_KEY = "clinical_favorites";
 
 export default function ClinicalTool() {
+  // --- STATE MANAGEMENT ---
   const [user, setUser] = useState(null);
-  const [selectedDisease, setSelectedDisease] = useState(null); // Controls the Modal Popup
+  const [selectedDisease, setSelectedDisease] = useState(null); // Controls the Popup Modal
   const [prescriptions] = useState(diseaseDatabase);
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState("search");
   const [favorites, setFavorites] = useState([]);
+  
+  // Calculator State
   const [doseData, setDoseData] = useState({ weight: "", adultDose: "" });
   const [calculatedResult, setCalculatedResult] = useState(null);
 
-  // 1. Check Login Status on Load
+  // --- INITIALIZATION ---
   useEffect(() => {
+    // Check if user is already logged in
     const savedUser = localStorage.getItem("clinical_current_user");
     if (savedUser) setUser(JSON.parse(savedUser));
 
+    // Load favorites
     const favs = localStorage.getItem(FAVORITES_STORAGE_KEY);
     if (favs) setFavorites(JSON.parse(favs));
   }, []);
 
-  // 2. Logout Function
+  // --- ACTIONS ---
   const handleLogout = () => {
     localStorage.removeItem("clinical_current_user");
     setUser(null);
   };
 
-  // 3. Login Function
   const handleLogin = (userData) => {
     localStorage.setItem("clinical_current_user", JSON.stringify(userData));
     setUser(userData);
   };
 
-  // 4. Contact Us Function
   const handleContactUs = () => {
-    const subject = "Support Request - ClinicalAssist App";
-    const body = "Hello Support Team, I need help with...";
+    const subject = "Support Request - ClinicalAssist";
+    const body = "Hello, I need assistance with...";
     window.location.href = `mailto:your-email@example.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
-
-  const filteredResults = useMemo(() => {
-    if (!query) return [];
-    const lowerQ = query.toLowerCase();
-    return Object.entries(prescriptions).filter(([key, data]) => {
-      return key.includes(lowerQ) || 
-             data.symptoms.some(s => s.toLowerCase().includes(lowerQ)) ||
-             data.category.toLowerCase().startsWith(lowerQ);
-    });
-  }, [query, prescriptions]);
 
   const toggleFavorite = (key) => {
     const newFavs = favorites.includes(key) ? favorites.filter(k => k !== key) : [...favorites, key];
@@ -70,16 +62,27 @@ export default function ClinicalTool() {
     if (w && d) setCalculatedResult(((w / 70) * d).toFixed(1));
   };
 
-  // --- IF NOT LOGGED IN, SHOW LOGIN SCREEN ---
+  // Filter Logic for Search
+  const filteredResults = useMemo(() => {
+    if (!query) return [];
+    const lowerQ = query.toLowerCase();
+    return Object.entries(prescriptions).filter(([key, data]) => {
+      return key.includes(lowerQ) || 
+             data.symptoms.some(s => s.toLowerCase().includes(lowerQ)) ||
+             data.category.toLowerCase().startsWith(lowerQ);
+    });
+  }, [query, prescriptions]);
+
+  // --- RENDER: AUTH SCREEN (If not logged in) ---
   if (!user) {
     return <Auth onLogin={handleLogin} />;
   }
 
-  // --- MAIN APP INTERFACE ---
+  // --- RENDER: MAIN APP ---
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans pb-24">
       
-      {/* HEADER */}
+      {/* 1. HEADER (Sticky) */}
       <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-lg border-b border-slate-200 shadow-sm">
         <div className="max-w-3xl mx-auto px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-2.5">
@@ -102,23 +105,26 @@ export default function ClinicalTool() {
           </div>
         </div>
 
+        {/* Search Bar (Visible only on Search Tab) */}
         {activeTab === "search" && (
           <div className="max-w-3xl mx-auto px-4 pb-3">
             <div className="relative flex items-center bg-slate-100 focus-within:bg-white rounded-xl border border-slate-200 focus-within:border-blue-400 transition-all shadow-inner">
               <Search className="h-4 w-4 text-slate-400 ml-3.5" />
               <input 
                 className="w-full h-11 pl-3 pr-4 bg-transparent outline-none text-base text-slate-700"
-                placeholder="Search disease..." value={query} onChange={e => setQuery(e.target.value)}
+                placeholder="Search disease (e.g. Asthma)..." 
+                value={query} 
+                onChange={e => setQuery(e.target.value)}
               />
             </div>
           </div>
         )}
       </div>
 
-      {/* CONTENT */}
+      {/* 2. MAIN CONTENT AREA */}
       <div className="max-w-3xl mx-auto px-4 mt-4 space-y-6">
         
-        {/* Tabs */}
+        {/* Navigation Tabs */}
         <div className="flex p-1.5 bg-white border border-slate-200 rounded-2xl shadow-sm">
           {["search", "favorites", "tools"].map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)}
@@ -131,10 +137,10 @@ export default function ClinicalTool() {
           ))}
         </div>
 
-        {/* Results Area */}
+        {/* Tab Content */}
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
           
-          {/* SEARCH RESULTS */}
+          {/* SEARCH TAB */}
           {activeTab === "search" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {query ? filteredResults.map(([key, data]) => (
@@ -155,7 +161,7 @@ export default function ClinicalTool() {
             </div>
           )}
 
-          {/* FAVORITES */}
+          {/* FAVORITES TAB */}
           {activeTab === "favorites" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {favorites.map(key => prescriptions[key] && (
@@ -177,7 +183,7 @@ export default function ClinicalTool() {
             </div>
           )}
 
-          {/* TOOLS */}
+          {/* TOOLS TAB */}
           {activeTab === "tools" && (
              <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-xl">
                <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2"><Baby className="text-purple-500"/> Pediatric Calc</h2>
@@ -192,7 +198,7 @@ export default function ClinicalTool() {
         </div>
       </div>
 
-      {/* --- POPUP MODAL (Hidden until clicked) --- */}
+      {/* 3. MODAL POPUP (Overlay) */}
       {selectedDisease && (
         <DiseaseModal 
           name={selectedDisease.key} 
