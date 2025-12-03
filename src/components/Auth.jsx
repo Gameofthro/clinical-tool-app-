@@ -1,20 +1,42 @@
 import { useState } from "react";
 import { Activity, Lock, Mail, User } from "lucide-react";
+// Import Firebase logic (Ensure src/firebase.js exists!)
+import { auth, googleProvider, signInWithPopup } from "../firebase"; 
 
 export default function Auth({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
 
+  // --- GOOGLE LOGIN HANDLER ---
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      
+      const userData = {
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL,
+        isProfileComplete: true // Google users often skip manual onboarding
+      };
+
+      localStorage.setItem("clinical_current_user", JSON.stringify(userData));
+      onLogin(userData);
+    } catch (error) {
+      console.error("Login Failed:", error.message);
+      setError("Google Sign-In failed. Please try again.");
+    }
+  };
+
+  // --- MANUAL FORM HANDLER ---
   const handleSubmit = (e) => {
     e.preventDefault();
     setError("");
     
-    // Get existing users from storage
     const users = JSON.parse(localStorage.getItem("clinical_users") || "[]");
 
     if (isLogin) {
-      // LOGIN LOGIC
       const user = users.find(u => u.email === formData.email && u.password === formData.password);
       if (user) {
         onLogin(user);
@@ -22,7 +44,6 @@ export default function Auth({ onLogin }) {
         setError("Invalid credentials or user not found.");
       }
     } else {
-      // SIGNUP LOGIC
       if (users.find(u => u.email === formData.email)) {
         setError("User already exists");
         return;
@@ -37,7 +58,7 @@ export default function Auth({ onLogin }) {
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl">
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <div className="inline-flex p-3 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/30 mb-4">
             <Activity className="h-8 w-8 text-white" />
           </div>
@@ -45,6 +66,21 @@ export default function Auth({ onLogin }) {
           <p className="text-slate-500 text-sm mt-1">{isLogin ? "Welcome back, Doctor" : "Create your account"}</p>
         </div>
 
+        {/* --- GOOGLE BUTTON --- */}
+        <button 
+          onClick={handleGoogleLogin}
+          className="w-full flex items-center justify-center gap-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 px-4 rounded-xl transition-all mb-6"
+        >
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
+          Continue with Google
+        </button>
+
+        <div className="relative flex items-center justify-center mb-6">
+          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200"></div></div>
+          <span className="relative bg-white px-4 text-xs text-slate-400 uppercase font-bold">Or continue with email</span>
+        </div>
+
+        {/* --- MANUAL FORM --- */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
             <div className="relative">
