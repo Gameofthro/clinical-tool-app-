@@ -1,13 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { 
-  Search, Stethoscope, Star, Baby, Activity, Mail, LogOut, User, X, 
-  Pill, Thermometer, AlertTriangle, Utensils, Ban, CheckCircle2, Zap, 
-  Menu, Building2, FileBadge, Save, Moon, Sun, Calculator, Scale, Info 
+  Search, Stethoscope, Baby, Activity, Mail, LogOut, User, X, 
+  Pill, Thermometer, AlertTriangle, Utensils, Ban, CheckCircle2, 
+  Menu, Building2, FileBadge, Save, Moon, Sun, Calculator, Scale 
 } from "lucide-react";
 
 // --- CONFIGURATION ---
-const LOCAL_STORAGE_KEY = "clinical_prescriptions_v6";
-const FAVORITES_STORAGE_KEY = "clinical_favorites";
+const LOCAL_STORAGE_KEY = "clinical_prescriptions_v7";
 const THEME_KEY = "clinical_theme";
 
 // --- 1. DATABASE (Medical Data) ---
@@ -226,7 +225,7 @@ function Auth({ onLogin }) {
     const users = JSON.parse(localStorage.getItem("clinical_users") || "[]");
     if (isLogin) {
       const user = users.find(u => u.email === formData.email && u.password === formData.password);
-      if (user) onLogin(user); else setError("Invalid credentials or user not found.");
+      if (user) onLogin(user); else setError("Invalid credentials. Try creating an account.");
     } else {
       if (users.find(u => u.email === formData.email)) { setError("User already exists"); return; }
       const newUser = { name: formData.name, email: formData.email, password: formData.password };
@@ -245,9 +244,9 @@ function Auth({ onLogin }) {
           <p className="text-slate-500 text-sm mt-1">{isLogin ? "Welcome back, Doctor" : "Create your account"}</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && <div className="relative"><User className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" /><input required type="text" placeholder="Full Name" className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 text-slate-800" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} /></div>}
-          <div className="relative"><Mail className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" /><input required type="email" placeholder="Email Address" className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 text-slate-800" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} /></div>
-          <div className="relative"><Lock className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" /><input required type="password" placeholder="Password" className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 text-slate-800" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} /></div>
+          {!isLogin && <div className="relative"><User className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" /><input required type="text" placeholder="Full Name" className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 text-slate-900 placeholder:text-slate-400" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} /></div>}
+          <div className="relative"><Mail className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" /><input required type="email" placeholder="Email Address" className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 text-slate-900 placeholder:text-slate-400" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} /></div>
+          <div className="relative"><Lock className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" /><input required type="password" placeholder="Password" className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 text-slate-900 placeholder:text-slate-400" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} /></div>
           {error && <p className="text-red-500 text-sm text-center font-medium">{error}</p>}
           <button type="submit" className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition shadow-lg">{isLogin ? "Sign In" : "Create Account"}</button>
         </form>
@@ -257,7 +256,7 @@ function Auth({ onLogin }) {
   );
 }
 
-function DiseaseCard({ name, data, isFav, onToggle, onClick }) {
+function DiseaseCard({ name, data, onClick }) {
   const colors = { red: "bg-rose-50 text-rose-700 border-rose-200", blue: "bg-sky-50 text-sky-700 border-sky-200", emerald: "bg-emerald-50 text-emerald-700 border-emerald-200", purple: "bg-violet-50 text-violet-700 border-violet-200", orange: "bg-amber-50 text-amber-700 border-amber-200" };
   const theme = colors[data.color] || colors.blue;
   return (
@@ -268,7 +267,6 @@ function DiseaseCard({ name, data, isFav, onToggle, onClick }) {
           <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 capitalize mt-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{name}</h3>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 font-medium">{data.firstLine}</p>
         </div>
-        <button onClick={(e) => { e.stopPropagation(); onToggle(); }} className="p-2 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-full transition active:scale-90"><Star className={`h-5 w-5 ${isFav ? "fill-yellow-400 text-yellow-400" : "text-slate-300 dark:text-slate-600"}`} /></button>
       </div>
     </div>
   );
@@ -327,25 +325,18 @@ export default function ClinicalTool() {
   const [prescriptions] = useState(diseaseDatabase);
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState("search");
-  const [activeTool, setActiveTool] = useState("pediatric"); // New state for tool sub-tabs
-  const [favorites, setFavorites] = useState([]);
+  const [activeTool, setActiveTool] = useState("pediatric");
   const [darkMode, setDarkMode] = useState(false);
   
-  // Calculators State
+  // Calculators
   const [doseData, setDoseData] = useState({ weight: "", adultDose: "" });
   const [bmiData, setBmiData] = useState({ height: "", weight: "" });
   const [gfrData, setGfrData] = useState({ creatinine: "", age: "", gender: "male" });
-  
   const [results, setResults] = useState({ dose: null, bmi: null, gfr: null });
 
-  // Init
   useEffect(() => {
     const savedUser = localStorage.getItem("clinical_current_user");
     if (savedUser) setUser(JSON.parse(savedUser));
-    const favs = localStorage.getItem(FAVORITES_STORAGE_KEY);
-    if (favs) setFavorites(JSON.parse(favs));
-    
-    // Check Dark Mode preference
     const isDark = localStorage.getItem(THEME_KEY) === "dark";
     setDarkMode(isDark);
     if(isDark) document.documentElement.classList.add("dark");
@@ -389,13 +380,6 @@ export default function ClinicalTool() {
     });
   }, [query, prescriptions]);
 
-  const toggleFavorite = (key) => {
-    const newFavs = favorites.includes(key) ? favorites.filter(k => k !== key) : [...favorites, key];
-    setFavorites(newFavs);
-    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(newFavs));
-  };
-
-  // Calculation Logic
   const calculateDose = () => {
     const w = parseFloat(doseData.weight); const d = parseFloat(doseData.adultDose);
     if (w && d) setResults({...results, dose: ((w / 70) * d).toFixed(1)});
@@ -407,14 +391,12 @@ export default function ClinicalTool() {
   const calculateGFR = () => {
     const cr = parseFloat(gfrData.creatinine); const age = parseFloat(gfrData.age);
     if (cr && age) {
-      // Simplified MDRD
       let gfr = 175 * Math.pow(cr, -1.154) * Math.pow(age, -0.203);
       if (gfrData.gender === "female") gfr *= 0.742;
       setResults({...results, gfr: gfr.toFixed(1)});
     }
   };
 
-  // --- VIEW LOGIC ---
   if (!user) return <Auth onLogin={handleLogin} />;
   if (!user.isProfileComplete) return <Onboarding user={user} onComplete={handleOnboardingComplete} />;
 
@@ -423,38 +405,38 @@ export default function ClinicalTool() {
       
       {/* HEADER */}
       <div className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 shadow-sm">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex justify-between items-center">
-          <div className="flex items-center gap-2.5">
-            <div className="bg-gradient-to-tr from-blue-600 to-blue-500 p-2.5 rounded-xl shadow-lg shadow-blue-600/20"><Stethoscope className="h-5 w-5 text-white" /></div>
-            <div>
-              <h1 className="text-xl font-bold text-slate-800 dark:text-white leading-none">Clinical<span className="text-blue-600 dark:text-blue-400">Assist</span></h1>
-              <div className="flex items-center gap-1 mt-0.5"><p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{user.fullName ? `Dr. ${user.fullName}` : user.name}</p></div>
+        <div className="max-w-3xl mx-auto px-4 py-3">
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center gap-2.5">
+              <div className="bg-gradient-to-tr from-blue-600 to-blue-500 p-2.5 rounded-xl shadow-lg shadow-blue-600/20"><Stethoscope className="h-5 w-5 text-white" /></div>
+              <div>
+                <h1 className="text-xl font-bold text-slate-800 dark:text-white leading-none">Clinical<span className="text-blue-600 dark:text-blue-400">Assist</span></h1>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button onClick={toggleTheme} className="p-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full border border-slate-200 dark:border-slate-700 transition">
+                {darkMode ? <Sun className="h-5 w-5 text-yellow-400" /> : <Moon className="h-5 w-5 text-slate-600" />}
+              </button>
+              <button onClick={handleLogout} className="p-2 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/40 rounded-full border border-rose-200 dark:border-rose-900 transition"><LogOut className="h-5 w-5 text-rose-600 dark:text-rose-400" /></button>
             </div>
           </div>
-          <div className="flex gap-2">
-            <button onClick={toggleTheme} className="p-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full border border-slate-200 dark:border-slate-700 transition">
-              {darkMode ? <Sun className="h-5 w-5 text-yellow-400" /> : <Moon className="h-5 w-5 text-slate-600" />}
-            </button>
-            <button onClick={handleLogout} className="p-2 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/40 rounded-full border border-rose-200 dark:border-rose-900 transition"><LogOut className="h-5 w-5 text-rose-600 dark:text-rose-400" /></button>
+          
+          <p className="text-center text-xs text-slate-500 dark:text-slate-400 italic mb-4 font-medium">"Empowering clinicians with precision and speed. Diagnose, Treat, Succeed."</p>
+
+          <div className="max-w-xl mx-auto relative flex items-center bg-slate-100 dark:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:border-blue-400 transition-all shadow-inner">
+            <Search className="h-4 w-4 text-slate-400 ml-3.5" /><input className="w-full h-11 pl-3 pr-4 bg-transparent outline-none text-base text-slate-700 dark:text-slate-200 placeholder:text-slate-400" placeholder="Search disease or symptom..." value={query} onChange={e => {setQuery(e.target.value); setActiveTab("search");}} />
           </div>
         </div>
-        {activeTab === "search" && (
-          <div className="max-w-3xl mx-auto px-4 pb-3">
-            <div className="relative flex items-center bg-slate-100 dark:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:border-blue-400 transition-all shadow-inner">
-              <Search className="h-4 w-4 text-slate-400 ml-3.5" /><input className="w-full h-11 pl-3 pr-4 bg-transparent outline-none text-base text-slate-700 dark:text-slate-200 placeholder:text-slate-400" placeholder="Search disease..." value={query} onChange={e => setQuery(e.target.value)} />
-            </div>
-          </div>
-        )}
       </div>
 
       {/* CONTENT */}
       <div className="max-w-3xl mx-auto px-4 mt-4 space-y-6">
         
-        {/* Tabs */}
+        {/* Navigation Tabs */}
         <div className="flex p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
-          {["search", "favorites", "tools"].map(tab => (
+          {["search", "tools"].map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all capitalize flex justify-center items-center gap-2 ${activeTab === tab ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md" : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"}`}>
-              {tab === "search" && <Search size={14} />}{tab === "favorites" && <Star size={14} />}{tab === "tools" && <Calculator size={14} />}{tab}
+              {tab === "search" && <Search size={14} />}{tab === "tools" && <Calculator size={14} />}{tab}
             </button>
           ))}
         </div>
@@ -463,25 +445,15 @@ export default function ClinicalTool() {
           {activeTab === "search" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {query ? filteredResults.map(([key, data]) => (
-                <DiseaseCard key={key} name={key} data={data} isFav={favorites.includes(key)} onToggle={() => toggleFavorite(key)} onClick={() => setSelectedDisease({ key, data })} />
+                <DiseaseCard key={key} name={key} data={data} onClick={() => setSelectedDisease({ key, data })} />
               )) : (
                 <div className="col-span-full text-center py-20 opacity-60"><Activity className="h-12 w-12 text-slate-300 dark:text-slate-600 mx-auto mb-2" /><p className="text-slate-500 dark:text-slate-400 font-medium">Search to see clinical guidelines</p></div>
               )}
             </div>
           )}
 
-          {activeTab === "favorites" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {favorites.map(key => prescriptions[key] && (
-                <DiseaseCard key={key} name={key} data={prescriptions[key]} isFav={true} onToggle={() => toggleFavorite(key)} onClick={() => setSelectedDisease({ key, data: prescriptions[key] })} />
-              ))}
-              {favorites.length === 0 && <div className="col-span-full text-center py-20 text-slate-400"><Star className="h-12 w-12 mx-auto mb-2 opacity-50" />No favorites saved.</div>}
-            </div>
-          )}
-
           {activeTab === "tools" && (
              <div className="space-y-4">
-                {/* Tool Selector */}
                 <div className="flex gap-2 overflow-x-auto pb-2">
                   {[
                     {id: 'pediatric', label: 'Pediatric Dose', icon: Baby},
