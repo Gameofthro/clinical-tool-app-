@@ -1,12 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Stethoscope, Star, Baby, Activity, Mail, LogOut, Calculator, Scale } from "lucide-react";
+import { 
+  Search, Stethoscope, Star, Baby, Activity, Mail, LogOut, Calculator, Scale 
+} from "lucide-react";
 
-// --- IMPORTS (Connecting to your files) ---
-// This uses the files you created in src/components/ and src/data/
+// --- IMPORTS ---
 import { diseaseDatabase } from "./data/diseases";
 import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
 import DiseaseModal from "./components/DiseaseModal";
+// Import the new calculator engine
+import { calculatePediatricDose, calculateBMI, calculateGFR } from "./utils/calculators";
 
 const FAVORITES_STORAGE_KEY = "clinical_favorites";
 const THEME_KEY = "clinical_theme";
@@ -22,23 +25,22 @@ export default function ClinicalTool() {
   const [favorites, setFavorites] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
   
-  // Calculators
-  const [doseData, setDoseData] = useState({ weight: "", adultDose: "" });
-  const [bmiData, setBmiData] = useState({ height: "", weight: "" });
-  const [gfrData, setGfrData] = useState({ creatinine: "", age: "", gender: "male" });
+  // Calculator Inputs
+  const [doseData, setDoseData] = useState({ weight: "", adultDose: "", unit: "kg" });
+  const [bmiData, setBmiData] = useState({ height: "", weight: "", wUnit: "kg", hUnit: "cm" });
+  const [gfrData, setGfrData] = useState({ creatinine: "", age: "", gender: "male", unit: "mg/dl" });
+  
+  // Results State
   const [results, setResults] = useState({ dose: null, bmi: null, gfr: null });
 
   // --- INITIALIZATION ---
   useEffect(() => {
-    // 1. Check if user is logged in
     const savedUser = localStorage.getItem("clinical_current_user");
     if (savedUser) setUser(JSON.parse(savedUser));
 
-    // 2. Load favorites
     const favs = localStorage.getItem(FAVORITES_STORAGE_KEY);
     if (favs) setFavorites(JSON.parse(favs));
     
-    // 3. Load Dark Mode
     const isDark = localStorage.getItem(THEME_KEY) === "dark";
     setDarkMode(isDark);
     if(isDark) document.documentElement.classList.add("dark");
@@ -83,32 +85,27 @@ export default function ClinicalTool() {
     localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(newFavs));
   };
 
-  // --- CALCULATORS ---
-  const calculateDose = () => {
-    const w = parseFloat(doseData.weight); const d = parseFloat(doseData.adultDose);
-    if (w && d) setResults({...results, dose: ((w / 70) * d).toFixed(1)});
+  // --- CALCULATION HANDLERS ---
+  const handleDoseCalc = () => {
+    const res = calculatePediatricDose(doseData.weight, doseData.adultDose, doseData.unit);
+    setResults({...results, dose: res});
   };
-  const calculateBMI = () => {
-    const h = parseFloat(bmiData.height)/100; const w = parseFloat(bmiData.weight);
-    if (h && w) setResults({...results, bmi: (w / (h * h)).toFixed(1)});
+
+  const handleBMICalc = () => {
+    const res = calculateBMI(bmiData.weight, bmiData.height, bmiData.wUnit, bmiData.hUnit);
+    if (res) setResults({...results, bmi: res});
   };
-  const calculateGFR = () => {
-    const cr = parseFloat(gfrData.creatinine); const age = parseFloat(gfrData.age);
-    if (cr && age) {
-      let gfr = 175 * Math.pow(cr, -1.154) * Math.pow(age, -0.203);
-      if (gfrData.gender === "female") gfr *= 0.742;
-      setResults({...results, gfr: gfr.toFixed(1)});
-    }
+
+  const handleGFRCalc = () => {
+    const res = calculateGFR(gfrData.creatinine, gfrData.age, gfrData.gender, gfrData.unit);
+    setResults({...results, gfr: res});
   };
 
   // --- RENDER ---
-  
-  // 1. Show Login Screen if no user
   if (!user) {
     return <Auth onLogin={handleLogin} />;
   }
 
-  // 2. Show Main App
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans pb-24 transition-colors duration-300">
       
@@ -130,9 +127,6 @@ export default function ClinicalTool() {
               </div>
             </div>
             <div className="flex gap-2">
-              {/* <button onClick={toggleTheme} className="p-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full border border-slate-200 dark:border-slate-700 transition">
-                {darkMode ? "☀️" : "🌙"}
-              </button> */}
               <button onClick={handleContactUs} className="p-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full border border-slate-200 dark:border-slate-700 transition">
                 <Mail className="h-5 w-5 text-slate-600 dark:text-slate-400" />
               </button>
@@ -142,7 +136,8 @@ export default function ClinicalTool() {
             </div>
           </div>
           
-          {/* Search Bar */}
+          <p className="text-center text-xs text-slate-500 dark:text-slate-400 italic mb-4 font-medium">"Empowering clinicians with precision and speed. Diagnose, Treat, Succeed."</p>
+
           {activeTab === "search" && (
             <div className="relative flex items-center bg-slate-100 dark:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:border-blue-400 transition-all shadow-inner">
               <Search className="h-4 w-4 text-slate-400 ml-3.5" />
@@ -165,9 +160,7 @@ export default function ClinicalTool() {
           {["search", "tools"].map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} 
               className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all capitalize flex justify-center items-center gap-2 ${activeTab === tab ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md" : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"}`}>
-              {tab === "search" && <Search size={14} />}
-              {tab === "tools" && <Calculator size={14} />}
-              {tab}
+              {tab === "search" && <Search size={14} />}{tab === "tools" && <Calculator size={14} />}{tab}
             </button>
           ))}
         </div>
@@ -198,8 +191,12 @@ export default function ClinicalTool() {
           {activeTab === "tools" && (
              <div className="space-y-4">
                 {/* Tool Selector */}
-                <div className="flex gap-2 overflow-x-auto pb-2">
-                  {[{id: 'pediatric', label: 'Dose', icon: Baby}, {id: 'bmi', label: 'BMI', icon: Scale}, {id: 'gfr', label: 'eGFR', icon: Activity}].map(tool => (
+                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
+                  {[
+                    {id: 'pediatric', label: 'Dose', icon: Baby},
+                    {id: 'bmi', label: 'BMI', icon: Scale},
+                    {id: 'gfr', label: 'eGFR', icon: Activity}
+                  ].map(tool => (
                     <button key={tool.id} onClick={() => setActiveTool(tool.id)} 
                       className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap border transition-all ${activeTool === tool.id ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'}`}>
                       <tool.icon size={14} /> {tool.label}
@@ -208,16 +205,104 @@ export default function ClinicalTool() {
                 </div>
 
                 <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl">
+                   {/* PEDIATRIC DOSE */}
                    {activeTool === 'pediatric' && (
                      <div className="space-y-4">
-                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2"><Baby className="text-purple-500"/> Pediatric Calc</h2>
-                       <input type="number" className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white" value={doseData.weight} onChange={e => setDoseData({...doseData, weight: e.target.value})} placeholder="Child Weight (kg)" />
-                       <input type="number" className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white" value={doseData.adultDose} onChange={e => setDoseData({...doseData, adultDose: e.target.value})} placeholder="Adult Dose (mg)" />
-                       <button onClick={calculateDose} className="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg">Calculate</button>
-                       {results.dose && <div className="p-5 bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl text-center text-emerald-700 dark:text-emerald-400 font-black text-3xl">{results.dose} mg</div>}
+                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Baby className="text-purple-500"/> Pediatric Calc</h2>
+                       
+                       <div className="flex gap-2">
+                         <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-blue-500 outline-none" 
+                           value={doseData.weight} onChange={e => setDoseData({...doseData, weight: e.target.value})} placeholder="Child Weight" />
+                         <select className="bg-slate-100 dark:bg-slate-700 rounded-xl px-3 font-bold text-sm outline-none dark:text-white"
+                           value={doseData.unit} onChange={e => setDoseData({...doseData, unit: e.target.value})}>
+                           <option value="kg">kg</option>
+                           <option value="lbs">lbs</option>
+                         </select>
+                       </div>
+
+                       <input type="number" className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-blue-500 outline-none" 
+                         value={doseData.adultDose} onChange={e => setDoseData({...doseData, adultDose: e.target.value})} placeholder="Adult Dose (mg)" />
+                       
+                       <button onClick={handleDoseCalc} className="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition">Calculate Safe Dose</button>
+                       
+                       {results.dose && <div className="p-5 bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl text-center text-emerald-700 dark:text-emerald-400 font-black text-3xl animate-in zoom-in-95">{results.dose} <span className="text-lg">mg</span></div>}
                      </div>
                    )}
-                   {/* Add other tools logic here if needed */}
+
+                   {/* BMI CALCULATOR */}
+                   {activeTool === 'bmi' && (
+                     <div className="space-y-4">
+                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Scale className="text-orange-500"/> BMI Calculator</h2>
+                       
+                       <div className="flex gap-2">
+                         <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-orange-500 outline-none" 
+                           value={bmiData.weight} onChange={e => setBmiData({...bmiData, weight: e.target.value})} placeholder="Weight" />
+                         <select className="bg-slate-100 dark:bg-slate-700 rounded-xl px-3 font-bold text-sm outline-none dark:text-white"
+                           value={bmiData.wUnit} onChange={e => setBmiData({...bmiData, wUnit: e.target.value})}>
+                           <option value="kg">kg</option>
+                           <option value="lbs">lbs</option>
+                         </select>
+                       </div>
+
+                       <div className="flex gap-2">
+                         <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-orange-500 outline-none" 
+                           value={bmiData.height} onChange={e => setBmiData({...bmiData, height: e.target.value})} placeholder="Height" />
+                         <select className="bg-slate-100 dark:bg-slate-700 rounded-xl px-3 font-bold text-sm outline-none dark:text-white"
+                           value={bmiData.hUnit} onChange={e => setBmiData({...bmiData, hUnit: e.target.value})}>
+                           <option value="cm">cm</option>
+                           <option value="ft">ft</option>
+                           <option value="in">in</option>
+                         </select>
+                       </div>
+
+                       <button onClick={handleBMICalc} className="w-full py-4 bg-orange-500 text-white font-bold rounded-2xl shadow-lg hover:bg-orange-600 transition">Calculate BMI</button>
+                       
+                       {results.bmi && (
+                         <div className="p-5 bg-orange-50 dark:bg-orange-900/30 rounded-2xl text-center animate-in zoom-in-95">
+                           <p className="text-orange-700 dark:text-orange-400 font-black text-3xl">{results.bmi.value}</p>
+                           <p className="text-orange-600 dark:text-orange-300 font-bold uppercase text-xs mt-1">{results.bmi.category}</p>
+                         </div>
+                       )}
+                     </div>
+                   )}
+
+                   {/* eGFR CALCULATOR */}
+                   {activeTool === 'gfr' && (
+                     <div className="space-y-4">
+                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Activity className="text-red-500"/> eGFR (MDRD)</h2>
+                       
+                       <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
+                         {['male', 'female'].map(g => (
+                           <button key={g} onClick={() => setGfrData({...gfrData, gender: g})} 
+                             className={`flex-1 p-3 rounded-lg font-bold capitalize transition-all ${gfrData.gender === g ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-400'}`}>
+                             {g}
+                           </button>
+                         ))}
+                       </div>
+
+                       <div className="flex gap-2">
+                         <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-red-500 outline-none" 
+                           value={gfrData.creatinine} onChange={e => setGfrData({...gfrData, creatinine: e.target.value})} placeholder="Creatinine" />
+                         <select className="bg-slate-100 dark:bg-slate-700 rounded-xl px-2 font-bold text-xs outline-none dark:text-white"
+                           value={gfrData.unit} onChange={e => setGfrData({...gfrData, unit: e.target.value})}>
+                           <option value="mg/dl">mg/dL</option>
+                           <option value="umol/l">µmol/L</option>
+                         </select>
+                       </div>
+
+                       <input type="number" className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-red-500 outline-none" 
+                         value={gfrData.age} onChange={e => setGfrData({...gfrData, age: e.target.value})} placeholder="Age (Years)" />
+                       
+                       <button onClick={handleGFRCalc} className="w-full py-4 bg-red-500 text-white font-bold rounded-2xl shadow-lg hover:bg-red-600 transition">Calculate eGFR</button>
+                       
+                       {results.gfr && (
+                         <div className="p-5 bg-red-50 dark:bg-red-900/30 rounded-2xl text-center animate-in zoom-in-95">
+                           <p className="text-red-700 dark:text-red-400 font-black text-3xl">{results.gfr}</p>
+                           <p className="text-red-600 dark:text-red-300 font-bold uppercase text-[10px] mt-1">mL/min/1.73m²</p>
+                         </div>
+                       )}
+                     </div>
+                   )}
                 </div>
              </div>
           )}
