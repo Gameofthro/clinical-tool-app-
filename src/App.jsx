@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { 
-  Search, Stethoscope, Star, Baby, Activity, Mail, LogOut, Calculator, Scale 
+  Search, Stethoscope, Baby, Activity, Mail, LogOut, 
+  Calculator, Scale, Moon, Sun, Menu
 } from "lucide-react";
 
 // --- IMPORTS ---
@@ -8,10 +9,8 @@ import { diseaseDatabase } from "./data/diseases";
 import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
 import DiseaseModal from "./components/DiseaseModal";
-// Import the new calculator engine
 import { calculatePediatricDose, calculateBMI, calculateGFR } from "./utils/calculators";
 
-const FAVORITES_STORAGE_KEY = "clinical_favorites";
 const THEME_KEY = "clinical_theme";
 
 export default function ClinicalTool() {
@@ -22,7 +21,6 @@ export default function ClinicalTool() {
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState("search");
   const [activeTool, setActiveTool] = useState("pediatric");
-  const [favorites, setFavorites] = useState([]);
   const [darkMode, setDarkMode] = useState(false);
   
   // Calculator Inputs
@@ -30,20 +28,21 @@ export default function ClinicalTool() {
   const [bmiData, setBmiData] = useState({ height: "", weight: "", wUnit: "kg", hUnit: "cm" });
   const [gfrData, setGfrData] = useState({ creatinine: "", age: "", gender: "male", unit: "mg/dl" });
   
-  // Results State
   const [results, setResults] = useState({ dose: null, bmi: null, gfr: null });
 
   // --- INITIALIZATION ---
   useEffect(() => {
+    // 1. User
     const savedUser = localStorage.getItem("clinical_current_user");
     if (savedUser) setUser(JSON.parse(savedUser));
-
-    const favs = localStorage.getItem(FAVORITES_STORAGE_KEY);
-    if (favs) setFavorites(JSON.parse(favs));
     
-    const isDark = localStorage.getItem(THEME_KEY) === "dark";
+    // 2. Dark Mode
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    // Default to dark mode if no preference saved, or follow system
+    const isDark = savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
     setDarkMode(isDark);
-    if(isDark) document.documentElement.classList.add("dark");
+    if (isDark) document.documentElement.classList.add("dark");
+    else document.documentElement.classList.remove("dark");
   }, []);
 
   // --- ACTIONS ---
@@ -51,7 +50,8 @@ export default function ClinicalTool() {
     const newMode = !darkMode;
     setDarkMode(newMode);
     localStorage.setItem(THEME_KEY, newMode ? "dark" : "light");
-    if(newMode) document.documentElement.classList.add("dark");
+    
+    if (newMode) document.documentElement.classList.add("dark");
     else document.documentElement.classList.remove("dark");
   };
 
@@ -79,32 +79,22 @@ export default function ClinicalTool() {
     });
   }, [query, prescriptions]);
 
-  const toggleFavorite = (key) => {
-    const newFavs = favorites.includes(key) ? favorites.filter(k => k !== key) : [...favorites, key];
-    setFavorites(newFavs);
-    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(newFavs));
-  };
-
-  // --- CALCULATION HANDLERS ---
+  // --- CALCULATORS ---
   const handleDoseCalc = () => {
     const res = calculatePediatricDose(doseData.weight, doseData.adultDose, doseData.unit);
     setResults({...results, dose: res});
   };
-
   const handleBMICalc = () => {
     const res = calculateBMI(bmiData.weight, bmiData.height, bmiData.wUnit, bmiData.hUnit);
     if (res) setResults({...results, bmi: res});
   };
-
   const handleGFRCalc = () => {
     const res = calculateGFR(gfrData.creatinine, gfrData.age, gfrData.gender, gfrData.unit);
     setResults({...results, gfr: res});
   };
 
   // --- RENDER ---
-  if (!user) {
-    return <Auth onLogin={handleLogin} />;
-  }
+  if (!user) return <Auth onLogin={handleLogin} />;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans pb-24 transition-colors duration-300">
@@ -112,7 +102,7 @@ export default function ClinicalTool() {
       {/* HEADER */}
       <div className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="max-w-3xl mx-auto px-4 py-3">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-2">
             <div className="flex items-center gap-2.5">
               <div className="bg-gradient-to-tr from-blue-600 to-blue-500 p-2.5 rounded-xl shadow-lg shadow-blue-600/20">
                 <Stethoscope className="h-5 w-5 text-white" />
@@ -127,7 +117,14 @@ export default function ClinicalTool() {
               </div>
             </div>
             <div className="flex gap-2">
-              <button onClick={handleContactUs} className="p-2 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-full border border-slate-200 dark:border-slate-700 transition">
+              <button 
+                onClick={toggleTheme} 
+                className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full border border-slate-200 dark:border-slate-700 transition text-slate-600 dark:text-slate-300"
+              >
+                {darkMode ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} />}
+              </button>
+              
+              <button onClick={handleContactUs} className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full border border-slate-200 dark:border-slate-700 transition">
                 <Mail className="h-5 w-5 text-slate-600 dark:text-slate-400" />
               </button>
               <button onClick={handleLogout} className="p-2 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/40 rounded-full border border-rose-200 dark:border-rose-900 transition">
@@ -136,10 +133,16 @@ export default function ClinicalTool() {
             </div>
           </div>
           
-          <p className="text-center text-xs text-slate-500 dark:text-slate-400 italic mb-4 font-medium">"Empowering clinicians with precision and speed. Diagnose, Treat, Succeed."</p>
+          {/* Motivational Tagline */}
+          <div className="text-center mb-4">
+            <p className="text-xs text-slate-500 dark:text-slate-400 italic font-medium">
+              "Empowering clinicians with precision and speed. Diagnose, Treat, Succeed."
+            </p>
+          </div>
 
+          {/* Centered Search Bar */}
           {activeTab === "search" && (
-            <div className="relative flex items-center bg-slate-100 dark:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:border-blue-400 transition-all shadow-inner">
+            <div className="max-w-xl mx-auto relative flex items-center bg-slate-100 dark:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:border-blue-400 transition-all shadow-inner">
               <Search className="h-4 w-4 text-slate-400 ml-3.5" />
               <input 
                 className="w-full h-11 pl-3 pr-4 bg-transparent outline-none text-base text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
@@ -155,12 +158,14 @@ export default function ClinicalTool() {
       {/* CONTENT */}
       <div className="max-w-3xl mx-auto px-4 mt-4 space-y-6">
         
-        {/* Tabs */}
+        {/* Navigation Tabs (Simpler now) */}
         <div className="flex p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
           {["search", "tools"].map(tab => (
             <button key={tab} onClick={() => setActiveTab(tab)} 
               className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all capitalize flex justify-center items-center gap-2 ${activeTab === tab ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md" : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"}`}>
-              {tab === "search" && <Search size={14} />}{tab === "tools" && <Calculator size={14} />}{tab}
+              {tab === "search" && <Search size={14} />}
+              {tab === "tools" && <Calculator size={14} />}
+              {tab}
             </button>
           ))}
         </div>
@@ -175,8 +180,6 @@ export default function ClinicalTool() {
                   key={key} 
                   name={key} 
                   data={data} 
-                  isFav={favorites.includes(key)} 
-                  onToggle={() => toggleFavorite(key)} 
                   onClick={() => setSelectedDisease({ key, data })} 
                 />
               )) : (

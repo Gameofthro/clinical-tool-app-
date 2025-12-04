@@ -1,6 +1,6 @@
 import { Star } from "lucide-react";
 
-export default function DiseaseCard({ name, data, isFav, onToggle, onClick }) {
+export default function DiseaseCard({ name, data, onClick }) {
   const colors = {
     red: "bg-rose-50 text-rose-700 border-rose-200",
     blue: "bg-sky-50 text-sky-700 border-sky-200",
@@ -13,26 +13,20 @@ export default function DiseaseCard({ name, data, isFav, onToggle, onClick }) {
   return (
     <div 
       onClick={onClick}
-      className="bg-white rounded-[20px] p-5 border border-slate-200 shadow-sm hover:shadow-xl hover:border-blue-300 hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
+      className="bg-white dark:bg-slate-800 rounded-[20px] p-5 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
     >
       <div className="flex justify-between items-start">
         <div>
           <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide border ${theme}`}>
             {data.category}
           </span>
-          <h3 className="text-xl font-bold text-slate-800 capitalize mt-2 group-hover:text-blue-600 transition-colors">
+          <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100 capitalize mt-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
             {name}
           </h3>
-          <p className="text-sm text-slate-500 mt-1 line-clamp-2 font-medium">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2 font-medium">
             {data.firstLine}
           </p>
         </div>
-        <button 
-          onClick={(e) => { e.stopPropagation(); onToggle(); }} 
-          className="p-2 hover:bg-slate-50 rounded-full transition active:scale-90"
-        >
-          <Star className={`h-6 w-6 ${isFav ? "fill-yellow-400 text-yellow-400" : "text-slate-300"}`} />
-        </button>
       </div>
     </div>
   );
