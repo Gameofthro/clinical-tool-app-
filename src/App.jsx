@@ -1,11 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { 
   Search, Stethoscope, Baby, Activity, Mail, LogOut, 
-  Calculator, Scale, Moon, Sun, BookOpen
+  Calculator, Scale, Moon, Sun, BookOpen, Check // Added Check icon for feedback
 } from "lucide-react";
 
 // --- IMPORTS ---
-// Assuming these exist in your local VS Code structure
 import { diseaseDatabase } from "./data/diseases";
 import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
@@ -13,6 +12,9 @@ import DiseaseModal from "./components/DiseaseModal";
 import { calculatePediatricDose, calculateBMI, calculateGFR } from "./utils/calculators";
 
 const THEME_KEY = "clinical_theme";
+
+// --- CONFIGURATION ---
+const SUPPORT_EMAIL = "clinicalassist.center@gmail.com"; 
 
 export default function ClinicalTool() {
   // --- STATE ---
@@ -23,6 +25,9 @@ export default function ClinicalTool() {
   const [activeTab, setActiveTab] = useState("search");
   const [activeTool, setActiveTool] = useState("pediatric");
   const [darkMode, setDarkMode] = useState(false);
+  
+  // New state to handle the "Copied!" feedback visual
+  const [emailCopied, setEmailCopied] = useState(false);
   
   // Calculator Inputs
   const [doseData, setDoseData] = useState({ weight: "", adultDose: "", unit: "kg" });
@@ -63,11 +68,16 @@ export default function ClinicalTool() {
     setUser(userData);
   };
 
-  const handleContactUs = () => {
-    window.location.href = "mailto:support@medisim.com?subject=Support Request";
+  // UPDATED: Function to copy email instead of opening mail client
+  const handleSupportClick = () => {
+    navigator.clipboard.writeText(SUPPORT_EMAIL).then(() => {
+      setEmailCopied(true);
+      // Reset the icon back to the Mail icon after 2 seconds
+      setTimeout(() => setEmailCopied(false), 2000);
+    });
   };
 
-  // --- FIXED SEARCH LOGIC (CRITICAL UPDATE) ---
+  // --- FIXED SEARCH LOGIC ---
   const filteredResults = useMemo(() => {
     if (!query) return [];
     const lowerQ = query.toLowerCase().trim();
@@ -76,8 +86,7 @@ export default function ClinicalTool() {
       // 1. Disease Name Match
       const nameMatch = key.toLowerCase().includes(lowerQ);
       
-      // 2. Symptom Match (Updated to check data.clinicalFeatures.symptoms)
-      // We use optional chaining (?.) to prevent crashes if clinicalFeatures is missing
+      // 2. Symptom Match
       const symptomMatch = data.clinicalFeatures?.symptoms?.some(s => 
         s.toLowerCase().includes(lowerQ)
       );
@@ -139,9 +148,20 @@ export default function ClinicalTool() {
               <button onClick={toggleTheme} className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full border border-slate-200 dark:border-slate-700 transition text-slate-600 dark:text-slate-300">
                 {darkMode ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} />}
               </button>
-              <button onClick={handleContactUs} className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full border border-slate-200 dark:border-slate-700 transition">
-                <Mail className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+              
+              {/* UPDATED CONTACT BUTTON: Copies email to clipboard */}
+              <button 
+                onClick={handleSupportClick} 
+                className={`p-2 rounded-full border transition flex items-center justify-center ${
+                  emailCopied 
+                    ? "bg-emerald-100 border-emerald-200 text-emerald-600 dark:bg-emerald-900/30 dark:border-emerald-800 dark:text-emerald-400" 
+                    : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-400"
+                }`}
+                title={emailCopied ? "Email Copied!" : "Copy Support Email"}
+              >
+                {emailCopied ? <Check className="h-5 w-5" /> : <Mail className="h-5 w-5" />}
               </button>
+
               <button onClick={handleLogout} className="p-2 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/40 rounded-full border border-rose-200 dark:border-rose-900 transition">
                 <LogOut className="h-5 w-5 text-rose-600 dark:text-rose-400" />
               </button>
@@ -195,7 +215,6 @@ export default function ClinicalTool() {
                   data={{
                       ...data,
                       color: getCategoryColor(data.category),
-                      // We map 'pathophysiology' to 'firstLine' so the card shows the mechanism
                       firstLine: data.pathophysiology 
                     }}
                   onClick={() => setSelectedDisease({ name: key, ...data })} 
@@ -211,6 +230,7 @@ export default function ClinicalTool() {
 
           {activeTab === "tools" && (
              <div className="space-y-4">
+               {/* Tool Selector */}
                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
                  {[
                    {id: 'pediatric', label: 'Dose', icon: Baby},
@@ -229,6 +249,7 @@ export default function ClinicalTool() {
                   {activeTool === 'pediatric' && (
                     <div className="space-y-4">
                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Baby className="text-purple-500"/> Pediatric Calc</h2>
+                      
                       <div className="flex gap-2">
                         <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-blue-500 outline-none" 
                           value={doseData.weight} onChange={e => setDoseData({...doseData, weight: e.target.value})} placeholder="Child Weight" />
@@ -238,9 +259,12 @@ export default function ClinicalTool() {
                           <option value="lbs">lbs</option>
                         </select>
                       </div>
+
                       <input type="number" className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-blue-500 outline-none" 
                         value={doseData.adultDose} onChange={e => setDoseData({...doseData, adultDose: e.target.value})} placeholder="Adult Dose (mg)" />
+                      
                       <button onClick={handleDoseCalc} className="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition">Calculate Safe Dose</button>
+                      
                       {results.dose && <div className="p-5 bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl text-center text-emerald-700 dark:text-emerald-400 font-black text-3xl animate-in zoom-in-95">{results.dose} <span className="text-lg">mg</span></div>}
                     </div>
                   )}
@@ -249,6 +273,7 @@ export default function ClinicalTool() {
                   {activeTool === 'bmi' && (
                     <div className="space-y-4">
                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Scale className="text-orange-500"/> BMI Calculator</h2>
+                      
                       <div className="flex gap-2">
                         <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-orange-500 outline-none" 
                           value={bmiData.weight} onChange={e => setBmiData({...bmiData, weight: e.target.value})} placeholder="Weight" />
@@ -258,6 +283,7 @@ export default function ClinicalTool() {
                           <option value="lbs">lbs</option>
                         </select>
                       </div>
+
                       <div className="flex gap-2">
                         <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-orange-500 outline-none" 
                           value={bmiData.height} onChange={e => setBmiData({...bmiData, height: e.target.value})} placeholder="Height" />
@@ -268,7 +294,9 @@ export default function ClinicalTool() {
                           <option value="in">in</option>
                         </select>
                       </div>
+
                       <button onClick={handleBMICalc} className="w-full py-4 bg-orange-500 text-white font-bold rounded-2xl shadow-lg hover:bg-orange-600 transition">Calculate BMI</button>
+                      
                       {results.bmi && (
                         <div className="p-5 bg-orange-50 dark:bg-orange-900/30 rounded-2xl text-center animate-in zoom-in-95">
                           <p className="text-orange-700 dark:text-orange-400 font-black text-3xl">{results.bmi.value}</p>
@@ -282,6 +310,7 @@ export default function ClinicalTool() {
                   {activeTool === 'gfr' && (
                     <div className="space-y-4">
                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Activity className="text-red-500"/> eGFR (MDRD)</h2>
+                      
                       <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
                         {['male', 'female'].map(g => (
                           <button key={g} onClick={() => setGfrData({...gfrData, gender: g})} 
@@ -290,6 +319,7 @@ export default function ClinicalTool() {
                           </button>
                         ))}
                       </div>
+
                       <div className="flex gap-2">
                         <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-red-500 outline-none" 
                           value={gfrData.creatinine} onChange={e => setGfrData({...gfrData, creatinine: e.target.value})} placeholder="Creatinine" />
@@ -299,9 +329,12 @@ export default function ClinicalTool() {
                           <option value="umol/l">µmol/L</option>
                         </select>
                       </div>
+
                       <input type="number" className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-red-500 outline-none" 
                         value={gfrData.age} onChange={e => setGfrData({...gfrData, age: e.target.value})} placeholder="Age (Years)" />
+                      
                       <button onClick={handleGFRCalc} className="w-full py-4 bg-red-500 text-white font-bold rounded-2xl shadow-lg hover:bg-red-600 transition">Calculate eGFR</button>
+                      
                       {results.gfr && (
                         <div className="p-5 bg-red-50 dark:bg-red-900/30 rounded-2xl text-center animate-in zoom-in-95">
                           <p className="text-red-700 dark:text-red-400 font-black text-3xl">{results.gfr}</p>
@@ -316,7 +349,6 @@ export default function ClinicalTool() {
         </div>
       </div>
 
-      {/* MODAL */}
       {selectedDisease && (
         <DiseaseModal 
           name={selectedDisease.name} 

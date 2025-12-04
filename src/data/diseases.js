@@ -304,5 +304,336 @@ export const diseaseDatabase = {
       eat: ["Cold Milk (Temporary relief)", "Oatmeal", "Banana", "Saunf (Fennel) after meals"],
       avoid: ["Spicy/Oily curries", "Tea/Coffee (Caffeine)", "Peppermint", "Samosa/Pakora", "Alcohol"]
     }
-  }
+  },
+  "Orthostatic Hypotension": {
+    category: "Cardiovascular",
+    pathophysiology: "Autonomic failure or volume depletion leads to an inability to increase systemic vascular resistance or heart rate upon standing, causing cerebral hypoperfusion.",
+    
+    clinicalFeatures: {
+      symptoms: ["Lightheadedness upon standing", "Syncopal episodes (fainting)", "Visual blurring", "Coat-hanger neck pain"],
+      signs: ["Drop in SBP >20mmHg within 3 mins of standing", "Drop in DBP >10mmHg", "Lack of compensatory tachycardia (in neurogenic causes)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Active Stand Test / Tilt Table", finding: "SBP drop >20mmHg", significance: "Gold Standard Diagnosis" },
+      { test: "Morning Cortisol", finding: "Low", significance: "Rule out Adrenal Insufficiency (Addison's)" },
+      { test: "HbA1c", finding: "High", significance: "Screen for Diabetic Autonomic Neuropathy" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Postprandial Dip.", explanation: "BP often drops significantly after large carbohydrate-rich meals due to splanchnic pooling." },
+      { pearl: "Reverse Dipping.", explanation: "Many patients have supine hypertension at night; treat by elevating the head end of the bed." }
+    ],
+    
+    redFlags: ["Melena (GI Bleed cause)", "New murmur (Aortic Stenosis)", "Focal neuro deficit (Stroke mimic)", "Chest pain"],
+    differentials: ["Vasovagal Syncope", "Volume Depletion (Dehydration)", "Adrenal Insufficiency", "Drug-induced (Alpha-blockers)"],
+
+    managementRationale: [
+      { 
+        drug: "Fludrocortisone", 
+        class: "Mineralocorticoid", 
+        dose: "0.1 mg", 
+        freq: "OD (Morning)", 
+        indication: "First-line Volume Expansion", 
+        rationale: "Increases sodium and water retention to boost blood volume." 
+      },
+      { 
+        drug: "Midodrine", 
+        class: "Alpha-1 Agonist", 
+        dose: "2.5-5 mg", 
+        freq: "TID (Daytime only)", 
+        indication: "Vasoconstriction", 
+        rationale: "Increases vascular tone. Avoid before bed to prevent supine hypertension." 
+      }
+    ],
+
+    lifestyle: [
+      "Physical Counter-maneuvers: Leg crossing or squatting when dizzy.",
+      "Head-up tilt sleeping (10-20 degrees).",
+      "Compression stockings (waist-high preferred)."
+    ],
+    
+    diet: {
+      eat: ["Salted Lassi/Chaas", "Pickles (Achar) - Liberal salt intake", "Hydration (>2.5L/day)"],
+      avoid: ["Large carbohydrate-heavy meals (prevents post-prandial drop)", "Alcohol"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "40%" },
+      progression: [{ day: 1, hb: "13.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "40%" }]
+    },
+    specialTests: [
+      { name: "Orthostatic Vitals", result: "Positive", notes: "Drop >20/10 mmHg" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Fludrocortisone 0.1mg", "Increased Salt/Fluid intake"] }
+    ]
+  },
+
+  "Chronic Obstructive Pulmonary Disease": {
+    category: "Respiratory",
+    pathophysiology: "Chronic airway inflammation due to noxious particles (smoke/biomass) leading to small airway fibrosis (obstructive bronchiolitis) and parenchymal destruction (emphysema).",
+    
+    clinicalFeatures: {
+      symptoms: ["Chronic progressive dyspnea", "Cough with sputum production", "Wheezing", "Fatigue"],
+      signs: ["Barrel chest", "Pursed-lip breathing", "Prolonged expiration", "Use of accessory muscles"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Spirometry", finding: "Post-bronchodilator FEV1/FVC < 0.7", significance: "Gold Standard Confirmation" },
+      { test: "CXR", finding: "Hyperinflation/Flattened diaphragm", significance: "Supports diagnosis/Rules out cancer" },
+      { test: "Alpha-1 Antitrypsin", finding: "Low levels", significance: "Check in young (<45y) non-smokers" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Oxygen Target.", explanation: "Target SpO2 88-92% in CO2 retainers to avoid suppressing hypoxic respiratory drive." },
+      { pearl: "Chulha Risk.", explanation: "Biomass fuel smoke is a major cause in rural Indian women who never smoked tobacco." }
+    ],
+    
+    redFlags: ["altered mental status (Hypercapnia)", "Worsening cyanosis", "Silent Chest", "Hemoptysis (Malignancy risk)"],
+    differentials: ["Asthma (Reversible)", "Congestive Heart Failure", "Bronchiectasis", "Tuberculosis"],
+
+    managementRationale: [
+      { 
+        drug: "Tiotropium", 
+        class: "LAMA (Long-Acting Muscarinic Antagonist)", 
+        dose: "18 mcg", 
+        freq: "OD (Inhaler)", 
+        indication: "Maintenance", 
+        rationale: "Bronchodilation and reduction of exacerbations." 
+      },
+      { 
+        drug: "Formoterol + Budesonide", 
+        class: "LABA + ICS", 
+        dose: "6/200 mcg", 
+        freq: "BD", 
+        indication: "Severe/Frequent Exacerbations", 
+        rationale: "Reduces inflammation and improves FEV1." 
+      }
+    ],
+
+    lifestyle: [
+      "Smoking Cessation (Single most effective intervention).",
+      "Pulmonary Rehabilitation (Pursed lip breathing exercises).",
+      "Annual Flu & Pneumococcal vaccines."
+    ],
+    
+    diet: {
+      eat: ["High protein (Paneer, Soya chunks, Eggs) to prevent muscle wasting", "Small frequent meals"],
+      avoid: ["Gas-forming foods (Rajma, Chole, Cabbage) which push diaphragm up", "Very high carb loads (Increases CO2 production)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "16.5 g/dL (Polycythemia)", wbc: "8,000 /cmm", plt: "280,000 /cmm", hct: "50%" },
+      progression: [{ day: 1, hb: "16.5 g/dL", wbc: "8,000 /cmm", plt: "280,000 /cmm", hct: "50%" }]
+    },
+    specialTests: [
+      { name: "ABG", result: "pH 7.35, pCO2 55 (Compensated)", notes: "Chronic Respiratory Acidosis" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Inhaled Tiotropium", "Nebulized Salbutamol SOS", "O2 to maintain 88-92%"] }
+    ]
+  },
+
+  "Parkinson’s Disease": {
+    category: "Neurology",
+    pathophysiology: "Progressive degeneration of dopaminergic neurons in the substantia nigra pars compacta, leading to a dopamine-acetylcholine imbalance in the basal ganglia.",
+    
+    clinicalFeatures: {
+      symptoms: ["Tremor at rest (Pill-rolling)", "Stiffness/Rigidity", "Slowness of movement (Bradykinesia)", "Postural instability"],
+      signs: ["Cogwheel rigidity", "Mask-like facies", "Shuffling gait", "Micrographia (Small handwriting)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Clinical Criteria", finding: "Bradykinesia + Tremor or Rigidity", significance: "Primary Diagnosis" },
+      { test: "Levodopa Challenge", finding: "Significant symptom improvement", significance: "Supports diagnosis" },
+      { test: "MRI Brain", finding: "Normal (excludes stroke/tumor)", significance: "Rule out secondary parkinsonism" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "TRAP Mnemonic.", explanation: "Tremor, Rigidity, Akinesia/Bradykinesia, Postural instability." },
+      { pearl: "Protein Interference.", explanation: "Dietary protein competes with Levodopa for absorption in the gut and crossing BBB." }
+    ],
+    
+    redFlags: ["Early falls (PSP)", "Early dementia (Lewy Body)", "Gaze palsy (PSP)", "Rapid progression"],
+    differentials: ["Essential Tremor (Action tremor)", "Drug-induced (Metoclopramide/Antipsychotics)", "Wilson's Disease", "Vascular Parkinsonism"],
+
+    managementRationale: [
+      { 
+        drug: "Carbidopa-Levodopa", 
+        class: "Dopamine Precursor/Decarboxylase Inhibitor", 
+        dose: "25/100 mg", 
+        freq: "TID", 
+        indication: "Motor symptoms", 
+        rationale: "Levodopa converts to dopamine; Carbidopa prevents peripheral breakdown." 
+      },
+      { 
+        drug: "Pramipexole", 
+        class: "Dopamine Agonist", 
+        dose: "0.125 mg", 
+        freq: "TID (Titrate)", 
+        indication: "Early onset (<65y)", 
+        rationale: "Delays need for Levodopa; reduces risk of dyskinesias." 
+      }
+    ],
+
+    lifestyle: [
+      "Physical Therapy: Big and Loud exercises.",
+      "Fall prevention strategies (Remove rugs, install grab bars).",
+      "Speech therapy for dysphagia/hypophonia."
+    ],
+    
+    diet: {
+      eat: ["Fiber-rich foods (Constipation is common)", "Hydration", "Turmeric (Neuroprotective potential)"],
+      avoid: ["High protein meals WITH Levodopa dose (Space them out)", "Heavy meals at lunch if taking meds"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "6,500 /cmm", plt: "250,000 /cmm", hct: "40%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "6,500 /cmm", plt: "250,000 /cmm", hct: "40%" }]
+    },
+    specialTests: [
+      { name: "MRI Brain", result: "Normal", notes: "No structural lesions" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Syndopa (Levodopa+Carbidopa) 110mg TID", "Physiotherapy"] }
+    ]
+  },
+
+  "Type 1 Diabetes Mellitus": {
+    category: "Endocrinology",
+    pathophysiology: "T-cell mediated autoimmune destruction of pancreatic beta cells resulting in absolute insulin deficiency and proneness to ketoacidosis.",
+    
+    clinicalFeatures: {
+      symptoms: ["Rapid weight loss", "Polyuria/Polydipsia", "Fatigue", "Fruity breath odor (in DKA)"],
+      signs: ["Lean body habitus", "Kussmaul breathing (if acidotic)", "Signs of dehydration"]
+    },
+
+    diagnosticWorkup: [
+      { test: "C-Peptide", finding: "Low or Undetectable", significance: "Confirms endogenous insulin deficiency" },
+      { test: "Autoantibodies (GAD65/IA-2)", finding: "Positive", significance: "Confirms Autoimmune etiology" },
+      { test: "Ketones (Blood/Urine)", finding: "Positive", significance: "Risk of DKA" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Honeymoon Phase.", explanation: "Temporary remission shortly after diagnosis where insulin needs drop; always transient." },
+      { pearl: "Sick Day Rule.", explanation: "Never stop insulin during illness/fever, even if not eating, due to stress hyperglycemia." }
+    ],
+    
+    redFlags: ["Vomiting + Abdominal Pain (Impending DKA)", "Confusion (Cerebral Edema/Severe Hypo)", "Kussmaul Respirations"],
+    differentials: ["Type 2 Diabetes (Ketosis-prone)", "MODY (Maturity Onset Diabetes of Young)", "Pancreatic injury"],
+
+    managementRationale: [
+      { 
+        drug: "Insulin Glargine", 
+        class: "Long-acting Insulin (Basal)", 
+        dose: "0.2-0.4 U/kg/day", 
+        freq: "OD (Bedtime)", 
+        indication: "Basal requirement", 
+        rationale: "Suppresses hepatic glucose production between meals." 
+      },
+      { 
+        drug: "Insulin Lispro/Aspart", 
+        class: "Rapid-acting Insulin (Bolus)", 
+        dose: "Carb ratio based", 
+        freq: "Before meals", 
+        indication: "Prandial spikes", 
+        rationale: "Covers glucose rise from food intake." 
+      }
+    ],
+
+    lifestyle: [
+      "Carbohydrate Counting is essential.",
+      "Continuous Glucose Monitoring (CGM) recommended.",
+      "Always carry fast-acting glucose (sugar/juice) for hypoglycemia."
+    ],
+    
+    diet: {
+      eat: ["Complex carbs (Ragi/Jowar Roti)", "Vegetables (Bhindi, Karela)", "Lean protein"],
+      avoid: ["Simple sugars (Mithai, Halwa)", "Fruit juices (Rapid spike)", "Fasting (Risk of Hypo)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "14.0 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "42%" },
+      progression: [{ day: 1, hb: "14.0 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "42%" }]
+    },
+    specialTests: [
+      { name: "C-Peptide", result: "< 0.1 ng/mL", notes: "Absolute deficiency" },
+      { name: "Anti-GAD65", result: "Positive", notes: "Autoimmune marker" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Insulin Glargine 10U HS", "Insulin Aspart 4U before meals", "Glucometer Check Q4H"] }
+    ]
+  },
+
+  "Peptic Ulcer Disease": {
+    category: "Gastroenterology",
+    pathophysiology: "Mucosal defect in the stomach or duodenum caused by an imbalance between aggressive factors (Acid, Pepsin) and defense mechanisms, usually driven by H. pylori or NSAIDs.",
+    
+    clinicalFeatures: {
+      symptoms: ["Epigastric burning pain", "Pain relieved by food (Duodenal) or worsened by food (Gastric)", "Bloating", "Early satiety"],
+      signs: ["Epigastric tenderness", "Melena (if bleeding)", "Pallor (if chronic bleed)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Upper GI Endoscopy", finding: "Ulcer visualization", significance: "Gold Standard + Biopsy capability" },
+      { test: "Urea Breath Test / H. pylori Ag", finding: "Positive", significance: "Confirms etiology for eradication" },
+      { test: "CBC", finding: "Low Hb", significance: "Check for chronic GI blood loss" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Gastric vs Duodenal.", explanation: "Duodenal ulcers improve with meals (Weight gain); Gastric ulcers worsen with meals (Weight loss)." },
+      { pearl: "Alarm Signs.", explanation: "Any patient >55y with new dyspepsia requires endoscopy to rule out cancer." }
+    ],
+    
+    redFlags: ["Hematemesis (Coffee ground)", "Melena (Black tarry stools)", "Rigid board-like abdomen (Perforation)", "Persistent vomiting (Outlet obstruction)"],
+    differentials: ["GERD", "Gastric Cancer", "Pancreatitis", "Biliary Colic"],
+
+    managementRationale: [
+      { 
+        drug: "Pantoprazole", 
+        class: "Proton Pump Inhibitor", 
+        dose: "40 mg", 
+        freq: "BD (if H.pylori) or OD", 
+        indication: "Acid suppression", 
+        rationale: "Maintains pH > 4 to allow mucosal healing." 
+      },
+      { 
+        drug: "Clarithromycin + Amoxicillin", 
+        class: "Antibiotics", 
+        dose: "500mg + 1g", 
+        freq: "BD x 14 days", 
+        indication: "H. pylori Eradication", 
+        rationale: "Standard triple therapy backbone (with PPI)." 
+      }
+    ],
+
+    lifestyle: [
+      "Stop NSAIDs (Painkillers) immediately.",
+      "Smoking cessation (Smoking delays ulcer healing).",
+      "Stress reduction."
+    ],
+    
+    diet: {
+      eat: ["Curd/Yogurt (Probiotics)", "Cold Milk (Symptomatic relief)", "Fiber-rich veg"],
+      avoid: ["Red Chili powder", "Spicy Pickles", "Coffee/Caffeine (Stimulates acid)", "Alcohol", "Deep fried foods"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.2 g/dL (Mild anemia)", wbc: "6,800 /cmm", plt: "300,000 /cmm", hct: "34%" },
+      progression: [{ day: 1, hb: "11.2 g/dL", wbc: "6,800 /cmm", plt: "300,000 /cmm", hct: "34%" }]
+    },
+    specialTests: [
+      { name: "H. Pylori Urease", result: "Positive", notes: "Indicates active infection" },
+      { name: "Endoscopy", result: "1cm Duodenal Ulcer", notes: "Clean base, no active bleed" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Kit-Kat (Pantoprazole+Amox+Clarithro) Kit", "Avoid NSAIDs"] }
+    ]
+  },
 };
