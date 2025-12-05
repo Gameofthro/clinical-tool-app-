@@ -636,4 +636,737 @@ export const diseaseDatabase = {
       { day: 1, meds: ["Kit-Kat (Pantoprazole+Amox+Clarithro) Kit", "Avoid NSAIDs"] }
     ]
   },
+
+  "Acute Kidney Injury": {
+    category: "Renal",
+    pathophysiology: "Abrupt reduction in kidney function (Pre-renal, Intrinsic, or Post-renal) leading to retention of nitrogenous waste (Azotemia) and electrolyte imbalances.",
+    
+    clinicalFeatures: {
+      symptoms: ["Oliguria (<400ml urine/day)", "Peripheral edema", "Nausea/Vomiting", "Fatigue/Confusion (Uremic)"],
+      signs: ["Fluid overload (Crackles, JVP elevated)", "Hypertension", "Asterixis (Flapping tremor in severe cases)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Serum Creatinine", finding: "Rise > 0.3 mg/dL in 48h", significance: "KDIGO Diagnostic Criteria" },
+      { test: "Ultrasound KUB", finding: "Normal size (Acute) vs Small (Chronic)", significance: "Rule out Post-renal obstruction" },
+      { test: "Urine Electrolytes", finding: "FENa < 1% (Prerenal)", significance: "Distinguishes Prerenal from ATN" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Stop Nephrotoxins.", explanation: "Immediate cessation of NSAIDs, ACEi/ARBs, and Aminoglycosides is the first step in management." },
+      { pearl: "Fluid Challenge.", explanation: "If lungs are clear, a fluid bolus helps distinguish volume depletion (Prerenal) from intrinsic damage." }
+    ],
+    
+    redFlags: ["Hyperkalemia (>6.5 mEq/L)", "Pulmonary Edema", "Severe Acidosis (pH < 7.1)", "Uremic Encephalopathy"],
+    differentials: ["Chronic Kidney Disease", "Urinary Retention (BPH)", "Heart Failure", "Dehydration"],
+
+    managementRationale: [
+      { 
+        drug: "Furosemide", 
+        class: "Loop Diuretic", 
+        dose: "40-80 mg", 
+        freq: "IV Bolus", 
+        indication: "Fluid Overload", 
+        rationale: "Manages volume status; does not 'jumpstart' kidneys but aids fluid balance." 
+      },
+      { 
+        drug: "Calcium Gluconate", 
+        class: "Electrolyte Supplement", 
+        dose: "10 ml (10%)", 
+        freq: "IV Stat", 
+        indication: "Hyperkalemia", 
+        rationale: "Stabilizes cardiac membrane to prevent arrhythmia (does not lower K+)." 
+      },
+      { 
+        drug: "Sodium Bicarbonate", 
+        class: "Alkalinizing Agent", 
+        dose: "1 mEq/kg", 
+        freq: "IV Infusion", 
+        indication: "Severe Acidosis", 
+        rationale: "Corrects metabolic acidosis (pH < 7.1)." 
+      }
+    ],
+
+    lifestyle: [
+      "Daily Weight Monitoring (Track fluid status).",
+      "Strict Input/Output charting.",
+      "Avoid herbal supplements (Nephrotoxicity risk)."
+    ],
+    
+    diet: {
+      eat: ["Gourd vegetables (Lauki/Tinda - Low K+)", "White Rice (Low protein load)", "Apples/Guava"],
+      avoid: ["Coconut Water (High Potassium)", "Fruit Juices", "Spinach/Tomatoes (High K+)", "High Protein Dals (Urea load)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.0 g/dL", wbc: "8,000 /cmm", plt: "200,000 /cmm", hct: "33%" },
+      progression: [{ day: 1, hb: "11.0 g/dL", wbc: "8,000 /cmm", plt: "200,000 /cmm", hct: "33%" }]
+    },
+    specialTests: [
+      { name: "Serum Creatinine", result: "2.8 mg/dL", notes: "Acute rise from baseline" },
+      { name: "Potassium", result: "5.8 mEq/L", notes: "Mild Hyperkalemia" }
+    ],
+    treatment: [
+      { day: 1, meds: ["IV Fluids (if dry)", "Stop Nephrotoxic Drugs", "Monitor Output"] }
+    ]
+  },
+
+  "Iron Deficiency Anemia": {
+    category: "Hematology",
+    pathophysiology: "Inadequate iron stores leading to defective heme synthesis, resulting in microcytic hypochromic red blood cells and reduced oxygen capacity.",
+    
+    clinicalFeatures: {
+      symptoms: ["Fatigue/Lethargy", "Pica (Craving ice/mud)", "Dyspnea on exertion", "Hair loss"],
+      signs: ["Pallor (Conjunctiva/Palms)", "Koilonychia (Spoon nails)", "Glossitis (Smooth tongue)", "Angular Cheilitis"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Serum Ferritin", finding: "< 30 ng/mL", significance: "Most sensitive/specific test for low iron stores" },
+      { test: "CBC", finding: "Low Hb, Low MCV (<80 fL)", significance: "Microcytic Hypochromic Anemia" },
+      { test: "TIBC", finding: "High (>400 mcg/dL)", significance: "Compensatory increase in transferrin" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Search for Cause.", explanation: "In adult males and post-menopausal women, IDA implies GI Bleed (Colon Cancer/Ulcer) until proven otherwise." },
+      { pearl: "Absorption Boost.", explanation: "Iron requires an acidic environment; absorption increases with Vitamin C (Ascorbic Acid)." }
+    ],
+    
+    redFlags: ["Melena/Hematemesis", "Weight Loss (Malignancy)", "Hemodynamic Instability", "Severe Tachycardia"],
+    differentials: ["Thalassemia Trait (Normal RDW)", "Anemia of Chronic Disease", "Sideroblastic Anemia"],
+
+    managementRationale: [
+      { 
+        drug: "Ferrous Ascorbate", 
+        class: "Iron Supplement", 
+        dose: "100 mg (Elemental)", 
+        freq: "BD", 
+        indication: "Iron Replenishment", 
+        rationale: "Ascorbate salt has better GI tolerability and absorption than sulfate." 
+      },
+      { 
+        drug: "Folic Acid", 
+        class: "Vitamin", 
+        dose: "5 mg", 
+        freq: "OD", 
+        indication: "Co-supplementation", 
+        rationale: "Supportive for erythropoiesis." 
+      }
+    ],
+
+    lifestyle: [
+      "Avoid tea/coffee 1 hour before/after meals (Tannins block iron).",
+      "Cook in cast-iron cookware (traditional method).",
+      "Deworming if parasitic cause suspected."
+    ],
+    
+    diet: {
+      eat: ["Jaggery (Gur)", "Dates/Khajoor", "Spinach (Palak)", "Amla/Lemon (Vit C boost)", "Pomegranate"],
+      avoid: ["Tea/Coffee with meals", "Excess milk (Calcium inhibits iron absorption)", "Phytate-rich grains without soaking"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "8.2 g/dL", wbc: "6,000 /cmm", plt: "450,000 /cmm (Reactive)", hct: "28%" },
+      progression: [{ day: 1, hb: "8.2 g/dL", wbc: "6,000 /cmm", plt: "450,000 /cmm", hct: "28%" }]
+    },
+    specialTests: [
+      { name: "Peripheral Smear", result: "Microcytic Hypochromic", notes: "Pencil cells seen" },
+      { name: "Serum Ferritin", result: "8 ng/mL", notes: "Severe deficiency" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Ferrous Ascorbate 100mg BD", "Tab. Folic Acid 5mg OD"] }
+    ]
+  },
+
+  "Typhoid Fever": {
+    category: "Infectious Disease",
+    pathophysiology: "Systemic infection by Salmonella Typhi transmitted via fecal-oral route, invading Peyer's patches and spreading via the reticuloendothelial system.",
+    
+    clinicalFeatures: {
+      symptoms: ["Step-ladder fever pattern", "Headache (Frontal)", "Abdominal pain", "Constipation or 'Pea-soup' diarrhea"],
+      signs: ["Rose spots (Trunk)", "Relative Bradycardia (Faget's sign)", "Hepatosplenomegaly", "Coated tongue"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Blood Culture", finding: "Salmonella Typhi growth", significance: "Gold Standard (Week 1)" },
+      { test: "Widal Test", finding: "TO > 1:160 (Rising titer)", significance: "Supportive (Week 2 onwards, high false positive rate)" },
+      { test: "CBC", finding: "Leukopenia with Neutropenia", significance: "Viral-like picture is typical" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Antibiotic Resistance.", explanation: "Multi-Drug Resistant (MDR) strains are common in India. Ciprofloxacin often fails; Ceftriaxone/Azithromycin preferred." },
+      { pearl: "Carrier State.", explanation: "2-5% become chronic carriers (gallbladder colonization), continuing to spread disease." }
+    ],
+    
+    redFlags: ["GI Bleeding", "Intestinal Perforation (Sudden pain)", "Typhoid Encephalopathy (Delirium)", "Myocarditis"],
+    differentials: ["Malaria", "Dengue Fever", "Leptospirosis", "Scrub Typhus"],
+
+    managementRationale: [
+      { 
+        drug: "Ceftriaxone", 
+        class: "Cephalosporin (3rd Gen)", 
+        dose: "2 g", 
+        freq: "IV OD x 7-14 days", 
+        indication: "Severe/Inpatient", 
+        rationale: "Highly effective against MDR strains." 
+      },
+      { 
+        drug: "Azithromycin", 
+        class: "Macrolide", 
+        dose: "500-1000 mg", 
+        freq: "PO OD x 7 days", 
+        indication: "Uncomplicated/Outpatient", 
+        rationale: "Intracellular penetration makes it effective for Salmonella." 
+      },
+      { 
+        drug: "Paracetamol", 
+        class: "Antipyretic", 
+        dose: "650 mg", 
+        freq: "SOS", 
+        indication: "Fever", 
+        rationale: "Symptomatic control." 
+      }
+    ],
+
+    lifestyle: [
+      "Enteric Precautions (Hand hygiene).",
+      "Complete full course of antibiotics to prevent carrier state.",
+      "Bed rest during febrile phase."
+    ],
+    
+    diet: {
+      eat: ["Soft Diet (Khichdi, Dalia)", "Boiled Water", "High Calorie fluids (Lassi)", "Banana"],
+      avoid: ["Raw vegetables (Salad)", "Street food/Pani Puri", "Spicy food (Irritates inflamed Peyer's patches)", "High fiber (Risk of perforation)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.5 g/dL", wbc: "3,800 /cmm (Leukopenia)", plt: "150,000 /cmm", hct: "38%" },
+      progression: [{ day: 1, hb: "12.5 g/dL", wbc: "3,800 /cmm", plt: "150,000 /cmm", hct: "38%" }]
+    },
+    specialTests: [
+      { name: "Widal Test", result: "TO 1:320, TH 1:160", notes: "Positive titer" },
+      { name: "Blood Culture", result: "S. Typhi", notes: "Sensitivity: Ceftriaxone (S)" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Inj. Ceftriaxone 2g IV", "Tab. Paracetamol 650mg SOS"] }
+    ]
+  },
+
+  "Systemic Lupus Erythematosus": {
+    category: "Autoimmune",
+    pathophysiology: "Chronic multisystem autoimmune disease involving autoantibodies (ANA, Anti-dsDNA) and immune complex deposition leading to tissue inflammation and damage.",
+    
+    clinicalFeatures: {
+      symptoms: ["Fatigue (Profound)", "Joint pain (Arthralgia)", "Photosensitivity", "Pleuritic chest pain"],
+      signs: ["Malar Rash (Butterfly rash)", "Discoid Rash", "Oral Ulcers (Painless)", "Alopecia"]
+    },
+
+    diagnosticWorkup: [
+      { test: "ANA (Antinuclear Antibody)", finding: "Positive (>1:80)", significance: "Screening Test (High Sensitivity)" },
+      { test: "Anti-dsDNA", finding: "Positive", significance: "High Specificity (Correlates with Nephritis)" },
+      { test: "Complement (C3/C4)", finding: "Low", significance: "Indicates active disease consumption" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Lupus Nephritis.", explanation: "Monitor Urinalysis every visit. Proteinuria/Hematuria suggests renal involvement (major morbidity)." },
+      { pearl: "Drug Induced Lupus.", explanation: "Hydralazine, Procainamide, and Isoniazid can trigger reversible lupus-like syndrome (Anti-Histone antibodies)." }
+    ],
+    
+    redFlags: ["New Proteinuria (Nephritis)", "Seizures/Psychosis (Neuro-Lupus)", "Hemoptysis (Pulmonary Hemorrhage)", "High Fever (Rule out Infection vs Flare)"],
+    differentials: ["Rheumatoid Arthritis", "Dermatomyositis", "Drug Eruptions", "Fibromyalgia"],
+
+    managementRationale: [
+      { 
+        drug: "Hydroxychloroquine", 
+        class: "Antimalarial", 
+        dose: "200-400 mg", 
+        freq: "OD", 
+        indication: "Maintenance", 
+        rationale: "Prevents flares and reduces organ damage. Requires annual eye exam." 
+      },
+      { 
+        drug: "Prednisolone", 
+        class: "Corticosteroid", 
+        dose: "0.5-1 mg/kg", 
+        freq: "OD (Taper)", 
+        indication: "Acute Flare", 
+        rationale: "Rapid anti-inflammatory action." 
+      },
+      { 
+        drug: "Mycophenolate Mofetil", 
+        class: "Immunosuppressant", 
+        dose: "1 g", 
+        freq: "BD", 
+        indication: "Lupus Nephritis", 
+        rationale: "Sparing agent for steroid reduction." 
+      }
+    ],
+
+    lifestyle: [
+      "Strict Sun Protection (Sunscreen SPF >50, Umbrella).",
+      "Smoking cessation (Smoking reduces Hydroxychloroquine efficacy).",
+      "Vitamin D supplementation."
+    ],
+    
+    diet: {
+      eat: ["Omega-3 rich foods (Fish/Walnuts)", "Calcium rich foods (Milk/Paneer)", "Turmeric (Anti-inflammatory)"],
+      avoid: ["Alfalfa sprouts (Contains L-canavanine, triggers lupus)", "Garlic (Immune booster - controversial in autoimmunity)", "Excessive Salt"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "10.0 g/dL", wbc: "3,500 /cmm", plt: "110,000 /cmm", hct: "32%" },
+      progression: [{ day: 1, hb: "10.0 g/dL", wbc: "3,500 /cmm", plt: "110,000 /cmm", hct: "32%" }]
+    },
+    specialTests: [
+      { name: "ANA", result: "Positive 1:640", notes: "Speckled pattern" },
+      { name: "Anti-dsDNA", result: "Positive", notes: "High titer" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Hydroxychloroquine 200mg", "Tab. Prednisolone 20mg"] }
+    ]
+  },
+
+  "Breast Cancer": {
+    category: "Oncology",
+    pathophysiology: "Uncontrolled proliferation of epithelial cells in the breast lobules or ducts, often driven by hormonal (Estrogen/Progesterone) or genetic (BRCA) factors.",
+    
+    clinicalFeatures: {
+      symptoms: ["Painless breast lump", "Nipple discharge (Bloody)", "Skin changes (Dimpling)", "Axillary swelling"],
+      signs: ["Hard, irregular fixed mass", "Peau d'orange (Orange peel skin)", "Nipple retraction", "Lymphadenopathy"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Mammography", finding: "Spiculated mass / Microcalcifications", significance: "Primary Screening/Diagnosis" },
+      { test: "Core Needle Biopsy", finding: "Invasive Ductal Carcinoma", significance: "Gold Standard Confirmation" },
+      { test: "IHC Panel", finding: "ER/PR/HER2 Status", significance: "Guides targeted therapy choices" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Triple Assessment.", explanation: "Diagnosis requires agreement of Clinical Exam, Imaging (Mammo/USG), and Pathology (Biopsy)." },
+      { pearl: "Upper Outer Quadrant.", explanation: "The most common site for breast cancer (Tail of Spence)." }
+    ],
+    
+    redFlags: ["Skin ulceration", "Fixed mass to chest wall", "Bone pain/Jaundice (Metastasis)", "Dyspnea (Lung Mets)"],
+    differentials: ["Fibroadenoma (Mobile)", "Breast Cyst", "Mastitis/Abscess", "Fat Necrosis"],
+
+    managementRationale: [
+      { 
+        drug: "Tamoxifen", 
+        class: "SERM", 
+        dose: "20 mg", 
+        freq: "OD", 
+        indication: "ER+ Breast Cancer", 
+        rationale: "Blocks estrogen receptors in breast tissue (Pre-menopausal)." 
+      },
+      { 
+        drug: "Letrozole", 
+        class: "Aromatase Inhibitor", 
+        dose: "2.5 mg", 
+        freq: "OD", 
+        indication: "ER+ Breast Cancer", 
+        rationale: "Inhibits peripheral estrogen synthesis (Post-menopausal)." 
+      },
+      { 
+        drug: "Trastuzumab", 
+        class: "Monoclonal Antibody", 
+        dose: "Loading/Maintenance", 
+        freq: "IV q3 weeks", 
+        indication: "HER2+ Breast Cancer", 
+        rationale: "Targets HER2 receptor overexpression." 
+      }
+    ],
+
+    lifestyle: [
+      "Weight control (Obesity increases recurrence risk).",
+      "Lymphedema precautions (Avoid BP/Needles on affected arm).",
+      "Regular exercise."
+    ],
+    
+    diet: {
+      eat: ["Cruciferous vegetables (Cabbage/Cauliflower)", "Soy (Moderate amounts safe)", "Flaxseeds", "Whole grains"],
+      avoid: ["Alcohol (Increases estrogen)", "Processed meats", "High fat dairy", "Sugary beverages"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "35%" },
+      progression: [{ day: 1, hb: "11.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "35%" }]
+    },
+    specialTests: [
+      { name: "Biopsy", result: "Invasive Ductal Carcinoma", notes: "Grade 2" },
+      { name: "Receptors", result: "ER+, PR+, HER2-", notes: "Luminal A subtype" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Tamoxifen 20mg OD", "Post-op care"] }
+    ]
+  },
+
+  "Lead Poisoning": {
+    category: "Toxicology",
+    pathophysiology: "Heavy metal toxicity causing inhibition of delta-aminolevulinic acid dehydratase (ALAD) in heme synthesis and interfering with calcium-dependent neuronal signaling.",
+    
+    clinicalFeatures: {
+      symptoms: ["Colicky abdominal pain (Lead Colic)", "Constipation", "Fatigue/Irritability", "Headache", "Memory loss"],
+      signs: ["Burton's Line (Blue-black gum line)", "Wrist drop (Radial nerve palsy)", "Pallor", "Hypertension"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Blood Lead Level (BLL)", finding: "> 5 mcg/dL", significance: "CDC Reference Level (Diagnosis)" },
+      { test: "Peripheral Smear", finding: "Basophilic Stippling", significance: "Classic hematological sign" },
+      { test: "X-ray Long Bones", finding: "Lead Lines", significance: "Indicates chronic exposure (growth plates)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Exposure Sources.", explanation: "In India: Ayurvedic 'Bhasmas', lead-acid battery recycling, old paints, and adulterated turmeric." },
+      { pearl: "Mimics Acute Abdomen.", explanation: "Severe lead colic is often mistaken for appendicitis or obstruction." }
+    ],
+    
+    redFlags: ["Encephalopathy (Seizures/Coma)", "BLL > 70 mcg/dL (Emergency)", "Severe Intractable Vomiting"],
+    differentials: ["Acute Porphyria", "Iron Deficiency Anemia", "Appendicitis", "Guillain-Barre Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Succimer (DMSA)", 
+        class: "Chelating Agent", 
+        dose: "10 mg/kg", 
+        freq: "TID x 5 days", 
+        indication: "BLL > 45 mcg/dL", 
+        rationale: "Oral chelator; binds lead and excretes it in urine." 
+      },
+      { 
+        drug: "Calcium Carbonate", 
+        class: "Mineral Supplement", 
+        dose: "500 mg", 
+        freq: "BD", 
+        indication: "Prevention", 
+        rationale: "Competes with lead for absorption in the gut." 
+      }
+    ],
+
+    lifestyle: [
+      "Environmental Abatement: Remove peeling paint, check water pipes.",
+      "Workplace hygiene: Shower/change clothes before entering home (if battery worker).",
+      "Wet mopping dust."
+    ],
+    
+    diet: {
+      eat: ["Calcium rich foods (Milk/Paneer)", "Iron rich foods (Spinach/Dates)", "Vitamin C (Amla) to help excretion"],
+      avoid: ["Fasting (Increases absorption)", "High fat meals", "Adulterated spices (Loose turmeric)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "9.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "28%" },
+      progression: [{ day: 1, hb: "9.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "28%" }]
+    },
+    specialTests: [
+      { name: "Blood Lead Level", result: "55 mcg/dL", notes: "Requires Chelation" },
+      { name: "Peripheral Smear", result: "Basophilic Stippling", notes: "Classic finding" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Cap. Succimer 10mg/kg", "Calcium Supplementation"] }
+    ]
+  },
+
+  "Polycystic Ovary Syndrome": {
+    category: "Reproductive Health",
+    pathophysiology: "Complex endocrine disorder involving insulin resistance and hyperinsulinemia, driving ovarian androgen overproduction and arresting follicular development.",
+    
+    clinicalFeatures: {
+      symptoms: ["Irregular periods (Oligomenorrhea)", "Weight gain/Difficulty losing weight", "Acne", "Unwanted hair growth (Hirsutism)"],
+      signs: ["Acanthosis Nigricans (Velvety neck skin)", "Central Obesity", "Ferriman-Gallwey Score > 8"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Pelvic Ultrasound", finding: "String of Pearls", significance: ">12 follicles or ovarian volume >10ml" },
+      { test: "Serum Testosterone", finding: "Elevated (Free/Total)", significance: "Biochemical Hyperandrogenism" },
+      { test: "Fasting Insulin/Glucose", finding: "High HOMA-IR", significance: "Insulin Resistance check" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Rotterdam Criteria.", explanation: "Diagnosis needs 2 of 3: Oligo-ovulation, Hyperandrogenism, Polycystic ovaries." },
+      { pearl: "Not just fertility.", explanation: "Major risk factor for Metabolic Syndrome, Type 2 Diabetes, and Endometrial Cancer." }
+    ],
+    
+    redFlags: ["Rapid virilization (Voice deepening - Rule out Tumor)", "Severe menorrhagia (Anemia)", "Amenorrhea > 3 months (Endometrial hyperplasia risk)"],
+    differentials: ["Cushing's Syndrome", "Congenital Adrenal Hyperplasia", "Hypothyroidism", "Prolactinoma"],
+
+    managementRationale: [
+      { 
+        drug: "Ethinylestradiol + Cyproterone", 
+        class: "OCP (Anti-androgenic)", 
+        dose: "Standard pill", 
+        freq: "OD x 21 days", 
+        indication: "Cycle regulation/Acne", 
+        rationale: "Increases SHBG to bind free testosterone; regulates shedding." 
+      },
+      { 
+        drug: "Metformin", 
+        class: "Biguanide", 
+        dose: "500-1000 mg", 
+        freq: "BD", 
+        indication: "Insulin Resistance", 
+        rationale: "Improves insulin sensitivity and spontaneous ovulation." 
+      },
+      { 
+        drug: "Letrozole", 
+        class: "Aromatase Inhibitor", 
+        dose: "2.5 mg", 
+        freq: "CD 3-7", 
+        indication: "Infertility", 
+        rationale: "First-line ovulation induction agent." 
+      }
+    ],
+
+    lifestyle: [
+      "Weight loss of 5-10% restores ovulation in 50% of patients.",
+      "Resistance training to improve insulin sensitivity.",
+      "Sleep hygiene to lower cortisol."
+    ],
+    
+    diet: {
+      eat: ["Low GI Foods", "Methi (Fenugreek) water", "Flaxseeds (Anti-androgenic)", "Spearmint Tea"],
+      avoid: ["Maida (White flour)", "Sugar/Sweets", "Dairy (if acne prone)", "Processed snacks"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.5 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "38%" },
+      progression: [{ day: 1, hb: "12.5 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "38%" }]
+    },
+    specialTests: [
+      { name: "USG Pelvis", result: "Bilateral Polycystic Ovaries", notes: "Ovarian volume 12cc" },
+      { name: "Testosterone", result: "80 ng/dL (High)", notes: "Upper normal limit 45" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Metformin 500mg BD", "Lifestyle Modification"] }
+    ]
+  },
+
+  "Osteoporosis": {
+    category: "Musculoskeletal",
+    pathophysiology: "Imbalance of bone remodeling where resorption (Osteoclasts) exceeds formation (Osteoblasts), leading to decreased bone mineral density and micro-architectural deterioration.",
+    
+    clinicalFeatures: {
+      symptoms: ["Asymptomatic (Silent disease)", "Back pain (Vertebral collapse)", "Loss of height"],
+      signs: ["Kyphosis (Dowager's hump)", "Fragility fractures (Wrist, Hip, Spine)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "DEXA Scan", finding: "T-score ≤ -2.5", significance: "Gold Standard Diagnosis" },
+      { test: "Serum Calcium/Vit D", finding: "Often Normal or Low D", significance: "Rule out Osteomalacia" },
+      { test: "PTH", finding: "Normal", significance: "Rule out Hyperparathyroidism" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Fragility Fracture.", explanation: "A fracture resulting from a fall from standing height or less defines severe osteoporosis regardless of T-score." },
+      { pearl: "Indian Paradox.", explanation: "Despite high sun exposure, Vitamin D deficiency is rampant in India, worsening bone health." }
+    ],
+    
+    redFlags: ["History of Hip Fracture", "Severe localized spine pain (Acute compression fracture)", "Steroid use > 3 months"],
+    differentials: ["Osteomalacia (Vit D deficiency)", "Multiple Myeloma", "Metastatic Bone Disease", "Hyperparathyroidism"],
+
+    managementRationale: [
+      { 
+        drug: "Alendronate", 
+        class: "Bisphosphonate", 
+        dose: "70 mg", 
+        freq: "Once Weekly", 
+        indication: "First-line Therapy", 
+        rationale: "Inhibits osteoclast-mediated bone resorption. Take on empty stomach, stay upright 30 mins." 
+      },
+      { 
+        drug: "Calcium Carbonate", 
+        class: "Supplement", 
+        dose: "500 mg", 
+        freq: "BD", 
+        indication: "Supportive", 
+        rationale: "Essential substrate for bone mineralization." 
+      },
+      { 
+        drug: "Cholecalciferol", 
+        class: "Vitamin D3", 
+        dose: "60,000 IU", 
+        freq: "Weekly x 8 weeks", 
+        indication: "Deficiency correction", 
+        rationale: "Increases gut calcium absorption." 
+      }
+    ],
+
+    lifestyle: [
+      "Weight-bearing exercises (Walking, Jogging).",
+      "Fall prevention (Correct vision, remove tripping hazards).",
+      "Sun exposure (10-15 mins midday)."
+    ],
+    
+    diet: {
+      eat: ["Ragi (Finger Millet) - Highest calcium grain", "Milk/Curd/Paneer", "Sesame seeds (Til)", "Moringa leaves"],
+      avoid: ["Excess Salt (Caused Calcium excretion)", "Excess Caffeine", "Smoking", "Cola drinks (High phosphate)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "36%" },
+      progression: [{ day: 1, hb: "12.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "36%" }]
+    },
+    specialTests: [
+      { name: "DEXA Scan", result: "L-Spine T-score -2.8", notes: "Osteoporosis confirmed" },
+      { name: "Vitamin D", result: "12 ng/mL", notes: "Deficiency" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Alendronate 70mg Weekly", "Cap. Vit D3 60k Weekly", "Calcium 500mg BD"] }
+    ]
+  },
+
+  "Eczema": {
+    category: "Dermatology",
+    pathophysiology: "Defective skin barrier function (Filaggrin mutation) leading to transepidermal water loss and immune dysregulation (Th2 pathway) causing inflammation.",
+    
+    clinicalFeatures: {
+      symptoms: ["Severe Pruritus ('Itch that rashes')", "Dry skin", "Sleep disturbance due to itch"],
+      signs: ["Erythema", "Lichenification (Thickening from scratching)", "Excoriations", "Flexural distribution (Inner elbows/knees)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Clinical Criteria", finding: "Hanifin & Rajka", significance: "Diagnosis is clinical" },
+      { test: "Serum IgE", finding: "Elevated", significance: "Supportive of atopic diathesis" },
+      { test: "Skin Prick Test", finding: "Positive to allergens", significance: "Identify triggers (rarely needed)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "The Atopic March.", explanation: "Eczema in infancy often progresses to Allergic Rhinitis and then Asthma later in childhood." },
+      { pearl: "Soak and Seal.", explanation: "Apply moisturizers immediately (within 3 mins) after bathing to trap moisture." }
+    ],
+    
+    redFlags: ["Eczema Herpeticum (Punched out erosions/fever)", "Superinfected (Yellow crusting - Staph)", "Erythroderma (>90% body surface)"],
+    differentials: ["Psoriasis (Extensor surfaces)", "Scabies", "Contact Dermatitis", "Seborrheic Dermatitis"],
+
+    managementRationale: [
+      { 
+        drug: "White Soft Paraffin / Coconut Oil", 
+        class: "Emollient", 
+        dose: "Apply liberally", 
+        freq: "Q4H (Continuous)", 
+        indication: "Maintenance", 
+        rationale: "Restores skin barrier function. Foundation of therapy." 
+      },
+      { 
+        drug: "Mometasone Furoate", 
+        class: "Topical Corticosteroid", 
+        dose: "0.1% Cream", 
+        freq: "OD (Acute flares)", 
+        indication: "Inflammation", 
+        rationale: "Anti-inflammatory. Use potent steroids for short duration." 
+      },
+      { 
+        drug: "Tacrolimus", 
+        class: "Calcineurin Inhibitor", 
+        dose: "0.03% or 0.1%", 
+        freq: "BD", 
+        indication: "Face/Neck", 
+        rationale: "Non-steroidal option suitable for thin skin areas." 
+      }
+    ],
+
+    lifestyle: [
+      "Use lukewarm water for baths (Hot water dries skin).",
+      "Wear cotton clothes; avoid wool/synthetic.",
+      "Keep fingernails short to prevent excoriation."
+    ],
+    
+    diet: {
+      eat: ["Omega-3 rich foods", "Probiotics (Curd)", "Hydration"],
+      avoid: ["Common allergens ONLY if confirmed (Egg/Peanut)", "Spicy foods (Can trigger sweat/itch)", "Processed sugar"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "7,500 /cmm", plt: "280,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "7,500 /cmm", plt: "280,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "Total IgE", result: "450 IU/mL", notes: "Elevated" },
+      { name: "Skin Swab", result: "Staph aureus", notes: "Treat if infected" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Topical Emollients liberally", "Tab. Cetirizine 5mg for itch"] }
+    ]
+  },
+
+  "Anaphylaxis": {
+    category: "Emergency / Immunology",
+    pathophysiology: "Severe, life-threatening systemic hypersensitivity reaction (Type I) involving massive mast cell degranulation and histamine release causing vasodilation and bronchospasm.",
+    
+    clinicalFeatures: {
+      symptoms: ["Difficulty breathing", "Dizziness/Fainting", "Tongue swelling", "Feeling of impending doom"],
+      signs: ["Hypotension (Shock)", "Wheezing/Stridor", "Urticaria (Hives)", "Angioedema"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Clinical Criteria", finding: "Acute onset + Skin/Mucosa + Resp/CVS compromise", significance: "Diagnosis is CLINICAL. Do not wait for labs." },
+      { test: "Serum Tryptase", finding: "Elevated", significance: "Retrospective confirmation (peaks 1-2h after)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Epinephrine First.", explanation: "Adrenaline is the ONLY life-saving drug. Antihistamines/Steroids do not treat shock or airway obstruction." },
+      { pearl: "Biphasic Reaction.", explanation: "Symptoms can recur 1-72 hours later; observation for at least 4-6 hours is mandatory." }
+    ],
+    
+    redFlags: ["Stridor (Airway closing)", "Hypotension (Shock)", "Persistent vomiting", "Bradycardia (ominous sign in shock)"],
+    differentials: ["Acute Asthma Attack", "Vasovagal Syncope", "Panic Attack", "Hereditary Angioedema"],
+
+    managementRationale: [
+      { 
+        drug: "Epinephrine (Adrenaline)", 
+        class: "Sympathomimetic", 
+        dose: "0.5 mg (1:1000)", 
+        freq: "IM Stat (Repeat q5min)", 
+        indication: "First-line Life Saving", 
+        rationale: "Alpha-1 vasoconstriction (BP) + Beta-2 bronchodilation (Airway) + Mast cell stabilization." 
+      },
+      { 
+        drug: "Hydrocortisone", 
+        class: "Corticosteroid", 
+        dose: "200 mg", 
+        freq: "IV Stat", 
+        indication: "Prevent biphasic reaction", 
+        rationale: "Reduces late-phase inflammation (slow onset)." 
+      },
+      { 
+        drug: "Pheniramine", 
+        class: "Antihistamine", 
+        dose: "45 mg", 
+        freq: "IV Stat", 
+        indication: "Cutaneous symptoms", 
+        rationale: "Relieves itching and hives only." 
+      }
+    ],
+
+    lifestyle: [
+      "Carry Epipen (or ampoule/syringe) at all times.",
+      "MedicAlert bracelet.",
+      "Strict avoidance of known triggers."
+    ],
+    
+    diet: {
+      eat: ["Safe home-cooked meals"],
+      avoid: ["Common Indian triggers: Brinjal (Eggplant), Peanuts, Shellfish", "Street food (Unknown ingredients)", "Beta-blockers (Reduce Epinephrine efficacy)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "14.0 g/dL", wbc: "12,000 /cmm", plt: "250,000 /cmm", hct: "42%" },
+      progression: [{ day: 1, hb: "14.0 g/dL", wbc: "12,000 /cmm", plt: "250,000 /cmm", hct: "42%" }]
+    },
+    specialTests: [
+      { name: "Serum Tryptase", result: "25 ng/mL", notes: "Elevated (Acute phase)" },
+      { name: "SpO2", result: "88% RA", notes: "Hypoxia present" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Inj. Adrenaline 0.5mg IM Stat", "IV Fluids Bolus", "O2 High Flow"] }
+    ]
+  },
 };
