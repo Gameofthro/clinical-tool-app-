@@ -9,7 +9,7 @@ import { diseaseDatabase } from "./data/diseases";
 import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
 import DiseaseModal from "./components/DiseaseModal";
-import SymptomChecker from "./components/SymptomChecker"; // Import the new component
+import SymptomChecker from "./components/SymptomCheckerComponent"; // renamed to avoid case-only issues
 import { calculatePediatricDose, calculateBMI, calculateGFR, calculateMAP, calculateMaintenanceFluid } from "./utils/calculators";
 
 const THEME_KEY = "clinical_theme";
