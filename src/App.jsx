@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { 
   Search, Stethoscope, Baby, Activity, Mail, LogOut, 
-  Calculator, Scale, Moon, Sun, BookOpen, Check, ClipboardList
+  Calculator, Scale, Moon, Sun, BookOpen, Check, ClipboardList, Heart, Droplet
 } from "lucide-react";
 
 // --- IMPORTS ---
@@ -10,7 +10,7 @@ import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
 import DiseaseModal from "./components/DiseaseModal";
 import SymptomChecker from "./components/SymptomChecker"; // Import the new component
-import { calculatePediatricDose, calculateBMI, calculateGFR } from "./utils/calculators";
+import { calculatePediatricDose, calculateBMI, calculateGFR, calculateMAP, calculateMaintenanceFluid } from "./utils/calculators";
 
 const THEME_KEY = "clinical_theme";
 
@@ -32,8 +32,12 @@ export default function ClinicalTool() {
   const [doseData, setDoseData] = useState({ weight: "", adultDose: "", unit: "kg" });
   const [bmiData, setBmiData] = useState({ height: "", weight: "", wUnit: "kg", hUnit: "cm" });
   const [gfrData, setGfrData] = useState({ creatinine: "", age: "", gender: "male", unit: "mg/dl" });
+
+  // New: MAP & Maintenance fluid states
+  const [mapData, setMapData] = useState({ sbp: "", dbp: "" });
+  const [maintData, setMaintData] = useState({ weight: "", unit: "kg" });
   
-  const [results, setResults] = useState({ dose: null, bmi: null, gfr: null });
+  const [results, setResults] = useState({ dose: null, bmi: null, gfr: null, map: null, maintenance: null });
 
   // --- INITIALIZATION ---
   useEffect(() => {
@@ -103,15 +107,26 @@ export default function ClinicalTool() {
   // --- CALCULATORS ---
   const handleDoseCalc = () => {
     const res = calculatePediatricDose(doseData.weight, doseData.adultDose, doseData.unit);
-    setResults({...results, dose: res});
+    setResults(prev => ({...prev, dose: res}));
   };
   const handleBMICalc = () => {
     const res = calculateBMI(bmiData.weight, bmiData.height, bmiData.wUnit, bmiData.hUnit);
-    if (res) setResults({...results, bmi: res});
+    if (res) setResults(prev => ({...prev, bmi: res}));
   };
   const handleGFRCalc = () => {
     const res = calculateGFR(gfrData.creatinine, gfrData.age, gfrData.gender, gfrData.unit);
-    setResults({...results, gfr: res});
+    setResults(prev => ({...prev, gfr: res}));
+  };
+
+  // --- NEW CALCULATOR HANDLERS ---
+  const handleMAPCalc = () => {
+    const res = calculateMAP(mapData.sbp, mapData.dbp);
+    setResults(prev => ({...prev, map: res}));
+  };
+
+  const handleMaintenanceCalc = () => {
+    const res = calculateMaintenanceFluid(maintData.weight, maintData.unit);
+    setResults(prev => ({...prev, maintenance: res}));
   };
 
   if (!user) return <Auth onLogin={handleLogin} />;
@@ -236,7 +251,9 @@ export default function ClinicalTool() {
                  {[
                    {id: 'pediatric', label: 'Dose', icon: Baby},
                    {id: 'bmi', label: 'BMI', icon: Scale},
-                   {id: 'gfr', label: 'eGFR', icon: Activity}
+                   {id: 'gfr', label: 'eGFR', icon: Activity},
+                   {id: 'map', label: 'MAP', icon: Heart},
+                   {id: 'maintenance', label: 'Maintenance', icon: Droplet}
                  ].map(tool => (
                    <button key={tool.id} onClick={() => setActiveTool(tool.id)} 
                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap border transition-all ${activeTool === tool.id ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'}`}>
@@ -327,6 +344,49 @@ export default function ClinicalTool() {
                         <div className="p-5 bg-red-50 dark:bg-red-900/30 rounded-2xl text-center animate-in zoom-in-95">
                           <p className="text-red-700 dark:text-red-400 font-black text-3xl">{results.gfr}</p>
                           <p className="text-red-600 dark:text-red-300 font-bold uppercase text-[10px] mt-1">mL/min/1.73m²</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* MAP CALCULATOR */}
+                  {activeTool === 'map' && (
+                    <div className="space-y-4">
+                      <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Heart className="text-red-500"/> Mean Arterial Pressure</h2>
+                      <div className="flex gap-2">
+                        <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-red-400 outline-none" 
+                          value={mapData.sbp} onChange={e => setMapData({...mapData, sbp: e.target.value})} placeholder="Systolic BP (mmHg)" />
+                        <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-red-400 outline-none" 
+                          value={mapData.dbp} onChange={e => setMapData({...mapData, dbp: e.target.value})} placeholder="Diastolic BP (mmHg)" />
+                      </div>
+                      <button onClick={handleMAPCalc} className="w-full py-4 bg-red-500 text-white font-bold rounded-2xl shadow-lg hover:bg-red-600 transition">Calculate MAP</button>
+                      {results.map && (
+                        <div className="p-5 bg-red-50 dark:bg-red-900/30 rounded-2xl text-center animate-in zoom-in-95">
+                          <p className="text-red-700 dark:text-red-400 font-black text-3xl">{results.map.value}</p>
+                          <p className="text-red-600 dark:text-red-300 font-bold uppercase text-xs mt-1">{results.map.status}</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* MAINTENANCE FLUID CALCULATOR */}
+                  {activeTool === 'maintenance' && (
+                    <div className="space-y-4">
+                      <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Droplet className="text-emerald-500"/> Maintenance Fluid (4-2-1)</h2>
+                      <div className="flex gap-2">
+                        <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-emerald-400 outline-none" 
+                          value={maintData.weight} onChange={e => setMaintData({...maintData, weight: e.target.value})} placeholder="Weight" />
+                        <select className="bg-slate-100 dark:bg-slate-700 rounded-xl px-3 font-bold text-sm outline-none dark:text-white"
+                          value={maintData.unit} onChange={e => setMaintData({...maintData, unit: e.target.value})}>
+                          <option value="kg">kg</option>
+                          <option value="lbs">lbs</option>
+                        </select>
+                      </div>
+                      <button onClick={handleMaintenanceCalc} className="w-full py-4 bg-emerald-600 text-white font-bold rounded-2xl shadow-lg hover:bg-emerald-700 transition">Calculate Maintenance</button>
+                      {results.maintenance && (
+                        <div className="p-5 bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl text-center animate-in zoom-in-95">
+                          <p className="text-emerald-700 dark:text-emerald-400 font-black text-2xl">{results.maintenance.rate} <span className="text-sm">mL/hr</span></p>
+                          <p className="text-emerald-600 dark:text-emerald-300 font-bold uppercase text-xs mt-1">{results.maintenance.daily} mL/day</p>
                         </div>
                       )}
                     </div>
