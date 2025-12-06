@@ -1,6 +1,6 @@
 /**
  * Medical Calculation Utilities
- * Contains algorithms for Pediatric Dosing, BMI, and Renal Function.
+ * Contains algorithms for Pediatric Dosing, BMI, Renal Function, MAP, and Fluid Maintenance.
  */
 
 // --- 1. PEDIATRIC DOSE (Clark's Rule) ---
@@ -64,8 +64,43 @@ export const calculateGFR = (creatinine, age, gender, unit = 'mg/dl') => {
     gfr = gfr * 0.742;
   }
 
-  // African American correction factor (1.212) is often a separate toggle, 
-  // keeping it simple for now or you can add another param.
-
   return gfr.toFixed(1);
+};
+
+// --- 4. MEAN ARTERIAL PRESSURE (MAP) ---
+export const calculateMAP = (sbp, dbp) => {
+  if (!sbp || !dbp) return null;
+  const s = parseFloat(sbp);
+  const d = parseFloat(dbp);
+  
+  // Formula: (SBP + 2*DBP) / 3
+  const map = (s + (2 * d)) / 3;
+  
+  let status = "Normal";
+  if (map < 65) status = "Low Perfusion (Shock Risk)";
+  if (map > 100) status = "High Afterload";
+
+  return { value: map.toFixed(0), status };
+};
+
+// --- 5. MAINTENANCE FLUID (4-2-1 Rule) ---
+export const calculateMaintenanceFluid = (weight, unit = 'kg') => {
+  if (!weight) return null;
+  
+  const w = unit === 'lbs' ? weight * 0.453592 : parseFloat(weight);
+  let rate = 0;
+
+  // 4-2-1 Rule
+  if (w <= 10) {
+    rate = w * 4;
+  } else if (w <= 20) {
+    rate = (10 * 4) + ((w - 10) * 2);
+  } else {
+    rate = (10 * 4) + (10 * 2) + ((w - 20) * 1);
+  }
+
+  return { 
+    rate: rate.toFixed(0), // mL/hr
+    daily: (rate * 24).toFixed(0) // Total mL/day
+  };
 };
