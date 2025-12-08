@@ -11347,5 +11347,1405 @@ export const diseaseDatabase = {
     treatment: [
       { day: 1, meds: ["Inj. HTIG IM", "Inj. Metronidazole", "Diazepam Infusion"] }
     ]
+  },
+  "Down Syndrome (Trisomy 21)": {
+    category: "Genetic / Chromosomal",
+    pathophysiology: "Presence of an extra copy of Chromosome 21 (Non-disjunction during meiosis), leading to overexpression of genes (e.g., APP, DYRK1A) causing intellectual disability, hypotonia, and dysmorphic features.",
+    
+    clinicalFeatures: {
+      symptoms: ["Developmental delay", "Hypotonia (Floppy baby)", "Hearing loss"],
+      signs: ["Mongoloid slant (Up-slanting eyes)", "Simian Crease (Single palmar crease)", "Sandal gap toe", "Macroglossia"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Karyotyping", finding: "47,XX,+21 or 47,XY,+21", significance: "Gold Standard Confirmation" },
+      { test: "Echocardiography", finding: "AV Canal Defect / VSD", significance: "Screening for Congenital Heart Disease (40% risk)" },
+      { test: "Thyroid Profile", finding: "Elevated TSH", significance: "Annual screening for Hypothyroidism" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Alzheimer's Risk.", explanation: "The APP gene is on Chr 21; nearly all patients develop Alzheimer's pathology by age 40." },
+      { pearl: "Atlantoaxial Instability.", explanation: "Increased laxity of C1-C2 joint; screen with X-ray before sports or surgery to prevent cord compression." }
+    ],
+    
+    redFlags: ["Infantile Spasms (Seizures)", "Leukemia (ALL/AML risk increased)", "Sleep Apnea", "Gait changes (Cord compression)"],
+    differentials: ["Congenital Hypothyroidism", "Beckwith-Wiedemann Syndrome", "Fragile X Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Levothyroxine", 
+        class: "Thyroid Hormone", 
+        dose: "Age based", 
+        freq: "OD", 
+        indication: "Hypothyroidism", 
+        rationale: "Early treatment prevents further intellectual compromise." 
+      },
+      { 
+        drug: "Donepezil", 
+        class: "AChE Inhibitor", 
+        dose: "5-10 mg", 
+        freq: "OD", 
+        indication: "Early Dementia", 
+        rationale: "Symptomatic management of cognitive decline in adults." 
+      },
+      { 
+        drug: "Digoxin", 
+        class: "Cardiac Glycoside", 
+        dose: "Pediatric dosing", 
+        freq: "BD", 
+        indication: "Heart Failure", 
+        rationale: "Management of congenital heart defects prior to surgery." 
+      }
+    ],
+
+    lifestyle: ["Early Intervention (PT/OT/Speech).", "Regular audiology/vision checks.", "Neck x-rays (Special Olympics protocol)."],
+    
+    diet: {
+      eat: ["High Fiber (Constipation is common)", "Calcium/Vit D", "Ragi (Finger Millet)"],
+      avoid: ["High calorie foods (Obesity risk due to low BMR)", "Choking hazards"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "14.0 g/dL", wbc: "10,000 /cmm", plt: "250,000 /cmm", hct: "42%" },
+      progression: [{ day: 1, hb: "14.0 g/dL", wbc: "10,000 /cmm", plt: "250,000 /cmm", hct: "42%" }]
+    },
+    specialTests: [
+      { name: "Karyotype", result: "Trisomy 21", notes: "Non-disjunction" },
+      { name: "TSH", result: "10 mIU/L", notes: "Hypothyroid" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Levothyroxine", "Early Intervention Therapy"] }
+    ]
+  },
+
+  "Turner Syndrome (45,X)": {
+    category: "Genetic / Chromosomal",
+    pathophysiology: "Complete or partial absence of one X chromosome in females (45,X). Haploinsufficiency of the SHOX gene leads to short stature and skeletal abnormalities.",
+    
+    clinicalFeatures: {
+      symptoms: ["Primary Amenorrhea", "Short stature", "Infertility", "Hearing loss"],
+      signs: ["Webbed neck (Pterygium colli)", "Wide carrying angle (Cubitus valgus)", "Broad chest (widely spaced nipples)", "Lymphedema (at birth)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Karyotyping", finding: "45,X", significance: "Gold Standard Diagnosis" },
+      { test: "Echocardiography", finding: "Coarctation of Aorta / Bicuspid Aortic Valve", significance: "Critical cardiovascular screening" },
+      { test: "FSH/LH", finding: "Elevated (Hypergonadotropic Hypogonadism)", significance: "Indicates ovarian failure (Streak ovaries)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Mosaicism.", explanation: "Some patients (45,X/46,XX) may have a milder phenotype and potential for fertility." },
+      { pearl: "Y Chromosome Material.", explanation: "If Y material is present in karyotype, prophylactic gonadectomy is mandatory due to high risk of Gonadoblastoma." }
+    ],
+    
+    redFlags: ["Hypertension (Coarctation)", "Aortic Dissection", "Sensorineural Deafness", "Renal anomalies (Horseshoe kidney)"],
+    differentials: ["Noonan Syndrome (Male/Female Turner)", "Constitutional Delay of Growth", "Pure Gonadal Dysgenesis"],
+
+    managementRationale: [
+      { 
+        drug: "Somatropin", 
+        class: "Growth Hormone", 
+        dose: "0.045-0.05 mg/kg/day", 
+        freq: "SC Daily", 
+        indication: "Short Stature", 
+        rationale: "Start early (age 4-5) to optimize final adult height." 
+      },
+      { 
+        drug: "Ethinylestradiol", 
+        class: "Estrogen", 
+        dose: "Low dose", 
+        freq: "Daily", 
+        indication: "Puberty Induction", 
+        rationale: "Induces secondary sexual characteristics. Start around age 12." 
+      },
+      { 
+        drug: "Progesterone", 
+        class: "Progestin", 
+        dose: "Cyclic", 
+        freq: "Monthly", 
+        indication: "Menstrual Cycle", 
+        rationale: "Added after 2 years of estrogen to prevent endometrial hyperplasia." 
+      }
+    ],
+
+    lifestyle: ["Blood pressure monitoring.", "Fertility counseling (Oocyte donation).", "Educational support (Math difficulties common)."],
+    
+    diet: {
+      eat: ["Calcium/Vitamin D (High Osteoporosis risk)", "Heart healthy diet"],
+      avoid: ["Excess salt (HTN risk)", "High calorie (Obesity risk)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "37%" },
+      progression: [{ day: 1, hb: "12.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "37%" }]
+    },
+    specialTests: [
+      { name: "Karyotype", result: "45,X", notes: "Classic Turner" },
+      { name: "ECHO", result: "Bicuspid Aortic Valve", notes: "Monitor" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Inj. Somatropin SC", "Tab. Estrogen"] }
+    ]
+  },
+
+  "Klinefelter Syndrome (47,XXY)": {
+    category: "Genetic / Chromosomal",
+    pathophysiology: "Presence of an extra X chromosome in males (47,XXY). Testicular dysgenesis leads to low testosterone (Hypogonadism) and elevated gonadotropins, causing feminization and infertility.",
+    
+    clinicalFeatures: {
+      symptoms: ["Infertility (Azoospermia)", "Gynecomastia", "Low libido", "Learning difficulties"],
+      signs: ["Tall stature (delayed epiphyseal closure)", "Small firm testes (<4ml)", "Sparse body hair", "Female fat distribution"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Karyotyping", finding: "47,XXY", significance: "Confirmatory" },
+      { test: "Hormonal Profile", finding: "High FSH/LH, Low Testosterone, High Estradiol", significance: "Hypergonadotropic Hypogonadism" },
+      { test: "Semen Analysis", finding: "Azoospermia", significance: "Universal finding" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Cancer Risk.", explanation: "50x increased risk of Breast Cancer compared to XY males; Regular breast exams needed." },
+      { pearl: "Delayed Diagnosis.", explanation: "Often undiagnosed until adulthood when presenting for infertility." }
+    ],
+    
+    redFlags: ["Breast Mass", "Osteoporosis", "Metabolic Syndrome", "Autoimmune Disease (SLE risk higher)"],
+    differentials: ["Kallmann Syndrome (Low FSH/LH)", "Marfan Syndrome (Tall)", "Fragile X Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Testosterone Enanthate", 
+        class: "Androgen", 
+        dose: "200 mg", 
+        freq: "IM q2-3 weeks", 
+        indication: "Hypogonadism", 
+        rationale: "Virilization, muscle mass, bone density, and libido improvement." 
+      },
+      { 
+        drug: "Anastrozole", 
+        class: "Aromatase Inhibitor", 
+        dose: "1 mg", 
+        freq: "OD", 
+        indication: "Severe Gynecomastia", 
+        rationale: "Reduces conversion of testosterone to estrogen (Adjunct, surgery preferred)." 
+      },
+      { 
+        drug: "Calcium / Vit D", 
+        class: "Supplement", 
+        dose: "Standard", 
+        freq: "Daily", 
+        indication: "Bone Health", 
+        rationale: "Prevents osteoporosis associated with hypogonadism." 
+      }
+    ],
+
+    lifestyle: ["Weight bearing exercise.", "Fertility preservation (TESE if sperm found).", "Breast self-exam."],
+    
+    diet: {
+      eat: ["Protein rich", "Calcium rich foods"],
+      avoid: ["Soy (Phytoestrogens - theoretical concern)", "Excess sugar (Metabolic syndrome risk)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "7,000 /cmm", plt: "220,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "7,000 /cmm", plt: "220,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "FSH", result: "45 mIU/mL", notes: "Very High" },
+      { name: "Testosterone", result: "150 ng/dL", notes: "Low" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Inj. Testosterone Depot", "Lifestyle Mod"] }
+    ]
+  },
+
+  "Chronic Myeloid Leukemia (CML)": {
+    category: "Oncology / Chromosomal",
+    pathophysiology: "Reciprocal translocation t(9;22) forming the Philadelphia Chromosome. This creates the BCR-ABL fusion gene, a constitutively active tyrosine kinase driving granulocyte proliferation.",
+    
+    clinicalFeatures: {
+      symptoms: ["Fatigue", "Night sweats", "Abdominal fullness (Early satiety)", "Weight loss"],
+      signs: ["Massive Splenomegaly", "Sternal tenderness", "Pallor"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Cytogenetics (Karyotype)", finding: "t(9;22) Philadelphia Chromosome", significance: "Hallmark of CML" },
+      { test: "RT-PCR", finding: "BCR-ABL transcript", significance: "Quantitative diagnosis and monitoring (MMR)" },
+      { test: "CBC", finding: "Marked Leukocytosis (>100k) with left shift (all stages seen)", significance: "Basophilia is characteristic" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Three Phases.", explanation: "Chronic (manageable), Accelerated (warning), Blast Crisis (acute leukemia behavior). Goal is to keep in Chronic." },
+      { pearl: "Tyrosine Kinase Inhibitors.", explanation: "TKIs transformed CML from a fatal disease to a chronic condition with near-normal life expectancy." }
+    ],
+    
+    redFlags: ["Blast Crisis (>20% blasts)", "WBC > 300k (Leukostasis)", "Additional chromosomal abnormalities"],
+    differentials: ["Leukemoid Reaction (High LAP score)", "Myelofibrosis", "Polycythemia Vera", "CNL"],
+
+    managementRationale: [
+      { 
+        drug: "Imatinib", 
+        class: "Tyrosine Kinase Inhibitor (1st Gen)", 
+        dose: "400 mg", 
+        freq: "OD", 
+        indication: "Chronic Phase", 
+        rationale: "Competitively inhibits ATP binding site of BCR-ABL kinase." 
+      },
+      { 
+        drug: "Dasatinib", 
+        class: "TKI (2nd Gen)", 
+        dose: "100 mg", 
+        freq: "OD", 
+        indication: "Imatinib Resistance/Intolerance", 
+        rationale: "More potent; effective against many mutations. Risk of pleural effusion." 
+      },
+      { 
+        drug: "Hydroxyurea", 
+        class: "Cytoreductive", 
+        dose: "1-2 g", 
+        freq: "Daily", 
+        indication: "Initial Cytoreduction", 
+        rationale: "Lowers WBC count rapidly before confirming diagnosis/starting TKI." 
+      }
+    ],
+
+    lifestyle: ["Compliance is critical (Missed doses -> Resistance).", "Regular PCR monitoring.", "Avoid pregnancy on TKIs."],
+    
+    diet: {
+      eat: ["Cooked foods (if neutropenic)", "Ginger (for TKI nausea)"],
+      avoid: ["Grapefruit (CYP3A4 inhibitor - increases Imatinib toxicity)", "St John's Wort"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "10.0 g/dL", wbc: "150,000 /cmm", plt: "450,000 /cmm", hct: "30%" },
+      progression: [{ day: 1, hb: "10.0 g/dL", wbc: "150,000 /cmm", plt: "450,000 /cmm", hct: "30%" }]
+    },
+    specialTests: [
+      { name: "BCR-ABL PCR", result: "55%", notes: "High load" },
+      { name: "Bone Marrow", result: "Hypercellular, <5% Blasts", notes: "Chronic Phase" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Imatinib 400mg OD", "Tab. Allopurinol"] }
+    ]
+  },
+
+  "Prader-Willi Syndrome (PWS)": {
+    category: "Genetic / Chromosomal",
+    pathophysiology: "Loss of expression of paternal genes on Chromosome 15q11-q13 (Deletion 70%, Maternal Uniparental Disomy 25%). Leads to hypothalamic dysfunction, causing hyperphagia and lack of satiety.",
+    
+    clinicalFeatures: {
+      symptoms: ["Insatiable hunger (Hyperphagia)", "Obesity", "Learning disability", "Tantrums"],
+      signs: ["Floppy infant (Hypotonia)", "Small hands/feet", "Almond-shaped eyes", "Hypogonadism"]
+    },
+
+    diagnosticWorkup: [
+      { test: "DNA Methylation Analysis", finding: "Abnormal", significance: "First-line; detects 99% of cases (Deletion/UPD/Imprinting)" },
+      { test: "FISH", finding: "Deletion 15q11-q13", significance: "Identifies the specific mechanism" },
+      { test: "Sleep Study", finding: "Obstructive Sleep Apnea", significance: "Common complication of obesity/hypotonia" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Hyperphagia.", explanation: "Not just 'hungry'. It is a life-threatening compulsion. Patients will eat raw meat, frozen food, or garbage. Locks on kitchen/fridge are mandatory." },
+      { pearl: "No Vomiting.", explanation: "High threshold for vomiting; gastric rupture is a silent killer after binge eating." }
+    ],
+    
+    redFlags: ["Sudden weight gain", "Respiratory failure (Pickwickian)", "Gastric Rupture (Acute abdomen)", "Diabetes"],
+    differentials: ["Angelman Syndrome (Maternal deletion of same region)", "Bardet-Biedl Syndrome", "Hypothalamic Tumor"],
+
+    managementRationale: [
+      { 
+        drug: "Somatropin", 
+        class: "Growth Hormone", 
+        dose: "0.035 mg/kg/day", 
+        freq: "SC Daily", 
+        indication: "Growth/Body Comp", 
+        rationale: "Improves height, increases lean muscle mass, and decreases fat mass. Contraindicated in severe obesity/apnea." 
+      },
+      { 
+        drug: "Topiramate", 
+        class: "Anticonvulsant", 
+        dose: "25-100 mg", 
+        freq: "BD", 
+        indication: "Skin Picking / Impulse Control", 
+        rationale: "Mood stabilization and mild appetite suppression." 
+      },
+      { 
+        drug: "Testosterone / Estrogen", 
+        class: "Hormone", 
+        dose: "Replacement", 
+        freq: "Cyclic", 
+        indication: "Hypogonadism", 
+        rationale: "Puberty induction and bone health." 
+      }
+    ],
+
+    lifestyle: ["Strict Food Security (Locked kitchen).", "Structured routine.", "Exercise program."],
+    
+    diet: {
+      eat: ["Calorie Restricted (60-80% of normal)", "High fiber (satiety attempt)"],
+      avoid: ["Unlimited access to ANY food", "Sugary treats", "High calorie density foods"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.5 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "40%" },
+      progression: [{ day: 1, hb: "13.5 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "40%" }]
+    },
+    specialTests: [
+      { name: "Methylation PCR", result: "Abnormal", notes: "PWS confirmed" },
+      { name: "IGF-1", result: "Low", notes: "GH deficiency" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Strict Diet Control", "Inj. Somatropin"] }
+    ]
+  },
+  "Edward's Syndrome (Trisomy 18)": {
+    category: "Genetic / Chromosomal",
+    pathophysiology: "Presence of an extra copy of Chromosome 18 (Nondisjunction). Severe disruption of organogenesis leads to multiple congenital anomalies and high neonatal mortality.",
+    
+    clinicalFeatures: {
+      symptoms: ["Failure to thrive", "Feeding difficulties", "Apneic episodes"],
+      signs: ["Rocker-bottom feet", "Clenched fists with overlapping fingers", "Micrognathia", "Low-set ears"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Karyotyping", finding: "47,XX,+18 or 47,XY,+18", significance: "Gold Standard Confirmation" },
+      { test: "Echocardiography", finding: "VSD / ASD / PDA", significance: "Cardiac defects present in >90%" },
+      { test: "Prenatal Ultrasound", finding: "Choroid plexus cysts / IUGR", significance: "Screening markers" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "The Hand Sign.", explanation: "The index finger overlaps the 3rd finger, and the 5th overlaps the 4th; highly specific for Trisomy 18." },
+      { pearl: "Survival.", explanation: "Very poor prognosis; only 5-10% survive past the first year. Mosaic forms may have milder phenotype." }
+    ],
+    
+    redFlags: ["Apnea (Central)", "Heart Failure", "Wilms Tumor (Increased risk)", "Esophageal Atresia"],
+    differentials: ["Patau Syndrome (Trisomy 13)", "Smith-Lemli-Opitz Syndrome", "Fetal Akinesia Sequence"],
+
+    managementRationale: [
+      { 
+        drug: "Supportive Care", 
+        class: "N/A", 
+        dose: "N/A", 
+        freq: "N/A", 
+        indication: "Palliative", 
+        rationale: "Focus on comfort, feeding (NG tube), and family counseling due to life-limiting nature." 
+      },
+      { 
+        drug: "Diuretics (Furosemide)", 
+        class: "Loop Diuretic", 
+        dose: "1 mg/kg", 
+        freq: "BD", 
+        indication: "Heart Failure", 
+        rationale: "Symptomatic relief of pulmonary congestion if cardiac defects are present." 
+      },
+      { 
+        drug: "Phenobarbital", 
+        class: "Anticonvulsant", 
+        dose: "3-5 mg/kg", 
+        freq: "OD", 
+        indication: "Seizures", 
+        rationale: "Seizures are common; monotherapy preferred to minimize sedation." 
+      }
+    ],
+
+    lifestyle: ["Hospice/Palliative care involvement.", "Genetic counseling for future pregnancies."],
+    
+    diet: {
+      eat: ["High calorie formula (if surviving)", "Nasogastric feeding"],
+      avoid: ["Oral feeding if aspiration risk is high"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "15.0 g/dL", wbc: "10,000 /cmm", plt: "150,000 /cmm", hct: "45%" },
+      progression: [{ day: 1, hb: "15.0 g/dL", wbc: "10,000 /cmm", plt: "150,000 /cmm", hct: "45%" }]
+    },
+    specialTests: [
+      { name: "Karyotype", result: "Trisomy 18", notes: "Full trisomy" },
+      { name: "Echo", result: "Large VSD", notes: "Hemodynamically significant" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Comfort Care measures", "NG Tube insertion"] }
+    ]
+  },
+
+  "Patau Syndrome (Trisomy 13)": {
+    category: "Genetic / Chromosomal",
+    pathophysiology: "Presence of an extra Chromosome 13. Causes severe midline defects due to disruption of prechordal mesoderm development (Holoprosencephaly).",
+    
+    clinicalFeatures: {
+      symptoms: ["Seizures", "Apnea", "Feeding difficulty"],
+      signs: ["Cleft Lip/Palate (Midline)", "Polydactyly (Extra fingers)", "Microphthalmia (Small eyes)", "Cutis Aplasia (Scalp skin defect)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Karyotyping", finding: "47,XX,+13 or 47,XY,+13", significance: "Confirmatory" },
+      { test: "Brain MRI", finding: "Holoprosencephaly (Single ventricle)", significance: "Classic CNS malformation" },
+      { test: "Renal Ultrasound", finding: "Polycystic Kidneys", significance: "Common association" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Midline Defects.", explanation: "The hallmark is failure of the forebrain to divide (Holoprosencephaly) and midline facial clefts." },
+      { pearl: "Prognosis.", explanation: "Median survival is < 7 days. Most severe of the viable trisomies." }
+    ],
+    
+    redFlags: ["Seizures (Intractable)", "Heart Failure", "Aspiration", "Respiratory Failure"],
+    differentials: ["Edward's Syndrome", "Meckel-Gruber Syndrome", "Smith-Lemli-Opitz Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Comfort Measures", 
+        class: "Palliative", 
+        dose: "Titrated", 
+        freq: "PRN", 
+        indication: "End of Life", 
+        rationale: "Opioids/Benzodiazepines for distress/seizures." 
+      },
+      { 
+        drug: "Anticonvulsants", 
+        class: "Various", 
+        dose: "Standard", 
+        freq: "Maintenance", 
+        indication: "Seizures", 
+        rationale: "Management of structural epilepsy." 
+      }
+    ],
+
+    lifestyle: ["Genetic counseling.", "Supportive care for parents."],
+    
+    diet: {
+      eat: ["Specialized feeding (Haberman feeder) for clefts"],
+      avoid: ["Standard nipples (aspiration risk)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "14.0 g/dL", wbc: "12,000 /cmm", plt: "100,000 /cmm", hct: "42%" },
+      progression: [{ day: 1, hb: "14.0 g/dL", wbc: "12,000 /cmm", plt: "100,000 /cmm", hct: "42%" }]
+    },
+    specialTests: [
+      { name: "Karyotype", result: "Trisomy 13", notes: "Non-disjunction" },
+      { name: "MRI Brain", result: "Alobar Holoprosencephaly", notes: "Severe" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Palliative Care Protocol"] }
+    ]
+  },
+
+  "Cri-du-chat Syndrome (5p-)": {
+    category: "Genetic / Chromosomal",
+    pathophysiology: "Partial deletion of the short arm of Chromosome 5 (5p15.2). Haploinsufficiency of genes (e.g., CTNND2) leads to abnormal laryngeal development and intellectual disability.",
+    
+    clinicalFeatures: {
+      symptoms: ["High-pitched cat-like cry (in infancy)", "Severe intellectual disability", "Feeding problems"],
+      signs: ["Microcephaly", "Hypertelorism (Wide set eyes)", "Epicanthal folds", "Hypotonia"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Chromosomal Microarray (CMA)", finding: "Deletion at 5p15", significance: "Higher sensitivity than Karyotype for small deletions" },
+      { test: "Karyotype", finding: "46,XX,del(5p)", significance: "Visible if deletion is large enough" },
+      { test: "FISH", finding: "Absent signal on 5p", significance: "Targeted confirmation" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "The Cry.", explanation: "The characteristic cry is due to structural abnormality of the larynx; it usually disappears by age 2." },
+      { pearl: "Survival.", explanation: "Unlike Trisomy 13/18, survival to adulthood is common, though with significant disability." }
+    ],
+    
+    redFlags: ["Aspiration pneumonia", "Failure to thrive", "Self-injurious behavior", "Scoliosis"],
+    differentials: ["Wolf-Hirschhorn Syndrome (4p-)", "Patau Syndrome", "Mowat-Wilson Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Physiotherapy", 
+        class: "Therapy", 
+        dose: "Daily", 
+        freq: "Ongoing", 
+        indication: "Hypotonia", 
+        rationale: "Improves motor milestones." 
+      },
+      { 
+        drug: "Speech Therapy", 
+        class: "Therapy", 
+        dose: "Regular", 
+        freq: "Ongoing", 
+        indication: "Communication", 
+        rationale: "Sign language often needed due to severe speech delay." 
+      },
+      { 
+        drug: "Melatonin", 
+        class: "Supplement", 
+        dose: "2-5 mg", 
+        freq: "HS", 
+        indication: "Sleep Disturbance", 
+        rationale: "Regulates circadian rhythm issues common in neurodevelopmental disorders." 
+      }
+    ],
+
+    lifestyle: ["Early intervention is critical.", "Family support groups."],
+    
+    diet: {
+      eat: ["High calorie supplements (if failure to thrive)"],
+      avoid: ["Choking hazards (swallow dysfunction)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.0 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "36%" },
+      progression: [{ day: 1, hb: "12.0 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "36%" }]
+    },
+    specialTests: [
+      { name: "Microarray", result: "5p15.2 Deletion", notes: "10Mb loss" },
+      { name: "Audiometry", result: "Normal", notes: "Rule out deafness" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Early Intervention Referral", "Speech Therapy"] }
+    ]
+  },
+
+  "Fragile X Syndrome (FMR1)": {
+    category: "Genetic / Chromosomal",
+    pathophysiology: "Expansion of CGG trinucleotide repeats (>200) in the FMR1 gene on the X chromosome. Leads to methylation and silencing of the FMRP protein, crucial for synaptic plasticity.",
+    
+    clinicalFeatures: {
+      symptoms: ["Intellectual disability (Most common inherited cause)", "Hyperactivity/ADHD", "Hand flapping", "Social anxiety"],
+      signs: ["Macroorchidism (Large testes - post puberty)", "Long face", "Large prominent ears", "Hyperextensible joints"]
+    },
+
+    diagnosticWorkup: [
+      { test: "FMR1 DNA Analysis (PCR/Southern Blot)", finding: "> 200 CGG repeats", significance: "Gold Standard (Full Mutation)" },
+      { test: "Karyotype", finding: "Fragile site at Xq27.3", significance: "Historical test (Low sensitivity, replaced by DNA testing)" },
+      { test: "Echocardiography", finding: "Mitral Valve Prolapse", significance: "Common connective tissue association" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Premutation Carriers.", explanation: "55-200 repeats. Risk of FXTAS (Tremor/Ataxia) in older males and FXPOI (Ovarian Insufficiency) in females." },
+      { pearl: "Autism Link.", explanation: "The most common known single-gene cause of Autism Spectrum Disorder." }
+    ],
+    
+    redFlags: ["Seizures", "Aggression/Self-injury", "Connective tissue problems (MVP, Scoliosis)", "FXTAS in grandfather"],
+    differentials: ["Sotos Syndrome", "Prader-Willi Syndrome", "Autism (Idiopathic)", "Marfan Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Stimulants (Methylphenidate)", 
+        class: "CNS Stimulant", 
+        dose: "Titrated", 
+        freq: "OD/BD", 
+        indication: "ADHD Symptoms", 
+        rationale: "Improves focus and hyperactivity. Monitor for anxiety worsening." 
+      },
+      { 
+        drug: "Sertraline", 
+        class: "SSRI", 
+        dose: "25-50 mg", 
+        freq: "OD", 
+        indication: "Anxiety / Aggression", 
+        rationale: "Treats social anxiety and mood instability." 
+      },
+      { 
+        drug: "Risperidone", 
+        class: "Atypical Antipsychotic", 
+        dose: "0.5-2 mg", 
+        freq: "BD", 
+        indication: "Severe Irritability", 
+        rationale: "FDA approved for irritability associated with Autism/Fragile X." 
+      }
+    ],
+
+    lifestyle: ["Structured environment.", "Sensory integration therapy.", "Genetic counseling for female relatives."],
+    
+    diet: {
+      eat: ["Balanced diet", "Folic Acid (Historical interest, minimal evidence)"],
+      avoid: ["Caffeine (Worsens hyperactivity)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "FMR1 PCR", result: ">200 repeats", notes: "Full Mutation" },
+      { name: "Methylation Study", result: "Hypermethylated", notes: "Gene Silenced" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Sertraline 25mg OD", "Behavioral Therapy"] }
+    ]
+  },
+
+  "Angelman Syndrome (15q-)": {
+    category: "Genetic / Chromosomal",
+    pathophysiology: "Loss of function of the maternal UBE3A gene on Chromosome 15q11-q13 (Deletion, Mutation, or Paternal Uniparental Disomy). Loss of ubiquitin pathway affects synaptic development.",
+    
+    clinicalFeatures: {
+      symptoms: ["Severe developmental delay", "Absent speech", "Happy demeanor (Frequent smiling/laughter)", "Sleep problems"],
+      signs: ["Ataxic gait ('Puppet-like')", "Microcephaly", "Seizures", "Tongue thrusting"]
+    },
+
+    diagnosticWorkup: [
+      { test: "DNA Methylation Analysis", finding: "Abnormal", significance: "First-line screening" },
+      { test: "FISH", finding: "Deletion 15q11-q13", significance: "Identifies the specific mechanism (70% of cases)" },
+      { test: "EEG", finding: "High amplitude slow spikes", significance: "Characteristic pattern even without clinical seizures" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Happy Puppet.", explanation: "Historical name due to the jerky, ataxic gait and paroxysms of laughter." },
+      { pearl: "Water Fascination.", explanation: "A unique behavioral phenotype where children are intensely fascinated by water/reflections." }
+    ],
+    
+    redFlags: ["Intractable Seizures", "Non-convulsive Status Epilepticus", "Severe Sleep Deprivation", "Aspiration"],
+    differentials: ["Prader-Willi Syndrome (Paternal deletion)", "Rett Syndrome", "Cerebral Palsy", "Lennox-Gastaut Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Sodium Valproate", 
+        class: "Anticonvulsant", 
+        dose: "20-30 mg/kg", 
+        freq: "BD", 
+        indication: "Seizures", 
+        rationale: "Broad spectrum control. Seizures in Angelman are often refractory." 
+      },
+      { 
+        drug: "Clonazepam", 
+        class: "Benzodiazepine", 
+        dose: "0.05 mg/kg", 
+        freq: "HS", 
+        indication: "Myoclonus / Sleep", 
+        rationale: "Treats myoclonic jerks and aids sleep initiation." 
+      },
+      { 
+        drug: "Melatonin", 
+        class: "Supplement", 
+        dose: "3-6 mg", 
+        freq: "HS", 
+        indication: "Sleep Disorder", 
+        rationale: "Addresses the severe sleep fragmentation common in AS." 
+      }
+    ],
+
+    lifestyle: ["Seizure safety precautions.", "Augmentative Communication Devices (AAC).", "Gait training."],
+    
+    diet: {
+      eat: ["Ketogenic Diet (Highly effective for refractory seizures in AS)", "High calorie (due to movement)"],
+      avoid: ["Sugary foods (exacerbates hyperactivity)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "37%" },
+      progression: [{ day: 1, hb: "12.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "37%" }]
+    },
+    specialTests: [
+      { name: "Methylation", result: "Paternal pattern only", notes: "Maternal allele lost" },
+      { name: "EEG", result: "Delta bursts", notes: "Typical AS" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Syr. Valproate", "Ketogenic Diet Initiation"] }
+    ]
+  },
+
+  "DiGeorge Syndrome (22q11.2)": {
+    category: "Genetic / Chromosomal",
+    pathophysiology: "Microdeletion of 22q11.2 causing defect in 3rd and 4th pharyngeal pouches. Leads to Thymic aplasia (T-cell defect), Parathyroid hypoplasia (Hypocalcemia), and Conotruncal heart defects.",
+    
+    clinicalFeatures: {
+      symptoms: ["Recurrent infections", "Seizures (Hypocalcemia)", "Nasal voice (Palatal insufficiency)", "Learning difficulties"],
+      signs: ["Cleft Palate", "Cardiac Murmur (Tetralogy of Fallot)", "Dysmorphic face", "Tetany"]
+    },
+
+    diagnosticWorkup: [
+      { test: "FISH / Microarray", finding: "22q11.2 Deletion", significance: "Gold Standard Confirmation" },
+      { test: "Serum Calcium/PTH", finding: "Low Ca / Low PTH", significance: "Hypoparathyroidism" },
+      { test: "Echocardiography", finding: "TOF / Truncus Arteriosus", significance: "Cardiac screening mandatory" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "CATCH-22.", explanation: "Cardiac defects, Abnormal facies, Thymic aplasia, Cleft palate, Hypocalcemia, 22q11." },
+      { pearl: "No Live Vaccines.", explanation: "Avoid live vaccines (BCG, MMR) until T-cell immune function is assessed and cleared." }
+    ],
+    
+    redFlags: ["Hypocalcemic Seizures", "Severe Immunodeficiency (SCID-like)", "Heart Failure", "Psychosis (Schizophrenia risk high in adults)"],
+    differentials: ["Velocardiofacial Syndrome (same deletion)", "CHARGE Syndrome", "Fetal Alcohol Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Calcium Carbonate", 
+        class: "Supplement", 
+        dose: "Titrated", 
+        freq: "QID", 
+        indication: "Hypocalcemia", 
+        rationale: "Maintains serum calcium." 
+      },
+      { 
+        drug: "Calcitriol", 
+        class: "Active Vitamin D", 
+        dose: "0.25 mcg", 
+        freq: "OD", 
+        indication: "Hypoparathyroidism", 
+        rationale: "Required due to lack of PTH-mediated Vit D activation." 
+      },
+      { 
+        drug: "Cotrimoxazole", 
+        class: "Antibiotic", 
+        dose: "Prophylactic", 
+        freq: "MWF", 
+        indication: "T-cell Deficiency", 
+        rationale: "PCP prophylaxis if CD4 counts are very low." 
+      }
+    ],
+
+    lifestyle: ["Speech therapy (VPI).", "Psychiatric screening (Adults).", "Genetic counseling."],
+    
+    diet: {
+      eat: ["Calcium rich foods (Dairy)", "Soft foods (if cleft palate)"],
+      avoid: ["Phytates with calcium", "Raw foods (if immunocompromised)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.0 g/dL", wbc: "5,000 /cmm", plt: "200,000 /cmm", hct: "33%" },
+      progression: [{ day: 1, hb: "11.0 g/dL", wbc: "5,000 /cmm", plt: "200,000 /cmm", hct: "33%" }]
+    },
+    specialTests: [
+      { name: "FISH", result: "22q11.2 Deleted", notes: "Positive" },
+      { name: "Calcium", result: "7.0 mg/dL", notes: "Low" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Syr. Calcium Carbonate", "Syr. Calcitriol"] }
+    ]
+  },
+
+  "Williams Syndrome (7q11)": {
+    category: "Genetic / Chromosomal",
+    pathophysiology: "Microdeletion of 7q11.23 including the Elastin (ELN) gene. Results in connective tissue abnormalities (Supravalvular Aortic Stenosis) and distinct neurobehavioral profile.",
+    
+    clinicalFeatures: {
+      symptoms: ["Failure to thrive (infancy)", "Cocktail party personality (Over-friendly)", "Anxiety", "Hypercalcemia (Infantile)"],
+      signs: ["Elfin facies (Full cheeks, wide mouth)", "Supravalvular Aortic Stenosis (SVAS)", "Hypertension"]
+    },
+
+    diagnosticWorkup: [
+      { test: "FISH / Microarray", finding: "7q11.23 Deletion", significance: "Diagnostic" },
+      { test: "Echocardiography", finding: "SVAS / Pulmonary Stenosis", significance: "Elastin arteriopathy" },
+      { test: "Serum Calcium", finding: "Elevated (Infancy)", significance: "Idiopathic hypercalcemia often resolves in childhood" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Elfin Facies.", explanation: "Broad forehead, stellate iris pattern, long philtrum, wide mouth with full lips." },
+      { pearl: "Music Ability.", explanation: "Often have absolute pitch and strong affinity for music despite intellectual disability." }
+    ],
+    
+    redFlags: ["Sudden Cardiac Death (Anesthesia risk with SVAS)", "Hypertensive Crisis", "Nephrocalcinosis", "Rectal Prolapse"],
+    differentials: ["Noonan Syndrome", "Congenital Rubella", "Smith-Magenis Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Amlodipine", 
+        class: "Calcium Channel Blocker", 
+        dose: "Age based", 
+        freq: "OD", 
+        indication: "Hypertension", 
+        rationale: "Treats vascular stiffness. Beta-blockers used with caution in SVAS." 
+      },
+      { 
+        drug: "Low Calcium Diet", 
+        class: "Dietary", 
+        dose: "Restriction", 
+        freq: "Daily", 
+        indication: "Infantile Hypercalcemia", 
+        rationale: "Reduces calcium load; steroids used in severe cases." 
+      }
+    ],
+
+    lifestyle: ["Avoid Vitamin D supplements (worsens hypercalcemia).", "Music Therapy.", "Anesthesia precaution."],
+    
+    diet: {
+      eat: ["Standard healthy diet (post-infancy)"],
+      avoid: ["Vitamin D fortified foods (in infants)", "Excess Calcium"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.0 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "36%" },
+      progression: [{ day: 1, hb: "12.0 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "36%" }]
+    },
+    specialTests: [
+      { name: "FISH", result: "Elastin Gene Deleted", notes: "7q11.23" },
+      { name: "Echo", result: "Supravalvular AS", notes: "Gradient 40mmHg" }
+    ],
+    treatment: [
+      { day: 1, meds: ["BP Monitoring", "Cardiology Follow-up"] }
+    ]
+  },
+
+  "Wolf-Hirschhorn Syndrome (4p-)": {
+    category: "Genetic / Chromosomal",
+    pathophysiology: "Partial deletion of the short arm of Chromosome 4 (4p16.3). Haploinsufficiency of genes like WHSC1 and LETM1 leads to severe growth restriction, seizures, and defects.",
+    
+    clinicalFeatures: {
+      symptoms: ["Seizures (resistant)", "Severe failure to thrive", "Developmental delay"],
+      signs: ["Greek Warrior Helmet facies (Prominent glabella)", "Microcephaly", "Cleft Lip/Palate", "Hypotonia"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Chromosomal Microarray", finding: "4p16.3 Deletion", significance: "Diagnostic" },
+      { test: "EEG", finding: "High amplitude spikes", significance: "Seizure management" },
+      { test: "Renal Ultrasound", finding: "Structural anomalies", significance: "Screening" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Greek Warrior Helmet.", explanation: "Broad, prominent bridge of the nose continuing to the forehead, resembling ancient armor." },
+      { pearl: "Seizure Course.", explanation: "Seizures are severe in childhood but often improve with age." }
+    ],
+    
+    redFlags: ["Status Epilepticus", "Aspiration", "Recurrent Infections (IgA deficiency)", "Feeding failure"],
+    differentials: ["Cri-du-chat", "Angelman Syndrome", "Fetal Alcohol Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Sodium Valproate / Levetiracetam", 
+        class: "Anticonvulsant", 
+        dose: "Standard", 
+        freq: "BD", 
+        indication: "Seizures", 
+        rationale: "Broad spectrum coverage; often requires polytherapy." 
+      },
+      { 
+        drug: "Gastrostomy (PEG)", 
+        class: "Surgical", 
+        dose: "N/A", 
+        freq: "Continuous", 
+        indication: "Feeding Failure", 
+        rationale: "Ensures adequate nutrition due to severe hypotonia/clefts." 
+      }
+    ],
+
+    lifestyle: ["Seizure safety.", "Early intervention.", "Genetic counseling."],
+    
+    diet: {
+      eat: ["High calorie formula", "Thickened feeds"],
+      avoid: ["Choking hazards"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.0 g/dL", wbc: "6,000 /cmm", plt: "200,000 /cmm", hct: "33%" },
+      progression: [{ day: 1, hb: "11.0 g/dL", wbc: "6,000 /cmm", plt: "200,000 /cmm", hct: "33%" }]
+    },
+    specialTests: [
+      { name: "Microarray", result: "4p16.3 Loss", notes: "5Mb deletion" },
+      { name: "EEG", result: "Multifocal spikes", notes: "Epileptogenic" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Syr. Levetiracetam", "Feeding Therapy"] }
+    ]
+  },
+  "Scurvy (Vitamin C Deficiency)": {
+    category: "Nutritional / Vitamin",
+    pathophysiology: "Deficiency of Ascorbic Acid leads to defective collagen synthesis (impaired hydroxylation of proline/lysine), causing vessel wall fragility, poor wound healing, and connective tissue weakness.",
+    
+    clinicalFeatures: {
+      symptoms: ["Gum bleeding", "Easy bruising", "Fatigue", "Joint pain"],
+      signs: ["Perifollicular Hemorrhage (Pathognomonic)", "Corkscrew hairs", "Swollen/Spongy gums", "Hemarthrosis"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Plasma Ascorbic Acid", finding: "< 0.2 mg/dL", significance: "Diagnostic" },
+      { test: "X-ray Knees", finding: "White Line of Frankel / Wimberger's Ring", significance: "Radiological signs in children" },
+      { test: "CBC", finding: "Anemia", significance: "Due to bleeding + impaired iron absorption" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "The 4 H's.", explanation: "Hemorrhage, Hyperkeratosis, Hypochondriasis, Hematologic abnormalities." },
+      { pearl: "Iron Absorption.", explanation: "Vitamin C is crucial for absorbing non-heme iron (plant sources); deficiency often co-exists with Iron Deficiency Anemia." }
+    ],
+    
+    redFlags: ["Hemarthrosis", "Intracranial Hemorrhage", "Severe Anemia", "Poor wound healing (Dehiscence)"],
+    differentials: ["Vasculitis", "ITP", "Leukemia (Gum hypertrophy mimic)", "Meningococcemia"],
+
+    managementRationale: [
+      { 
+        drug: "Ascorbic Acid", 
+        class: "Vitamin C", 
+        dose: "100-300 mg", 
+        freq: "Daily x 1 month", 
+        indication: "Treatment", 
+        rationale: "Rapidly corrects deficiency. Spontaneous bleeding stops within 24h." 
+      }
+    ],
+
+    lifestyle: ["Smoking cessation (Smokers require higher Vit C).", "Avoid overcooking vegetables (heat destroys Vit C)."],
+    
+    diet: {
+      eat: ["Amla (Indian Gooseberry - Highest source)", "Guava", "Citrus fruits", "Sprouted pulses"],
+      avoid: ["Processed foods", "Boiling vegetables too long"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "10.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "30%" },
+      progression: [{ day: 1, hb: "10.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "30%" }]
+    },
+    specialTests: [
+      { name: "Vit C Level", result: "0.1 mg/dL", notes: "Severe Deficiency" },
+      { name: "Bleeding Time", result: "Prolonged", notes: "Vessel fragility" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Vitamin C 500mg OD", "Dietary changes"] }
+    ]
+  },
+
+  "Pellagra (Vitamin B3 Deficiency)": {
+    category: "Nutritional / Vitamin",
+    pathophysiology: "Deficiency of Niacin (Vitamin B3) or its precursor Tryptophan. Impairs NAD/NADP synthesis, affecting high-energy tissues (Skin, Gut, Brain).",
+    
+    clinicalFeatures: {
+      symptoms: ["The 4 D's: Dermatitis, Diarrhea, Dementia, Death (if untreated)", "Insomnia", "Glossitis"],
+      signs: ["Casal's Necklace (Photosensitive rash around neck)", "Gauntlet Dermatitis (Hands)", "Beefy red tongue"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Clinical Diagnosis", finding: "Symmetric photosensitive rash + Dementia", significance: "Gold Standard" },
+      { test: "Urine N-methylnicotinamide", finding: "Low levels", significance: "Biochemical confirmation" },
+      { test: "Serotonin Levels", finding: "Low", significance: "Tryptophan shunted away" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Casal's Necklace.", explanation: "Characteristic hyperpigmented rash on the dermatome of C3/C4 (neck) due to sun exposure." },
+      { pearl: "Maize Eaters.", explanation: "Common in populations relying on corn/maize (Jowar) as staple, as niacin in corn is bound (niacytin) and unavailable unless treated with lime." }
+    ],
+    
+    redFlags: ["Encephalopathy", "Severe blistering rash", "Intractable Diarrhea"],
+    differentials: ["Sunburn", "Lupus (SLE)", "Hartnup Disease", "Carcinoid Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Nicotinamide", 
+        class: "Vitamin B3", 
+        dose: "100-300 mg", 
+        freq: "Divided Doses", 
+        indication: "Active Pellagra", 
+        rationale: "Preferred over Nicotinic Acid (Niacin) to avoid flushing side effects." 
+      },
+      { 
+        drug: "B-Complex", 
+        class: "Multivitamin", 
+        dose: "1 tab", 
+        freq: "OD", 
+        indication: "Co-deficiencies", 
+        rationale: "Deficiencies rarely occur in isolation; B2 and B6 are needed for Niacin metabolism." 
+      }
+    ],
+
+    lifestyle: ["Sun protection during recovery.", "Avoid alcohol (inhibits absorption)."],
+    
+    diet: {
+      eat: ["Groundnuts (Peanuts) - rich source", "Milk/Eggs (Tryptophan source)", "Chicken"],
+      avoid: ["Maize/Sorghum as sole staple (unless nixtamalized)", "Alcohol"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.0 g/dL", wbc: "5,000 /cmm", plt: "200,000 /cmm", hct: "33%" },
+      progression: [{ day: 1, hb: "11.0 g/dL", wbc: "5,000 /cmm", plt: "200,000 /cmm", hct: "33%" }]
+    },
+    specialTests: [
+      { name: "Urinary NMN", result: "Low", notes: "Diagnostic" },
+      { name: "Mental Status", result: "Confused", notes: "Dementia aspect" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Nicotinamide 100mg TID", "B-Complex"] }
+    ]
+  },
+
+  "Thiamine Deficiency (Beriberi/Wernicke's)": {
+    category: "Nutritional / Vitamin",
+    pathophysiology: "Vitamin B1 deficiency impairs Pyruvate Dehydrogenase (Aerobic metabolism). Affects high-energy organs: Heart ('Wet' - High output failure) and Nerves ('Dry' - Neuropathy).",
+    
+    clinicalFeatures: {
+      symptoms: ["Wet: Dyspnea, Edema, Palpitations", "Dry: Numbness, Foot drop, Difficulty walking", "Wernicke's: Confusion"],
+      signs: ["Wet: Dilated Cardiomyopathy, S3", "Dry: Muscle wasting, Areflexia", "Wernicke's: Ataxia, Ophthalmoplegia"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Erythrocyte Transketolase Activity", finding: "Reduced (>15% increase with Thiamine)", significance: "Functional assay" },
+      { test: "Serum Thiamine", finding: "Low", significance: "Direct measure" },
+      { test: "Echocardiography", finding: "Dilated LV + High Output", significance: "Wet Beriberi" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Give Thiamine BEFORE Glucose.", explanation: "Glucose load increases thiamine demand. In depleted patients, giving glucose first precipitates Wernicke's Encephalopathy." },
+      { pearl: "Polished Rice.", explanation: "Common in populations consuming exclusively polished white rice where the B1-rich husk is removed." }
+    ],
+    
+    redFlags: ["Shoshin Beriberi (Fulminant cardiovascular collapse)", "Wernicke's Encephalopathy (Coma risk)", "Lactic Acidosis"],
+    differentials: ["Alcoholic Cardiomyopathy", "Diabetic Neuropathy", "Guillain-Barre Syndrome", "CHF"],
+
+    managementRationale: [
+      { 
+        drug: "Thiamine (Vit B1)", 
+        class: "Vitamin", 
+        dose: "100 mg (Wernicke's: 500mg)", 
+        freq: "IV/IM -> PO", 
+        indication: "Deficiency", 
+        rationale: "Parenteral route mandatory for cardiac/neuro symptoms due to poor gut absorption in deficiency." 
+      },
+      { 
+        drug: "Furosemide", 
+        class: "Diuretic", 
+        dose: "20 mg", 
+        freq: "IV", 
+        indication: "Wet Beriberi", 
+        rationale: "Cautious use for heart failure; Thiamine is the actual cure for the pump failure." 
+      }
+    ],
+
+    lifestyle: ["Alcohol cessation (Major cause).", "Parboiled rice consumption."],
+    
+    diet: {
+      eat: ["Unpolished/Brown Rice", "Whole wheat", "Pulses/Dal", "Nuts"],
+      avoid: ["Alcohol", "Raw fish/fermented tea (contain Thiaminases)", "Refined sugars"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "36%" },
+      progression: [{ day: 1, hb: "12.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "36%" }]
+    },
+    specialTests: [
+      { name: "Echo", result: "High Output Failure", notes: "Wet Beriberi" },
+      { name: "Transketolase", result: "Low", notes: "Thiamine Def" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Inj. Thiamine 100mg IV TID", "Dietary Correction"] }
+    ]
+  },
+
+  "Vitamin A Deficiency (Xerophthalmia)": {
+    category: "Nutritional / Vitamin",
+    pathophysiology: "Deficiency of Retinol impairs rhodopsin synthesis (Night Blindness) and causes squamous metaplasia of epithelia (Dry eye/skin), leading to corneal ulceration and blindness.",
+    
+    clinicalFeatures: {
+      symptoms: ["Night Blindness (Nyctalopia - earliest symptom)", "Dry eyes", "Poor growth"],
+      signs: ["Bitot's Spots (Foamy white spots on conjunctiva)", "Corneal Xerosis (Hazy/Dry)", "Keratomalacia (Melting cornea)", "Follicular Hyperkeratosis (Toad skin)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Serum Retinol", finding: "< 20 mcg/dL", significance: "Confirmation" },
+      { test: "Dark Adaptation Test", finding: "Prolonged", significance: "Functional test for night blindness" },
+      { test: "Impression Cytology", finding: "Loss of goblet cells", significance: "Conjunctival metaplasia" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Bitot's Spots.", explanation: "Triangular, foamy, keratinized lesions on the temporal conjunctiva; specific for Vitamin A deficiency." },
+      { pearl: "Measles Mortality.", explanation: "Vit A deficiency increases Measles severity; WHO recommends high dose Vit A for all children with Measles." }
+    ],
+    
+    redFlags: ["Corneal Ulceration", "Keratomalacia (Permanent Blindness)", "Measles Co-infection"],
+    differentials: ["Retinitis Pigmentosa (Night blindness)", "Dry Eye Syndrome", "Trachoma"],
+
+    managementRationale: [
+      { 
+        drug: "Vitamin A (Retinol)", 
+        class: "Vitamin", 
+        dose: "100,000 - 200,000 IU", 
+        freq: "Day 0, 1, and 14", 
+        indication: "Active Xerophthalmia", 
+        rationale: "WHO Schedule: Massive doses required to replenish liver stores rapidly." 
+      },
+      { 
+        drug: "Artificial Tears", 
+        class: "Lubricant", 
+        dose: "q2h", 
+        freq: "PRN", 
+        indication: "Xerosis", 
+        rationale: "Symptomatic relief for dry eyes." 
+      },
+      { 
+        drug: "Antibiotic Eye Ointment", 
+        class: "Antimicrobial", 
+        dose: "Topical", 
+        freq: "BD", 
+        indication: "Corneal Ulcer", 
+        rationale: "Prevents secondary bacterial infection in compromised cornea." 
+      }
+    ],
+
+    lifestyle: ["National Prophylaxis Program (India: 9 doses from 9 months to 5 years).", "Cooking with oil (Fat soluble)."],
+    
+    diet: {
+      eat: ["Carrots/Papaya (Beta-carotene)", "Drumstick leaves (Moringa)", "Liver/Egg yolk (Retinol)", "Mango"],
+      avoid: ["Low fat diet (impedes absorption)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "33%" },
+      progression: [{ day: 1, hb: "11.0 g/dL", wbc: "6,000 /cmm", plt: "33,000 /cmm", hct: "33%" }]
+    },
+    specialTests: [
+      { name: "Serum Retinol", result: "10 mcg/dL", notes: "Deficient" },
+      { name: "Eye Exam", result: "Bitot's Spots", notes: "Stage X1B" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Cap. Vitamin A 200,000 IU", "Eye Lubricants"] }
+    ]
+  },
+
+  "Vitamin K Deficiency": {
+    category: "Hematology / Nutritional",
+    pathophysiology: "Lack of Vitamin K prevents Gamma-Carboxylation of Factors II, VII, IX, X, Protein C, and S. Causes inability to bind calcium and form clots.",
+    
+    clinicalFeatures: {
+      symptoms: ["Easy bruising", "Nose bleeds", "Melena/Hematemesis"],
+      signs: ["Ecchymoses", "Hemarthrosis (rare)", "Hemorrhagic Disease of Newborn (Bleeding from umbilical stump)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Prothrombin Time (PT/INR)", finding: "Prolonged", significance: "Factor VII has shortest half-life; first to rise" },
+      { test: "APTT", finding: "Prolonged (Mild)", significance: "Affects IX and X (Common pathway)" },
+      { test: "Mixing Study", finding: "Corrects", significance: "Indicates factor deficiency, not inhibitor" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Antibiotic Induced.", explanation: "Gut flora produces Vit K2. Long term broad-spectrum antibiotics (e.g., Cephalosporins) wipe out flora, causing deficiency." },
+      { pearl: "Warfarin Reversal.", explanation: "Warfarin works by inducing functional Vit K deficiency. Reversal is achieved by giving Vit K1." }
+    ],
+    
+    redFlags: ["Intracranial Hemorrhage (Newborns)", "GI Bleeding", "INR > 9 (Spontaneous bleed risk)"],
+    differentials: ["Liver Failure (Factors not produced)", "DIC (Factors consumed)", "Hemophilia", "Rat Poison (Superwarfarin)"],
+
+    managementRationale: [
+      { 
+        drug: "Phytomenadione (Vit K1)", 
+        class: "Vitamin", 
+        dose: "1-10 mg", 
+        freq: "PO/SC/IV", 
+        indication: "High INR / Bleeding", 
+        rationale: "IV acts fastest (6-8h). Oral takes 24h. Anaphylaxis risk with rapid IV push." 
+      },
+      { 
+        drug: "Fresh Frozen Plasma (FFP)", 
+        class: "Blood Product", 
+        dose: "15 ml/kg", 
+        freq: "Stat", 
+        indication: "Active Life-Threatening Bleed", 
+        rationale: "Immediate replacement of factors (Vit K takes time to work)." 
+      }
+    ],
+
+    lifestyle: ["Newborn Prophylaxis (1mg IM at birth).", "Monitor INR if on Warfarin."],
+    
+    diet: {
+      eat: ["Green Leafy Vegetables (Spinach, Methi, Sarson)", "Broccoli", "Soybean oil"],
+      avoid: ["Inconsistent intake if on Warfarin (Keep K intake stable)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.0 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "36%" },
+      progression: [{ day: 1, hb: "12.0 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "36%" }]
+    },
+    specialTests: [
+      { name: "INR", result: "6.5", notes: "Critical High" },
+      { name: "Liver Function", result: "Normal", notes: "Excludes hepatic failure" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Inj. Vitamin K1 10mg IV", "Stop Warfarin"] }
+    ]
+  },
+
+  "Vitamin E Deficiency": {
+    category: "Neurology / Nutritional",
+    pathophysiology: "Deficiency of Alpha-Tocopherol (Antioxidant) leads to oxidative damage of axons (posterior column/spinocerebellar) and red blood cell membranes.",
+    
+    clinicalFeatures: {
+      symptoms: ["Unsteadiness (Ataxia)", "Muscle weakness", "Vision changes"],
+      signs: ["Areflexia (Absent reflexes)", "Loss of vibration/proprioception", "Ophthalmoplegia", "Hemolytic Anemia (preemies)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Serum Alpha-Tocopherol", finding: "Low (<5 mcg/mL)", significance: "Diagnostic" },
+      { test: "Peripheral Smear", finding: "Acanthocytes", significance: "RBC membrane damage" },
+      { test: "Lipid Profile", finding: "Very Low (Abetalipoproteinemia)", significance: "Cause of malabsorption" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Friedreich's Ataxia Mimic.", explanation: "Vitamin E deficiency presents with nearly identical neurological signs (Ataxia + Areflexia + Proprioception loss)." },
+      { pearl: "Fat Malabsorption.", explanation: "Almost never dietary. Usually due to Cystic Fibrosis, Cholestasis, or Abetalipoproteinemia." }
+    ],
+    
+    redFlags: ["Retinitis Pigmentosa", "Progressive Ataxia", "Cardiomyopathy"],
+    differentials: ["Friedreich's Ataxia", "Vitamin B12 Deficiency (CD + Periph neuropathy)", "Tabes Dorsalis"],
+
+    managementRationale: [
+      { 
+        drug: "Alpha-Tocopherol", 
+        class: "Vitamin E", 
+        dose: "800-1200 IU", 
+        freq: "Daily", 
+        indication: "Neurological Symptoms", 
+        rationale: "High doses required to penetrate CNS and arrest progression." 
+      },
+      { 
+        drug: "Water-soluble Vitamin E", 
+        class: "Formulation", 
+        dose: "Standard", 
+        freq: "Daily", 
+        indication: "Cholestasis / Fat Malabsorption", 
+        rationale: "TPGS form enables absorption without bile salts." 
+      }
+    ],
+
+    lifestyle: ["Gait training.", "Fall prevention."],
+    
+    diet: {
+      eat: ["Almonds/Walnuts", "Sunflower Seeds", "Wheat Germ Oil", "Vegetable oils"],
+      avoid: ["Low fat diet (worsens absorption)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.0 g/dL", wbc: "6,000 /cmm", plt: "200,000 /cmm", hct: "33%" },
+      progression: [{ day: 1, hb: "11.0 g/dL", wbc: "6,000 /cmm", plt: "200,000 /cmm", hct: "33%" }]
+    },
+    specialTests: [
+      { name: "Vit E Level", result: "2 mcg/mL", notes: "Deficient" },
+      { name: "Reflexes", result: "Absent", notes: "Neuropathy" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Cap. Vitamin E 400 IU TID"] }
+    ]
+  },
+
+  "Riboflavin Deficiency (Ariboflavinosis)": {
+    category: "Nutritional / Vitamin",
+    pathophysiology: "Deficiency of Vitamin B2 (Precursor for FAD/FMN coenzymes). Impairs redox reactions, affecting mucocutaneous tissue and cornea.",
+    
+    clinicalFeatures: {
+      symptoms: ["Sore throat", "Cracks at mouth corners", "Eye irritation"],
+      signs: ["Cheilitis/Angular Stomatitis", "Magenta Tongue (Glossitis)", "Corneal Neovascularization", "Seborrheic Dermatitis"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Erythrocyte Glutathione Reductase", finding: "Activity coefficient > 1.4", significance: "Functional assay" },
+      { test: "Clinical Exam", finding: "Angular Stomatitis + Magenta Tongue", significance: "Classic presentation" },
+      { test: "Slit Lamp Exam", finding: "Corneal vascularization", significance: "Ocular sign" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Magenta Tongue.", explanation: "Distinct from the 'Beefy Red' tongue of B12/Niacin deficiency; B2 deficiency causes a purplish-red hue." },
+      { pearl: "Scrotal Dermatitis.", explanation: "Often overlooked sign; 'Oro-Oculo-Genital' syndrome." }
+    ],
+    
+    redFlags: ["Cataracts", "Severe Photophobia", "Anemia (Normocytic - B2 aids iron absorption)"],
+    differentials: ["Candidiasis (Angular cheilitis)", "Iron Deficiency", "Syphilis", "Other B-vitamin deficiencies"],
+
+    managementRationale: [
+      { 
+        drug: "Riboflavin", 
+        class: "Vitamin B2", 
+        dose: "10-20 mg", 
+        freq: "Daily", 
+        indication: "Deficiency", 
+        rationale: "Rapidly resolves mucocutaneous lesions." 
+      },
+      { 
+        drug: "B-Complex", 
+        class: "Multivitamin", 
+        dose: "1 tab", 
+        freq: "OD", 
+        indication: "Co-deficiency", 
+        rationale: "Always treat with other B vitamins." 
+      }
+    ],
+
+    lifestyle: ["Avoid sun exposure to medications (Riboflavin is photosensitive)."],
+    
+    diet: {
+      eat: ["Milk/Dairy (Best source)", "Eggs", "Green leafy vegetables", "Liver"],
+      avoid: ["Alcohol (Interferes with absorption)", "Glass bottles for milk (Light destroys B2)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "35%" },
+      progression: [{ day: 1, hb: "11.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "35%" }]
+    },
+    specialTests: [
+      { name: "Clinical", result: "Angular Cheilitis", notes: "Bilateral" },
+      { name: "Glutathione Reductase", result: "Low Activity", notes: "B2 dependent" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Riboflavin 10mg BD", "Dietary Milk"] }
+    ]
+  },
+
+  "Pyridoxine Deficiency (Vitamin B6)": {
+    category: "Nutritional / Vitamin",
+    pathophysiology: "Deficiency of Pyridoxal Phosphate (PLP), a cofactor for >100 enzymes (Transaminases, Neurotransmitter synthesis, Heme synthesis). Causes neuropathy and anemia.",
+    
+    clinicalFeatures: {
+      symptoms: ["Numbness/Tingling", "Depression/Confusion", "Sore tongue"],
+      signs: ["Peripheral Neuropathy", "Sideroblastic Anemia", "Glossitis", "Seizures (in infants)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Plasma PLP", finding: "Low", significance: "Direct measure" },
+      { test: "Peripheral Smear", finding: "Dimorphic anemia + Pappenheimer bodies", significance: "Sideroblastic picture" },
+      { test: "Homocysteine", finding: "Elevated", significance: "Metabolic block" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Isoniazid (INH).", explanation: "INH binds B6; Peripheral neuropathy is a classic side effect. ALWAYS co-prescribe B6 (10-25mg) with INH therapy." },
+      { pearl: "Sideroblastic Anemia.", explanation: "B6 is needed for ALA-Synthase (Heme synthesis). Deficiency leads to iron accumulation in mitochondria (Ring Sideroblasts)." }
+    ],
+    
+    redFlags: ["Intractable Seizures (infants)", "Severe Neuropathy", "Microcytic Anemia refractory to Iron"],
+    differentials: ["Iron Deficiency Anemia", "Lead Poisoning", "Diabetic Neuropathy"],
+
+    managementRationale: [
+      { 
+        drug: "Pyridoxine", 
+        class: "Vitamin B6", 
+        dose: "50-100 mg", 
+        freq: "OD", 
+        indication: "Deficiency / INH Toxicity", 
+        rationale: "Corrects metabolic defects. High doses (gram quantities) needed for acute INH overdose seizures." 
+      },
+      { 
+        drug: "B-Complex", 
+        class: "Multivitamin", 
+        dose: "Standard", 
+        freq: "OD", 
+        indication: "General Health", 
+        rationale: "Maintains balance of other B vitamins." 
+      }
+    ],
+
+    lifestyle: ["Monitor if on Isoniazid, Penicillamine, or Levodopa.", "Avoid mega-doses (>500mg) as B6 itself causes neuropathy."],
+    
+    diet: {
+      eat: ["Chickpeas (Chana)", "Bananas", "Potatoes", "Chicken"],
+      avoid: ["Alcohol", "Overcooking (Heat sensitive)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "9.0 g/dL", wbc: "5,000 /cmm", plt: "200,000 /cmm", hct: "28%" },
+      progression: [{ day: 1, hb: "9.0 g/dL", wbc: "5,000 /cmm", plt: "200,000 /cmm", hct: "28%" }]
+    },
+    specialTests: [
+      { name: "Bone Marrow", result: "Ring Sideroblasts", notes: "Iron stain positive" },
+      { name: "Homocysteine", result: "High", notes: "B6 dependent" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Pyridoxine 100mg OD", "Review INH dose"] }
+    ]
   }
 };

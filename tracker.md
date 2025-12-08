@@ -397,3 +397,46 @@ Batch 31 (Bonus/Remaining)
 [ ] 156. Malaria (Complicated)
 
 [ ] 157. Tetanus
+
+Down Syndrome
+
+Turner Syndrome
+
+Klinefelter Syndrome
+
+Chronic Myeloid Leukemia (CML) (Ph Chromosome)
+
+Prader-Willi Syndrome
+
+
+Edward's (Trisomy 18)
+
+Patau (Trisomy 13)
+
+Cri-du-chat (5p-)
+
+Fragile X (FMR1)
+
+Angelman (15q-)
+
+DiGeorge (22q11)
+
+Williams Syndrome (7q11)
+
+Wolf-Hirschhorn (4p-)
+
+Scurvy (C)
+
+Pellagra (B3)
+
+Beriberi (B1)
+
+Vitamin A Deficiency
+
+Vitamin K Deficiency
+
+Vitamin E Deficiency (rare, ataxia)
+
+Riboflavin Deficiency (B2 - Cheilitis)
+
+Pyridoxine Deficiency (B6)
