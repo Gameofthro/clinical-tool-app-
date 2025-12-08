@@ -397,7 +397,7 @@ Batch 31 (Bonus/Remaining)
 [ ] 156. Malaria (Complicated)
 
 [ ] 157. Tetanus
-
+batch 32
 Down Syndrome
 
 Turner Syndrome
@@ -425,6 +425,7 @@ Williams Syndrome (7q11)
 
 Wolf-Hirschhorn (4p-)
 
+
 Scurvy (C)
 
 Pellagra (B3)
@@ -440,3 +441,70 @@ Vitamin E Deficiency (rare, ataxia)
 Riboflavin Deficiency (B2 - Cheilitis)
 
 Pyridoxine Deficiency (B6)
+
+Batch 36: Protozoa & Tissue Parasites
+
+Amebiasis (Amebic Dysentery/Liver Abscess):
+
+Visceral Leishmaniasis (Kala-Azar):
+
+Giardiasis:
+
+Toxoplasmosis:
+
+Trichomoniasis:
+
+Batch 37: Helminths (Worm Infestations)
+Neurocysticercosis (NCC)
+
+Hydatid Disease
+
+Ascariasis (Roundworm)
+
+Hookworm Infection
+
+Enterobiasis (Pinworm)
+
+Batch 38: Movement & Neurodegenerative Disorders
+Amyotrophic Lateral Sclerosis (ALS)
+
+Huntington's Disease
+
+Wilson's Disease
+
+Essential Tremor:
+
+Restless Legs Syndrome (Willis-Ekbom)
+
+Batch 39: Cranial Nerves, Pain & Headache
+Trigeminal Neuralgia
+
+Bell's Palsy
+
+Cluster Headache
+
+Idiopathic Intracranial Hypertension (Pseudotumor Cerebri): 
+
+Meniere's Disease: 
+
+Batch 40: Autoimmune & Sleep Neurology
+Neuromyelitis Optica (NMO / Devic's)
+
+Lambert-Eaton Myasthenic Syndrome (LEMS)
+
+Narcolepsy
+
+Transverse Myelitis
+
+Tourette Syndrome
+
+Batch 41: Pediatric, Structural & Infection
+Spinal Muscular Atrophy (SMA)
+
+Cerebral Palsy
+
+Brain Abscess
+
+Rabies
+
+Normal Pressure Hydrocephalus (NPH)

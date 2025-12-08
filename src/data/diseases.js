@@ -12747,5 +12747,2474 @@ export const diseaseDatabase = {
     treatment: [
       { day: 1, meds: ["Tab. Pyridoxine 100mg OD", "Review INH dose"] }
     ]
+  },
+  "Glaucoma (POAG/PACG)": {
+    category: "Ophthalmology",
+    pathophysiology: "Optic neuropathy characterized by progressive retinal ganglion cell death and visual field loss, usually associated with elevated Intraocular Pressure (IOP). Primary Open Angle (POAG) is chronic/insidious; Primary Angle Closure (PACG) is acute blockage of aqueous outflow.",
+    
+    clinicalFeatures: {
+      symptoms: ["POAG: Peripheral vision loss (Tunnel vision)", "PACG: Severe eye pain, Halos around lights, Nausea"],
+      signs: ["Elevated IOP (>21 mmHg)", "Optic Disc Cupping (Cup:Disc ratio > 0.5)", "Corneal Edema (Steamy cornea in Acute PACG)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Tonometry", finding: "High IOP", significance: "Screening (>21 mmHg is risk factor, not definition)" },
+      { test: "Gonioscopy", finding: "Open vs Closed Angle", significance: "Gold Standard Classification" },
+      { test: "Perimetry", finding: "Visual Field Defects", significance: "Functional assessment of damage" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Silent Thief.", explanation: "POAG is asymptomatic until significant vision is lost. Regular screening >40y is crucial." },
+      { pearl: "Steroid Responders.", explanation: "Systemic or topical corticosteroids can raise IOP significantly in susceptible individuals, mimicking POAG." }
+    ],
+    
+    redFlags: ["Acute Red Eye + Fixed Mid-dilated Pupil (Acute Angle Closure)", "IOP > 40 mmHg", "Sudden vision loss"],
+    differentials: ["Ocular Hypertension", "Secondary Glaucoma (Trauma/Steroid)", "Migraine (Halos mimic)", "Optic Neuritis"],
+
+    managementRationale: [
+      { 
+        drug: "Latanoprost", 
+        class: "Prostaglandin Analog", 
+        dose: "1 drop", 
+        freq: "OD (Night)", 
+        indication: "First-line POAG", 
+        rationale: "Increases uveoscleral outflow. Most potent IOP lowering effect with once-daily dosing." 
+      },
+      { 
+        drug: "Timolol", 
+        class: "Beta Blocker", 
+        dose: "0.5% Drop", 
+        freq: "BD", 
+        indication: "Adjunct", 
+        rationale: "Decreases aqueous humor production. Caution in asthma/bradycardia (systemic absorption)." 
+      },
+      { 
+        drug: "Acetazolamide", 
+        class: "Carbonic Anhydrase Inhibitor", 
+        dose: "250-500 mg", 
+        freq: "Stat / QID", 
+        indication: "Acute Angle Closure", 
+        rationale: "Systemic CAI rapidly reduces aqueous production in emergency. Follow with Laser Iridotomy." 
+      }
+    ],
+
+    lifestyle: ["Avoid Valsalva maneuvers (heavy lifting).", "Sleep with head elevated.", "Control Diabetes/HTN."],
+    
+    diet: {
+      eat: ["Green leafy vegetables (Nitrates)", "Antioxidants (Berries)"],
+      avoid: ["Excess Caffeine (Transient IOP spike)", "Drinking large volume fluid rapidly"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "N", wbc: "N", plt: "N", hct: "N" },
+      progression: [{ day: 1, hb: "N", wbc: "N", plt: "N", hct: "N" }]
+    },
+    specialTests: [
+      { name: "Tonometry", result: "28 mmHg", notes: "High" },
+      { name: "Cup:Disc Ratio", result: "0.7", notes: "Glaucomatous cupping" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Gtt. Latanoprost HS", "Gtt. Timolol BD"] }
+    ]
+  },
+
+  "Conjunctivitis (Pink Eye)": {
+    category: "Ophthalmology / Infectious Disease",
+    pathophysiology: "Inflammation of the conjunctiva caused by Viruses (Adenovirus), Bacteria (Staph/Strep), or Allergens (Pollen), leading to vasodilation (redness) and discharge.",
+    
+    clinicalFeatures: {
+      symptoms: ["Redness", "Grittiness/Foreign body sensation", "Discharge (Watery vs Purulent)", "Itching (Allergic)"],
+      signs: ["Conjunctival Injection", "Follicles (Viral) vs Papillae (Allergic/Bacterial)", "Preauricular Lymphadenopathy (Viral)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Clinical Diagnosis", finding: "Discharge type", significance: "Purulent=Bacterial, Watery=Viral, Stringy/Mucoid=Allergic" },
+      { test: "Conjunctival Swab", finding: "Organism", significance: "Only for severe/recurrent cases or neonates" },
+      { test: "Visual Acuity", finding: "Normal", significance: "Rules out corneal involvement (Keratitis)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Viral is predominant.", explanation: "Most cases are viral (Adenovirus) and self-limiting. Antibiotics are often overprescribed." },
+      { pearl: "Contact Lens Wearers.", explanation: "Red eye in CL wearer is Pseudomonas Keratitis until proven otherwise; requires Fluoroquinolone drops." }
+    ],
+    
+    redFlags: ["Pain/Photophobia (Keratitis/Uveitis)", "Reduced Vision", "Hypopyon (Pus in anterior chamber)", "Ciliary Flush"],
+    differentials: ["Uveitis", "Acute Glaucoma", "Keratitis (Corneal Ulcer)", "Scleritis"],
+
+    managementRationale: [
+      { 
+        drug: "Moxifloxacin", 
+        class: "Fluoroquinolone", 
+        dose: "0.5% Drop", 
+        freq: "TID x 5-7 days", 
+        indication: "Bacterial Conjunctivitis", 
+        rationale: "Broad spectrum, preservative-free options available. DOC for contact lens wearers." 
+      },
+      { 
+        drug: "Olopatadine", 
+        class: "Mast Cell Stabilizer/Antihistamine", 
+        dose: "0.1% Drop", 
+        freq: "BD", 
+        indication: "Allergic Conjunctivitis", 
+        rationale: "Dual action provides rapid itch relief and long-term control." 
+      },
+      { 
+        drug: "Artificial Tears", 
+        class: "Lubricant", 
+        dose: "Q4H", 
+        freq: "PRN", 
+        indication: "Viral Conjunctivitis", 
+        rationale: "Symptomatic relief. No specific antiviral exists for Adenovirus." 
+      }
+    ],
+
+    lifestyle: ["Hygiene (Separate towels).", "No Contact Lenses until resolved.", "Cold compresses (Allergic/Viral)."],
+    
+    diet: {
+      eat: ["Vitamin A rich foods (Corneal health)"],
+      avoid: ["Allergens (if known)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "N", wbc: "N", plt: "N", hct: "N" },
+      progression: [{ day: 1, hb: "N", wbc: "N", plt: "N", hct: "N" }]
+    },
+    specialTests: [
+      { name: "Swab", result: "Adenovirus", notes: "Self-limiting" },
+      { name: "Fluorescein Stain", result: "Negative", notes: "No corneal ulcer" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Lubricating Drops", "Cold Compress"] }
+    ]
+  },
+
+  "Age-Related Macular Degeneration (AMD)": {
+    category: "Ophthalmology / Geriatrics",
+    pathophysiology: "Degenerative disease of the macula (central retina). 'Dry' (85%): Drusen accumulation and RPE atrophy. 'Wet' (15%): Choroidal Neovascularization (CNV) causing leakage/bleeding and rapid vision loss.",
+    
+    clinicalFeatures: {
+      symptoms: ["Central vision loss (scotoma)", "Metamorphopsia (Straight lines look wavy)", "Difficulty reading"],
+      signs: ["Drusen (yellow deposits)", "Macular hemorrhage/edema (Wet)", "Geographic Atrophy (Advanced Dry)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Amsler Grid", finding: "Distortion/Wavy lines", significance: "Home monitoring tool" },
+      { test: "OCT (Optical Coherence Tomography)", finding: "Subretinal fluid/Drusen", significance: "Gold Standard for diagnosis and monitoring response" },
+      { test: "Fluorescein Angiography", finding: "Leaking vessels", significance: "Confirms CNV in Wet AMD" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Wet is Urgent.", explanation: "Conversion from Dry to Wet can happen suddenly. Any new distortion requires immediate Anti-VEGF to save vision." },
+      { pearl: "AREDS2.", explanation: "Specific supplement formula (Vit C, E, Zinc, Copper, Lutein, Zeaxanthin) slows progression of intermediate Dry AMD." }
+    ],
+    
+    redFlags: ["Sudden central scotoma", "Macular Hemorrhage", "Rapid drop in acuity"],
+    differentials: ["Diabetic Macular Edema", "Macular Hole", "Central Serous Chorioretinopathy", "Epiretinal Membrane"],
+
+    managementRationale: [
+      { 
+        drug: "Ranibizumab / Bevacizumab", 
+        class: "Anti-VEGF Monoclonal Ab", 
+        dose: "0.5 mg / 1.25 mg", 
+        freq: "Intravitreal Monthly", 
+        indication: "Wet AMD", 
+        rationale: "Inhibits angiogenesis and reduces vascular permeability, drying the macula." 
+      },
+      { 
+        drug: "Aflibercept", 
+        class: "VEGF Trap", 
+        dose: "2 mg", 
+        freq: "Intravitreal q8 weeks", 
+        indication: "Wet AMD", 
+        rationale: "Binds VEGF-A, VEGF-B, and PlGF; longer duration of action." 
+      },
+      { 
+        drug: "AREDS2 Formula", 
+        class: "Antioxidant Supplement", 
+        dose: "1 cap", 
+        freq: "BD", 
+        indication: "Dry AMD (Intermediate)", 
+        rationale: "Reduces risk of progression to advanced AMD by 25%. Beta-carotene removed to safer for smokers." 
+      }
+    ],
+
+    lifestyle: ["Smoking cessation (Strongest modifiable risk factor).", "UV protection (Sunglasses).", "Low vision aids."],
+    
+    diet: {
+      eat: ["Leafy Greens (Lutein/Zeaxanthin)", "Fatty Fish (Omega-3)", "Eggs"],
+      avoid: ["Smoking (Oxidative stress)", "High Glycemic Index foods"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "N", wbc: "N", plt: "N", hct: "N" },
+      progression: [{ day: 1, hb: "N", wbc: "N", plt: "N", hct: "N" }]
+    },
+    specialTests: [
+      { name: "OCT Macula", result: "Subretinal Fluid", notes: "Wet AMD Active" },
+      { name: "Visual Acuity", result: "6/60", notes: "Central loss" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Intravitreal Anti-VEGF Injection", "AREDS2 Caps"] }
+    ]
+  },
+
+  "Diabetic Retinopathy": {
+    category: "Ophthalmology / Endocrine",
+    pathophysiology: "Microvascular complication of chronic hyperglycemia causing pericyte loss, capillary occlusion (ischemia), and VEGF upregulation (neovascularization). Classified into Non-Proliferative (NPDR) and Proliferative (PDR).",
+    
+    clinicalFeatures: {
+      symptoms: ["Floaters (Vitreous hemorrhage)", "Blurry vision (Macular edema)", "Sudden vision loss"],
+      signs: ["Microaneurysms (Dot/Blot hemorrhages)", "Hard Exudates", "Cotton Wool Spots", "Neovascularization (PDR)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Dilated Fundoscopy", finding: "Classic retinal signs", significance: "Screening Standard" },
+      { test: "OCT Macula", finding: "Cystoid Macular Edema", significance: "Quantifies edema (CSME)" },
+      { test: "Fluorescein Angiography", finding: "Capillary dropout / Leakage", significance: "Guides laser therapy" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Paradoxical Worsening.", explanation: "Rapid correction of HbA1c can temporarily worsen retinopathy ('Early worsening'). Control should be gradual." },
+      { pearl: "Macular Edema.", explanation: "The most common cause of vision loss in diabetics, can occur at ANY stage (NPDR or PDR)." }
+    ],
+    
+    redFlags: ["Vitreous Hemorrhage", "Tractional Retinal Detachment", "Neovascular Glaucoma (Rubeosis Iridis)", "Sudden vision loss"],
+    differentials: ["Hypertensive Retinopathy", "Central Retinal Vein Occlusion (CRVO)", "Radiation Retinopathy"],
+
+    managementRationale: [
+      { 
+        drug: "Ranibizumab", 
+        class: "Anti-VEGF", 
+        dose: "0.3 mg", 
+        freq: "Intravitreal", 
+        indication: "Diabetic Macular Edema (DME)", 
+        rationale: "First-line for center-involving edema with vision loss. Restores blood-retinal barrier." 
+      },
+      { 
+        drug: "Dexamethasone Implant (Ozurdex)", 
+        class: "Corticosteroid", 
+        dose: "0.7 mg", 
+        freq: "Intravitreal q4-6 months", 
+        indication: "Persistent DME", 
+        rationale: "Sustained release steroid for cases resistant to Anti-VEGF or post-vitrectomized eyes." 
+      },
+      { 
+        drug: "Pan-Retinal Photocoagulation (PRP)", 
+        class: "Laser Surgery", 
+        dose: "N/A", 
+        freq: "Sessions", 
+        indication: "Proliferative DR (PDR)", 
+        rationale: "Sacrifices peripheral retina to reduce oxygen demand and VEGF drive, regressing new vessels." 
+      }
+    ],
+
+    lifestyle: ["Strict Glycemic Control (HbA1c < 7%).", "BP Control (<130/80).", "Annual Eye Exam."],
+    
+    diet: {
+      eat: ["Low GI foods (Jamun/Karela)", "Fiber"],
+      avoid: ["Simple sugars", "High Sodium (worsens edema)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.0 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "36%" },
+      progression: [{ day: 1, hb: "12.0 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "36%" }]
+    },
+    specialTests: [
+      { name: "HbA1c", result: "9.5%", notes: "Poor control" },
+      { name: "Fundoscopy", result: "New Vessels Disc (NVD)", notes: "High Risk PDR" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Intravitreal Anti-VEGF", "Laser PRP planning"] }
+    ]
+  },
+
+  "Uveitis": {
+    category: "Ophthalmology / Autoimmune",
+    pathophysiology: "Inflammation of the uveal tract (Iris, Ciliary Body, Choroid). Can be Infectious, Autoimmune (HLA-B27), or Idiopathic. Classified anatomically: Anterior (Iritis), Intermediate (Pars Planitis), Posterior (Choroiditis), or Panuveitis.",
+    
+    clinicalFeatures: {
+      symptoms: ["Anterior: Pain, Photophobia, Redness", "Posterior: Floaters, Blurred vision (Painless)"],
+      signs: ["Anterior: Ciliary Flush, Cells/Flare in AC, Hypopyon, Miosis", "Posterior: Retinal/Choroidal lesions, Vitritis"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Slit Lamp Exam", finding: "Keratic Precipitates (KP)", significance: "Granulomatous (Mutton fat) vs Non-granulomatous (Fine)" },
+      { test: "HLA-B27", finding: "Positive", significance: "Strong association with Ankylosing Spondylitis/Reiter's" },
+      { test: "Chest X-ray / Mantoux", finding: "Abnormal", significance: "Screening for Sarcoidosis/TB (Common causes in India)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Major Difference.", explanation: "Anterior Uveitis (Iritis) is PAINFUL and Red. Posterior Uveitis is PAINLESS and presents with visual changes/floaters." },
+      { pearl: "Synechiae.", explanation: "Inflamed iris sticks to the lens (Posterior Synechiae), causing irregular pupil and glaucoma. Cycloplegics prevent this." }
+    ],
+    
+    redFlags: ["Hypopyon (Behcet's/HLA-B27)", "High IOP (Uveitic Glaucoma)", "Retinal Detachment", "Macular Edema"],
+    differentials: ["Conjunctivitis (No pain/photophobia)", "Acute Glaucoma", "Keratitis", "Endophthalmitis"],
+
+    managementRationale: [
+      { 
+        drug: "Prednisolone Acetate", 
+        class: "Corticosteroid", 
+        dose: "1% Drop", 
+        freq: "Hourly (Acute) -> Taper", 
+        indication: "Anterior Uveitis", 
+        rationale: "Aggressive topical suppression of inflammation. Shake bottle well (suspension)." 
+      },
+      { 
+        drug: "Atropine / Cyclopentolate", 
+        class: "Cycloplegic", 
+        dose: "1% Drop", 
+        freq: "BD/TID", 
+        indication: "Anterior Uveitis", 
+        rationale: "Dilates pupil to prevent Synechiae and relaxes ciliary muscle to relieve pain/spasm." 
+      },
+      { 
+        drug: "Methotrexate / Azathioprine", 
+        class: "Immunosuppressant", 
+        dose: "Systemic", 
+        freq: "Maintenance", 
+        indication: "Posterior / Chronic Uveitis", 
+        rationale: "Steroid-sparing agents required for vision-threatening posterior involvement." 
+      }
+    ],
+
+    lifestyle: ["Dark glasses (Photophobia).", "Screening for systemic disease (AS, Sarcoid).", "Rheumatology referral."],
+    
+    diet: {
+      eat: ["Anti-inflammatory diet (Turmeric/Ginger)", "Vitamin C/E"],
+      avoid: ["Pro-inflammatory foods (Sugar/processed)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "Slit Lamp", result: "Cells 4+, Flare 3+", notes: "Severe Anterior Uveitis" },
+      { name: "HLA-B27", result: "Positive", notes: "Associated" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Gtt. Prednisolone 1% Hourly", "Gtt. Atropine 1% BD"] }
+    ]
+  },
+  "Amebiasis (Amebic Dysentery/Liver Abscess)": {
+    category: "Infectious Disease / Parasitology",
+    pathophysiology: "Infection by Entamoeba histolytica protozoa. Trophozoites invade colonic mucosa causing 'flask-shaped ulcers' (Dysentery) or travel via portal circulation to form liver abscesses containing 'anchovy sauce' pus.",
+    
+    clinicalFeatures: {
+      symptoms: ["Bloody mucoid diarrhea", "Right Upper Quadrant pain (Liver Abscess)", "Tenesmus", "Fever"],
+      signs: ["Hepatomegaly (Tender)", "Abdominal tenderness", "Weight loss"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Stool Microscopy", finding: "Trophozoites with ingested RBCs", significance: "Pathognomonic (distinguishes from non-pathogenic E. dispar)" },
+      { test: "Ultrasound Liver", finding: "Hypoechoic solitary lesion", significance: "Liver Abscess diagnosis" },
+      { test: "Stool Antigen", finding: "Positive", significance: "High sensitivity" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Double Hit Therapy.", explanation: "Metronidazole kills tissue amoebas but not cysts in the gut lumen. Always follow with a luminal agent (Diloxanide/Paromomycin) to prevent carrier state." },
+      { pearl: "Anchovy Sauce.", explanation: "Aspiration of liver abscess yields odorless, chocolate-colored pus (necrotic hepatocytes), not true pus." }
+    ],
+    
+    redFlags: ["Peritonitis (Rupture)", "Toxic Megacolon", "Pleural Effusion (Diaphragmatic irritation)", "Dysentery in pregnancy"],
+    differentials: ["Pyogenic Liver Abscess", "IBD (Ulcerative Colitis)", "Bacillary Dysentery (Shigella)", "Hepatocellular Carcinoma"],
+
+    managementRationale: [
+      { 
+        drug: "Metronidazole", 
+        class: "Nitroimidazole", 
+        dose: "800 mg", 
+        freq: "TID x 5-10 days", 
+        indication: "Tissue Amoebicide", 
+        rationale: "Kills invasive trophozoites in liver and bowel wall. Avoid Alcohol (Disulfiram-like reaction)." 
+      },
+      { 
+        drug: "Diloxanide Furoate", 
+        class: "Luminal Amoebicide", 
+        dose: "500 mg", 
+        freq: "TID x 10 days", 
+        indication: "Cyst Eradication", 
+        rationale: "Eradicates cysts in the gut lumen to prevent relapse and transmission." 
+      },
+      { 
+        drug: "Chloroquine", 
+        class: "Antimalarial", 
+        dose: "600 mg", 
+        freq: "OD x 2 days -> 300mg", 
+        indication: "Hepatic Amebiasis", 
+        rationale: "Concentrates in the liver; used as adjunct if Metronidazole response is poor." 
+      }
+    ],
+
+    lifestyle: ["Hand hygiene (Fecal-oral spread).", "Boil drinking water.", "Sanitation improvement."],
+    
+    diet: {
+      eat: ["Bland soft diet (Khichdi, Curd Rice)", "Hydration (ORS)"],
+      avoid: ["Alcohol (Strictly)", "Spicy foods", "Milk (if secondary lactose intolerance develops)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.0 g/dL", wbc: "14,000 /cmm", plt: "250,000 /cmm", hct: "36%" },
+      progression: [{ day: 1, hb: "12.0 g/dL", wbc: "14,000 /cmm", plt: "250,000 /cmm", hct: "36%" }]
+    },
+    specialTests: [
+      { name: "Stool Exam", result: "Cysts seen", notes: "E. histolytica" },
+      { name: "USG Abdomen", result: "Rt Lobe Abscess", notes: "5x5 cm" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Metronidazole 800mg TID", "Tab. Diloxanide 500mg TID"] }
+    ]
+  },
+
+  "Visceral Leishmaniasis (Kala-Azar)": {
+    category: "Infectious Disease / Parasitology",
+    pathophysiology: "Infection by Leishmania donovani protozoa transmitted by Sandflies (Phlebotomus). Parasites infect macrophages in the reticuloendothelial system (Bone Marrow, Liver, Spleen) causing pancytopenia and organomegaly.",
+    
+    clinicalFeatures: {
+      symptoms: ["Prolonged fever (Double rise in 24h)", "Weight loss (Cachexia)", "Darkening of skin (Kala-Azar)", "Bleeding"],
+      signs: ["Massive Splenomegaly", "Hepatomegaly", "Pallor", "Lymphadenopathy"]
+    },
+
+    diagnosticWorkup: [
+      { test: "rk39 Dipstick", finding: "Positive", significance: "Rapid field diagnostic test (High sensitivity in India)" },
+      { test: "Bone Marrow Aspiration", finding: "LD Bodies (Amastigotes)", significance: "Gold Standard Confirmation" },
+      { test: "CBC", finding: "Pancytopenia", significance: "Marrow infiltration" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Black Fever.", explanation: "Hyperpigmentation of the skin is a hallmark, giving the disease its Hindi name 'Kala-Azar'." },
+      { pearl: "PKDL.", explanation: "Post-Kala-Azar Dermal Leishmaniasis: Hypopigmented nodules appearing years after cure; reservoir for transmission." }
+    ],
+    
+    redFlags: ["Severe Anemia", "Secondary Infection (Measles/TB/Pneumonia)", "Macrophage Activation Syndrome", "Bleeding Diathesis"],
+    differentials: ["Malaria (Tropical Splenomegaly)", "Chronic Myeloid Leukemia", "Typhoid", "Brucellosis"],
+
+    managementRationale: [
+      { 
+        drug: "Liposomal Amphotericin B", 
+        class: "Antifungal/Antiprotozoal", 
+        dose: "10 mg/kg", 
+        freq: "Single Dose IV", 
+        indication: "First-line (India)", 
+        rationale: "Highest cure rate (>90%) with single dose. Nephrotoxicity is reduced in liposomal form." 
+      },
+      { 
+        drug: "Miltefosine", 
+        class: "Phospholipid Analogue", 
+        dose: "50 mg", 
+        freq: "BD x 28 days", 
+        indication: "Oral Option", 
+        rationale: "First oral agent. Contraindicated in pregnancy (Teratogenic)." 
+      },
+      { 
+        drug: "Sodium Stibogluconate", 
+        class: "Antimonial", 
+        dose: "20 mg/kg", 
+        freq: "IV/IM Daily", 
+        indication: "Historical / Resistance", 
+        rationale: "High resistance in Bihar/Nepal; rarely used now due to cardiotoxicity." 
+      }
+    ],
+
+    lifestyle: ["Sandfly control (Fine mesh nets, IRS).", "Nutrition support.", "Follow up for PKDL."],
+    
+    diet: {
+      eat: ["High Protein/Calorie (combat wasting)", "Iron rich foods"],
+      avoid: ["Malnutrition (Risk factor for progression)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "7.0 g/dL", wbc: "2,000 /cmm", plt: "60,000 /cmm", hct: "21%" },
+      progression: [{ day: 1, hb: "7.0 g/dL", wbc: "2,000 /cmm", plt: "60,000 /cmm", hct: "21%" }]
+    },
+    specialTests: [
+      { name: "rk39 Antigen", result: "Positive", notes: "Diagnostic" },
+      { name: "Spleen", result: "Palpable 10cm", notes: "Massive" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Inj. Liposomal Amphotericin B 10mg/kg Stat"] }
+    ]
+  },
+
+  "Giardiasis": {
+    category: "Infectious Disease / Parasitology",
+    pathophysiology: "Infection of the small intestine by Giardia lamblia (flagellate). Trophozoites attach to the duodenal wall causing villous atrophy, enzyme deficiency (lactase), and fat malabsorption.",
+    
+    clinicalFeatures: {
+      symptoms: ["Bloating / Flatulence (Sulfurous burps)", "Chronic Diarrhea", "Steatorrhea (Greasy floating stools)", "Weight loss"],
+      signs: ["Abdominal distension", "Borborygmi", "Failure to thrive (children)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Stool Microscopy", finding: "Cysts or Trophozoites ('Falling leaf' motility)", significance: "Diagnostic (Intermittent shedding requires 3 samples)" },
+      { test: "Stool Antigen (ELISA)", finding: "Positive", significance: "Higher sensitivity than microscopy" },
+      { test: "Duodenal Aspirate", finding: "Trophozoites", significance: "Rarely needed (Endoscopy)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Lactose Intolerance.", explanation: "Secondary lactose intolerance is common post-infection due to brush border damage. Avoid milk for weeks after cure." },
+      { pearl: "Chlorine Resistance.", explanation: "Giardia cysts are resistant to standard chlorination; hikers/campers drinking stream water are at risk." }
+    ],
+    
+    redFlags: ["Dehydration", "Malabsorption Syndrome", "Hypokalemia", "Chronic fatigue"],
+    differentials: ["Celiac Disease", "IBS", "Lactose Intolerance", "Strongyloidiasis"],
+
+    managementRationale: [
+      { 
+        drug: "Tinidazole", 
+        class: "Nitroimidazole", 
+        dose: "2 g", 
+        freq: "Single Dose", 
+        indication: "First-line", 
+        rationale: "Single dose cure rate >90%. Better tolerated than Metronidazole." 
+      },
+      { 
+        drug: "Metronidazole", 
+        class: "Nitroimidazole", 
+        dose: "400 mg", 
+        freq: "TID x 5-7 days", 
+        indication: "Alternative", 
+        rationale: "Standard therapy; avoid alcohol." 
+      },
+      { 
+        drug: "Nitazoxanide", 
+        class: "Antiprotozoal", 
+        dose: "500 mg", 
+        freq: "BD x 3 days", 
+        indication: "Pediatric / Resistant", 
+        rationale: "Broad spectrum (covers Cryptosporidium too)." 
+      }
+    ],
+
+    lifestyle: ["Hand washing.", "Boil water (1 min).", "Treat asymptomatic household contacts (controversial)."],
+    
+    diet: {
+      eat: ["Curd/Yogurt (Probiotics help)", "Rice/Banana"],
+      avoid: ["Milk/Ice cream (Lactose)", "Fatty foods (Steatorrhea)", "Gas producing beans"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "Stool Ova/Parasite", result: "Giardia cysts", notes: "Positive" },
+      { name: "IgA", result: "Normal", notes: "Rule out deficiency" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Tinidazole 2g Stat", "Lactose-free diet"] }
+    ]
+  },
+
+  "Toxoplasmosis": {
+    category: "Infectious Disease / Parasitology",
+    pathophysiology: "Infection by Toxoplasma gondii (intracellular protozoa). Acquired via cat feces or undercooked meat. Usually latent; reactivates in immunocompromised (AIDS) causing CNS lesions.",
+    
+    clinicalFeatures: {
+      symptoms: ["Headache", "Confusion", "Seizures", "Blurred vision (Chorioretinitis)"],
+      signs: ["Focal neurological deficits", "Fever", "Cervical lymphadenopathy (in immunocompetent)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "MRI Brain", finding: "Multiple Ring-Enhancing Lesions", significance: "Classic in HIV (Basal ganglia predilection)" },
+      { test: "IgG Serology", finding: "Positive", significance: "Indicates past exposure (Risk of reactivation)" },
+      { test: "PCR (CSF/Amniotic)", finding: "T. gondii DNA", significance: "Confirmatory" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Congenital Triad.", explanation: "Chorioretinitis, Hydrocephalus, Intracranial Calcifications. Risk is highest if mother infected in 3rd trimester, but damage worst in 1st." },
+      { pearl: "Therapeutic Trial.", explanation: "In AIDS with brain lesions, treat empirically for Toxo. If no improvement in 2 weeks, biopsy for CNS Lymphoma." }
+    ],
+    
+    redFlags: ["Chorioretinitis (Blindness)", "Encephalitis", "Pneumonitis", "Congenital transmission"],
+    differentials: ["Primary CNS Lymphoma", "Neurocysticercosis", "Tuberculoma", "Brain Abscess"],
+
+    managementRationale: [
+      { 
+        drug: "Pyrimethamine", 
+        class: "Antifolate", 
+        dose: "200mg Load -> 50-75mg", 
+        freq: "OD", 
+        indication: "Active Disease", 
+        rationale: "Inhibits dihydrofolate reductase. Must give with Folinic Acid." 
+      },
+      { 
+        drug: "Sulfadiazine", 
+        class: "Sulfonamide", 
+        dose: "1-1.5 g", 
+        freq: "QID", 
+        indication: "Active Disease", 
+        rationale: "Synergistic with Pyrimethamine. Hydration needed to prevent crystalluria." 
+      },
+      { 
+        drug: "Leucovorin (Folinic Acid)", 
+        class: "Vitamin", 
+        dose: "10-25 mg", 
+        freq: "OD", 
+        indication: "Adjunct", 
+        rationale: "Prevents bone marrow suppression caused by Pyrimethamine." 
+      }
+    ],
+
+    lifestyle: ["Avoid changing cat litter (pregnant women).", "Cook meat thoroughly.", "Prophylaxis in HIV (CD4 < 100)."],
+    
+    diet: {
+      eat: ["Fully cooked meat", "Washed vegetables"],
+      avoid: ["Raw/Rare steak", "Unwashed salads", "Raw eggs"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.0 g/dL", wbc: "3,000 /cmm", plt: "150,000 /cmm", hct: "33%" },
+      progression: [{ day: 1, hb: "11.0 g/dL", wbc: "3,000 /cmm", plt: "150,000 /cmm", hct: "33%" }]
+    },
+    specialTests: [
+      { name: "MRI Brain", result: "2 Ring Lesions", notes: "Target sign" },
+      { name: "CD4 Count", result: "80 cells/uL", notes: "High risk" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Pyrimethamine+Sulfadiazine", "Tab. Leucovorin"] }
+    ]
+  },
+
+  "Trichomoniasis": {
+    category: "Infectious Disease (STI)",
+    pathophysiology: "Sexually transmitted infection by Trichomonas vaginalis (motile protozoa). Colonizes the vagina/urethra causing epithelial damage and micro-ulcerations (increasing HIV risk).",
+    
+    clinicalFeatures: {
+      symptoms: ["Profuse vaginal discharge (Frothy/Yellow-Green)", "Vulvar itching", "Dysuria", "Dyspareunia"],
+      signs: ["Strawberry Cervix (Punctate hemorrhages - Colpitis macularis)", "Malodorous discharge (Fishy)", "pH > 4.5"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Wet Mount Microscopy", finding: "Motile Trichomonads", significance: "Diagnostic (60% sensitivity)" },
+      { test: "NAAT (PCR)", finding: "Positive", significance: "Gold Standard (High sensitivity)" },
+      { test: "Whiff Test", finding: "Positive (Fishy odor with KOH)", significance: "Can be positive (like BV)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Partner Treatment.", explanation: "Re-infection rate is high. Sexual partners must be treated simultaneously even if asymptomatic." },
+      { pearl: "Pregnancy Risk.", explanation: "Associated with preterm rupture of membranes and low birth weight." }
+    ],
+    
+    redFlags: ["Co-infection with HIV/Gonorrhea", "PID symptoms", "Preterm Labor"],
+    differentials: ["Bacterial Vaginosis (Clue cells)", "Candidiasis (Curd-like)", "Chlamydia", "Gonorrhea"],
+
+    managementRationale: [
+      { 
+        drug: "Metronidazole", 
+        class: "Nitroimidazole", 
+        dose: "2 g", 
+        freq: "Stat (Single Dose)", 
+        indication: "First-line", 
+        rationale: "95% cure rate. Single dose improves compliance. Avoid alcohol for 24h." 
+      },
+      { 
+        drug: "Tinidazole", 
+        class: "Nitroimidazole", 
+        dose: "2 g", 
+        freq: "Stat", 
+        indication: "Alternative", 
+        rationale: "Longer half-life, fewer GI side effects, but more expensive." 
+      },
+      { 
+        drug: "Metronidazole (7 day)", 
+        class: "Nitroimidazole", 
+        dose: "500 mg", 
+        freq: "BD x 7 days", 
+        indication: "HIV patients / Failure", 
+        rationale: "Multi-dose regimen preferred in HIV-positive women." 
+      }
+    ],
+
+    lifestyle: ["Abstinence for 7 days.", "Condom use.", "Avoid douching."],
+    
+    diet: {
+      eat: ["Probiotics (restore flora)"],
+      avoid: ["Alcohol (Strictly - Disulfiram reaction with Metronidazole)", "Spicy foods"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "Wet Mount", result: "Motile Protozoa", notes: "Positive" },
+      { name: "Vaginal pH", result: "5.5", notes: "Elevated" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Metronidazole 2g Stat", "Partner Notification"] }
+    ]
+  },
+  "Neurocysticercosis (NCC)": {
+    category: "Infectious Disease / Neurology",
+    pathophysiology: "CNS infection by the larval stage of Taenia solium (Pork Tapeworm). Ingestion of eggs leads to oncosphere migration to the brain, forming cysts. Host immune reaction to degenerating cysts causes inflammation and seizures.",
+    
+    clinicalFeatures: {
+      symptoms: ["Seizures (Focal/Generalized)", "Headache", "Vomiting", "Confusion"],
+      signs: ["Papilledema (Raised ICP)", "Focal neurological deficit", "Subcutaneous nodules (Cysticercosis cutis)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "MRI Brain with Contrast", finding: "Ring enhancing lesion with scolex", significance: "Gold Standard ('Hole-with-dot' appearance)" },
+      { test: "CT Brain", finding: "Calcified granulomas", significance: "Chronic/Inactive disease" },
+      { test: "EITB (Western Blot)", finding: "Positive", significance: "Serological confirmation" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Vegetarian Risk.", explanation: "Acquired by ingesting eggs from feces of a tapeworm carrier (fecal-oral), NOT by eating undercooked pork. Vegetarians are frequently affected." },
+      { pearl: "Seizure Cause.", explanation: "The most common cause of adult-onset epilepsy in developing nations." }
+    ],
+    
+    redFlags: ["Intraventricular Cyst (Obstructive Hydrocephalus)", "Cysticercotic Encephalitis (Diffuse edema)", "Status Epilepticus", "Ocular Cysticercosis"],
+    differentials: ["Tuberculoma (Conglomerate ring enhancement)", "Brain Abscess", "Metastasis", "Primary Brain Tumor"],
+
+    managementRationale: [
+      { 
+        drug: "Albendazole", 
+        class: "Anthelmintic", 
+        dose: "15 mg/kg (max 800mg)", 
+        freq: "BD x 8-28 days", 
+        indication: "Parenchymal Cysts", 
+        rationale: "Penetrates CNS to kill cysts. Must give WITH steroids to prevent inflammatory flare." 
+      },
+      { 
+        drug: "Dexamethasone", 
+        class: "Corticosteroid", 
+        dose: "0.1 mg/kg", 
+        freq: "BD", 
+        indication: "Perilesional Edema", 
+        rationale: "Suppresses inflammation caused by dying parasite. Started 1 day BEFORE Albendazole." 
+      },
+      { 
+        drug: "Phenytoin / Levetiracetam", 
+        class: "Anticonvulsant", 
+        dose: "Standard", 
+        freq: "Maintenance", 
+        indication: "Seizure Control", 
+        rationale: "Prevent seizures during acute inflammatory phase." 
+      }
+    ],
+
+    lifestyle: ["Wash vegetables thoroughly.", "Hand hygiene.", "Treat household tapeworm carriers."],
+    
+    diet: {
+      eat: ["Hygienic home-cooked meals"],
+      avoid: ["Raw salads/cabbage (common vector for eggs)", "Street food"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "MRI", result: "Single Ring Enhancing Lesion", notes: "Scolex visible" },
+      { name: "Fundoscopy", result: "Normal", notes: "No ocular cysts" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Dexamethasone", "Tab. Phenytoin", "Start Albendazole tomorrow"] }
+    ]
+  },
+
+  "Hydatid Disease (Echinococcosis)": {
+    category: "Infectious Disease / Parasitology",
+    pathophysiology: "Infection by larval stage of Echinococcus granulosus (Dog Tapeworm). Oncospheres migrate to liver (70%) or lungs (20%), forming slow-growing fluid-filled cysts with a germinal layer and brood capsules.",
+    
+    clinicalFeatures: {
+      symptoms: ["Abdominal pain (RUQ)", "Mass effect", "Chest pain/Cough (Lung cyst)", "Urticaria (Leakage)"],
+      signs: ["Hepatomegaly", "Palpable abdominal mass", "Jaundice (Biliary rupture)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Ultrasound Abdomen", finding: "Cyst with daughter cysts ('Cartwheel' / 'Honeycomb')", significance: "Gharbi Classification" },
+      { test: "CECT Abdomen", finding: "Calcified cyst wall", significance: "Staging and surgical planning" },
+      { test: "Serology (ELISA)", finding: "Positive", significance: "Supportive (False negatives common in lung cysts)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Anaphylaxis Risk.", explanation: "Cyst fluid is highly antigenic. Spontaneous rupture or surgical spill can cause fatal anaphylactic shock." },
+      { pearl: "PAIR Procedure.", explanation: "Puncture, Aspiration, Injection (scolicidal), Re-aspiration. Option for inoperable cysts." }
+    ],
+    
+    redFlags: ["Rupture into Biliary Tree (Jaundice/Colic)", "Rupture into Bronchus (Expectoration of cysts - 'Grape skins')", "Anaphylaxis"],
+    differentials: ["Simple Liver Cyst", "Amebic Liver Abscess", "Pyogenic Abscess", "Cystadenoma"],
+
+    managementRationale: [
+      { 
+        drug: "Albendazole", 
+        class: "Anthelmintic", 
+        dose: "10-15 mg/kg", 
+        freq: "BD", 
+        indication: "Primary / Adjuvant", 
+        rationale: "Shrinks cysts. Given for 1-6 months. Essential pre-op to prevent seeding." 
+      },
+      { 
+        drug: "Praziquantel", 
+        class: "Anthelmintic", 
+        dose: "40 mg/kg", 
+        freq: "Weekly", 
+        indication: "Spillage / Rupture", 
+        rationale: "More effective against protoscoleces released during rupture." 
+      },
+      { 
+        drug: "Epinephrine", 
+        class: "Sympathomimetic", 
+        dose: "0.5 mg IM", 
+        freq: "Stat", 
+        indication: "Anaphylaxis (if rupture)", 
+        rationale: "Emergency management of cyst fluid reaction." 
+      }
+    ],
+
+    lifestyle: ["Hand washing after handling dogs.", "Deworming pet dogs.", "Avoid feeding offal to dogs."],
+    
+    diet: {
+      eat: ["High fat meal with Albendazole (increases absorption by 5x)"],
+      avoid: ["N/A"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.0 g/dL", wbc: "9,000 /cmm (Eosinophilia)", plt: "200,000 /cmm", hct: "36%" },
+      progression: [{ day: 1, hb: "12.0 g/dL", wbc: "9,000 /cmm", plt: "200,000 /cmm", hct: "36%" }]
+    },
+    specialTests: [
+      { name: "USG", result: "Multiseptated Cyst", notes: "CE2 Stage" },
+      { name: "Eosinophils", result: "10%", notes: "Mild elevation" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Albendazole 400mg BD", "Surgical Consult"] }
+    ]
+  },
+
+  "Ascariasis (Roundworm)": {
+    category: "Infectious Disease / Parasitology",
+    pathophysiology: "Infection by Ascaris lumbricoides. Larvae migrate via lungs (Loeffler's) then mature in intestine. Heavy burden causes malnutrition or mechanical obstruction.",
+    
+    clinicalFeatures: {
+      symptoms: ["Abdominal pain", "Passing worms in stool/vomit", "Cough/Wheeze (Larval migration)", "Nausea"],
+      signs: ["Abdominal distension", "Malnutrition (Stunting)", "Wheezing (Loeffler's syndrome)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Stool Microscopy", finding: "Fertile/Infertile Eggs (Bile stained)", significance: "Definitive diagnosis" },
+      { test: "Abdominal X-ray", finding: "'Whirlpool sign' of worm mass", significance: "Intestinal Obstruction" },
+      { test: "CBC", finding: "Eosinophilia", significance: "During tissue migration phase" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Wandering Worm.", explanation: "Adult worms can migrate into the biliary tree (Cholangitis), pancreatic duct (Pancreatitis), or appendix." },
+      { pearl: "Anesthesia Risk.", explanation: "General anesthesia can stimulate worms to migrate, potentially causing airway obstruction or surgical site compromise." }
+    ],
+    
+    redFlags: ["Intestinal Obstruction (Volvulus)", "Biliary Colic (Worm in CBD)", "Appendicitis", "Perforation"],
+    differentials: ["Hookworm", "Strongyloides", "Small Bowel Obstruction (Adhesion)", "Asthma (Loeffler's mimic)"],
+
+    managementRationale: [
+      { 
+        drug: "Albendazole", 
+        class: "Anthelmintic", 
+        dose: "400 mg", 
+        freq: "Stat", 
+        indication: "Intestinal Phase", 
+        rationale: "Inhibits microtubule synthesis, starving the worm. 100% cure rate." 
+      },
+      { 
+        drug: "Mebendazole", 
+        class: "Anthelmintic", 
+        dose: "100 mg", 
+        freq: "BD x 3 days", 
+        indication: "Alternative", 
+        rationale: "Effective and safe. Less systemic absorption." 
+      },
+      { 
+        drug: "Piperazine", 
+        class: "Paralytic", 
+        dose: "75 mg/kg", 
+        freq: "Stat", 
+        indication: "Intestinal Obstruction", 
+        rationale: "Flaccid paralysis of worms allows them to pass without stimulating localized aggregation (which Albendazole might worsen in obstruction)." 
+      }
+    ],
+
+    lifestyle: ["Sanitation (Latrines).", "Hand washing.", "Wash vegetables."],
+    
+    diet: {
+      eat: ["High protein (recovery from malnutrition)", "Hygenic food"],
+      avoid: ["Raw unwashed produce (soil contamination)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.0 g/dL", wbc: "12,000 /cmm", plt: "250,000 /cmm", hct: "33%" },
+      progression: [{ day: 1, hb: "11.0 g/dL", wbc: "12,000 /cmm", plt: "250,000 /cmm", hct: "33%" }]
+    },
+    specialTests: [
+      { name: "Stool Exam", result: "Fertile Eggs seen", notes: "Heavy load" },
+      { name: "USG Abdomen", result: "Linear structures in bowel", notes: "Worms visible" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Albendazole 400mg Stat", "Deworm family"] }
+    ]
+  },
+
+  "Hookworm Infection (Ankylostomiasis)": {
+    category: "Infectious Disease / Hematology",
+    pathophysiology: "Infection by Ancylostoma duodenale or Necator americanus. Larvae penetrate skin (Ground itch), migrate to lungs, then gut. Adults attach to mucosa and suck blood, causing Iron Deficiency Anemia.",
+    
+    clinicalFeatures: {
+      symptoms: ["Fatigue (Anemia)", "Pica (Geophagia)", "Epigastric pain", "Itchy feet (Ground Itch)"],
+      signs: ["Pallor", "Koilonychia", "Pedal edema (Hypoproteinemia)", "Creeping Eruption (Cutaneous Larva Migrans)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Stool Microscopy", finding: "Oval, thin-shelled eggs", significance: "Diagnostic" },
+      { test: "CBC", finding: "Microcytic Hypochromic Anemia + Eosinophilia", significance: "Classic profile" },
+      { test: "Stool Occult Blood", finding: "Positive", significance: "Chronic blood loss" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Blood Loss.", explanation: "Each worm sucks 0.03-0.2 ml blood/day. A heavy load causes massive chronic blood loss requiring iron replacement." },
+      { pearl: "Wakana Disease.", explanation: "Acute syndrome of cough, dyspnea, and eosinophilia during larval migration through lungs." }
+    ],
+    
+    redFlags: ["Severe Anemia (Hb < 5)", "High Output Heart Failure", "Hypoproteinemia (Anasarca)", "Growth retardation"],
+    differentials: ["Nutritional Anemia", "Peptic Ulcer Disease", "Strongyloidiasis", "Ascariasis"],
+
+    managementRationale: [
+      { 
+        drug: "Albendazole", 
+        class: "Anthelmintic", 
+        dose: "400 mg", 
+        freq: "Stat", 
+        indication: "De-worming", 
+        rationale: "Effective against adults. Single dose usually sufficient." 
+      },
+      { 
+        drug: "Ferrous Ascorbate", 
+        class: "Iron Supplement", 
+        dose: "100 mg elemental", 
+        freq: "BD", 
+        indication: "Anemia", 
+        rationale: "Replenishes iron stores. Continue for 3 months after Hb normalizes." 
+      },
+      { 
+        drug: "Albumin / Protein", 
+        class: "Supportive", 
+        dose: "Dietary/IV", 
+        freq: "Daily", 
+        indication: "Hypoproteinemia", 
+        rationale: "Corrects edema caused by protein-losing enteropathy." 
+      }
+    ],
+
+    lifestyle: ["Wear footwear outdoors (Prevents larval entry).", "Sanitation."],
+    
+    diet: {
+      eat: ["Iron rich foods (Spinach, Jaggery, Dates)", "Vitamin C (Amla) to boost iron absorption"],
+      avoid: ["Tea/Coffee with meals (Tannins block iron)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "7.0 g/dL", wbc: "9,000 /cmm", plt: "300,000 /cmm", hct: "21%" },
+      progression: [{ day: 1, hb: "7.0 g/dL", wbc: "9,000 /cmm", plt: "300,000 /cmm", hct: "21%" }]
+    },
+    specialTests: [
+      { name: "Stool Exam", result: "Hookworm Eggs", notes: "Moderate intensity" },
+      { name: "Ferritin", result: "10 ng/mL", notes: "Iron Deficiency" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Albendazole 400mg Stat", "Tab. Iron-Folic Acid BD"] }
+    ]
+  },
+
+  "Enterobiasis (Pinworm)": {
+    category: "Infectious Disease / Parasitology",
+    pathophysiology: "Infection by Enterobius vermicularis. Female worms migrate out of the anus at night to lay eggs, causing intense pruritus and secondary infection.",
+    
+    clinicalFeatures: {
+      symptoms: ["Perianal Itching (Nocturnal)", "Restless sleep", "Teeth grinding (Bruxism)", "Vulvovaginitis (in girls)"],
+      signs: ["Excoriations perianal", "Visible worms on stool surface (white threads)", "Secondary impetigo"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Scotch Tape Test", finding: "Eggs (D-shaped)", significance: "Gold Standard (Perform in morning before washing)" },
+      { test: "Visual Inspection", finding: "Adult worms", significance: "Seen on perianal skin/stool" },
+      { test: "Stool Microscopy", finding: "Often Negative", significance: "Eggs are not typically passed in stool" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Family Affair.", explanation: "Highly contagious via fomites (bedding/toys). Treat ALL household members simultaneously regardless of symptoms." },
+      { pearl: "Auto-infection.", explanation: "Scratching transfers eggs to mouth, perpetuating the cycle. Hand hygiene is curative." }
+    ],
+    
+    redFlags: ["Ectopic migration (PID/Salpingitis)", "Appendicitis (Rare cause)", "Severe sleep deprivation"],
+    differentials: ["Perianal Dermatitis", "Hemorrhoids", "Candidiasis", "Psychogenic Pruritus"],
+
+    managementRationale: [
+      { 
+        drug: "Mebendazole", 
+        class: "Anthelmintic", 
+        dose: "100 mg", 
+        freq: "Stat, Repeat in 2 weeks", 
+        indication: "First-line", 
+        rationale: "Kills adults but not eggs. Second dose kills newly hatched worms." 
+      },
+      { 
+        drug: "Albendazole", 
+        class: "Anthelmintic", 
+        dose: "400 mg", 
+        freq: "Stat, Repeat in 2 weeks", 
+        indication: "Alternative", 
+        rationale: "Equally effective. Treat whole family." 
+      },
+      { 
+        drug: "White Soft Paraffin", 
+        class: "Barrier", 
+        dose: "Apply anal region", 
+        freq: "HS", 
+        indication: "Symptomatic", 
+        rationale: "Relieves itching and traps worms." 
+      }
+    ],
+
+    lifestyle: ["Trim fingernails short.", "Wash pajamas/bedsheets in hot water.", "Morning bathing."],
+    
+    diet: {
+      eat: ["Hygenic food"],
+      avoid: ["Eating in bed"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.5 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "37%" },
+      progression: [{ day: 1, hb: "12.5 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "37%" }]
+    },
+    specialTests: [
+      { name: "Tape Test", result: "Enterobius Eggs", notes: "Positive" },
+      { name: "Eosinophils", result: "Normal", notes: "Non-tissue invasive" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Mebendazole 100mg Stat", "Family Treatment"] }
+    ]
+  },
+  "Amyotrophic Lateral Sclerosis (ALS/MND)": {
+    category: "Neurology",
+    pathophysiology: "Progressive neurodegenerative disorder affecting both Upper Motor Neurons (Motor Cortex) and Lower Motor Neurons (Brainstem/Spinal Cord), leading to muscle atrophy, spasticity, and respiratory failure. Sensation and bowel/bladder function usually spared.",
+    
+    clinicalFeatures: {
+      symptoms: ["Progressive weakness (distal to proximal)", "Dysphagia/Dysarthria (Bulbar onset)", "Muscle cramps", "Emotional lability"],
+      signs: ["UMN: Hyperreflexia, Babinski, Spasticity", "LMN: Fasciculations (Tongue/Limbs), Atrophy"]
+    },
+
+    diagnosticWorkup: [
+      { test: "EMG/NCS", finding: "Active denervation + Reinnervation", significance: "Gold Standard (in multiple body segments)" },
+      { test: "MRI Brain/Spine", finding: "Normal (excludes compression)", significance: "Diagnosis of Exclusion" },
+      { test: "Pulmonary Function Test", finding: "Reduced FVC", significance: "Monitors respiratory muscle decline" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Split Hand Sign.", explanation: "Preferential wasting of the thenar eminence (APB/FDI) with relative sparing of the hypothenar eminence (ADM); specific for ALS." },
+      { pearl: "Riluzole Benefit.", explanation: "Extends survival by only 2-3 months but is standard of care. Does NOT reverse weakness." }
+    ],
+    
+    redFlags: ["Respiratory Failure (FVC < 50%)", "Aspiration Pneumonia", "Head Drop (Neck extensor weakness)", "Frontotemporal Dementia"],
+    differentials: ["Cervical Spondylotic Myelopathy", "Multifocal Motor Neuropathy (MMN)", "Spinal Muscular Atrophy", "Post-Polio Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Riluzole", 
+        class: "Glutamate Antagonist", 
+        dose: "50 mg", 
+        freq: "BD", 
+        indication: "Disease Modification", 
+        rationale: "Inhibits glutamate release, reducing excitotoxicity. Monitor LFTs." 
+      },
+      { 
+        drug: "Edaravone", 
+        class: "Free Radical Scavenger", 
+        dose: "60 mg", 
+        freq: "IV Infusion (Cycles)", 
+        indication: "Early Stage ALS", 
+        rationale: "Slows functional decline in select patients. Requires port access." 
+      },
+      { 
+        drug: "Baclofen", 
+        class: "Muscle Relaxant", 
+        dose: "10-20 mg", 
+        freq: "TID", 
+        indication: "Spasticity", 
+        rationale: "GABA-B agonist. Reduces painful cramps and stiffness." 
+      }
+    ],
+
+    lifestyle: ["PEG Tube placement (before FVC < 50%).", "Non-Invasive Ventilation (BiPAP).", "Communication aids."],
+    
+    diet: {
+      eat: ["High Calorie/Fat (Weight loss worsens prognosis)", "Thickened liquids (Dysphagia)"],
+      avoid: ["Thin liquids (Aspiration)", "Low calorie diet"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "40%" },
+      progression: [{ day: 1, hb: "13.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "40%" }]
+    },
+    specialTests: [
+      { name: "EMG", result: "Fibrillations + Positive Sharp Waves", notes: "Diffuse" },
+      { name: "FVC", result: "65%", notes: "Declining" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Riluzole 50mg BD", "Physiotherapy"] }
+    ]
+  },
+
+  "Huntington's Disease": {
+    category: "Neurology / Genetic",
+    pathophysiology: "Autosomal Dominant neurodegenerative disorder caused by CAG trinucleotide expansion (>36 repeats) in the HTT gene. Mutant Huntingtin protein aggregates cause neuronal death in the Caudate/Putamen (Striatum).",
+    
+    clinicalFeatures: {
+      symptoms: ["Chorea (involuntary dance-like movements)", "Personality changes/Aggression", "Cognitive decline", "Depression"],
+      signs: ["Milkmaid's Grip", "Saccadic eye movement dysfunction", "Bradykinesia (late stage)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Genetic Testing", finding: "> 40 CAG repeats", significance: "Confirmatory Diagnosis" },
+      { test: "MRI Brain", finding: "Caudate Nucleus Atrophy", significance: "Box-car ventricles (Ex-vacuo dilation)" },
+      { test: "MoCA", finding: "Executive dysfunction", significance: "Subcortical dementia profile" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Anticipation.", explanation: "Paternal transmission leads to expansion of CAG repeats, causing earlier onset and greater severity in subsequent generations." },
+      { pearl: "Suicide Risk.", explanation: "Very high, especially around diagnosis and early stages of independence loss." }
+    ],
+    
+    redFlags: ["Severe Dysphagia (Choking)", "Suicidal Ideation", "Falls", "Psychosis"],
+    differentials: ["Sydenham's Chorea", "Wilson's Disease", "Drug-induced Tardive Dyskinesia", "Neuroacanthocytosis"],
+
+    managementRationale: [
+      { 
+        drug: "Tetrabenazine", 
+        class: "VMAT2 Inhibitor", 
+        dose: "Titrated (max 100mg)", 
+        freq: "TID", 
+        indication: "Chorea", 
+        rationale: "Depletes dopamine stores. Black box warning for Depression/Suicide." 
+      },
+      { 
+        drug: "Deutetrabenazine", 
+        class: "VMAT2 Inhibitor", 
+        dose: "6-48 mg", 
+        freq: "BD", 
+        indication: "Chorea", 
+        rationale: "Deuterated form with better pharmacokinetic profile and fewer neuropsychiatric side effects." 
+      },
+      { 
+        drug: "Haloperidol", 
+        class: "Antipsychotic", 
+        dose: "1-5 mg", 
+        freq: "BD", 
+        indication: "Chorea + Psychosis", 
+        rationale: "Dopamine blockade treats both movement and behavioral symptoms." 
+      }
+    ],
+
+    lifestyle: ["Genetic Counseling (50% risk to offspring).", "High calorie diet (Chorea burns energy).", "Padding for bed (prevent injury)."],
+    
+    diet: {
+      eat: ["High Calorie (3000-4000 kcal/day)", "Finger foods (easier to handle)"],
+      avoid: ["Choking hazards"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "6,500 /cmm", plt: "250,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "6,500 /cmm", plt: "250,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "CAG Repeats", result: "45 repeats", notes: "Full Penetrance" },
+      { name: "MRI", result: "Caudate atrophy", notes: "Classic HD" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Tetrabenazine 12.5mg BD", "Tab. Sertraline (Depression)"] }
+    ]
+  },
+
+  "Wilson's Disease (Hepatolenticular Degeneration)": {
+    category: "Neurology / Hepatology",
+    pathophysiology: "Autosomal recessive defect in ATP7B gene causing impaired biliary copper excretion. Copper accumulates in Liver (Cirrhosis), Brain (Basal Ganglia), and Cornea.",
+    
+    clinicalFeatures: {
+      symptoms: ["Tremor ('Wing-beating')", "Dysarthria/Drooling", "Jaundice/Hepatitis", "Psychiatric (Mood swings)"],
+      signs: ["Kayser-Fleischer (KF) Rings", "Parkinsonism", "Hepatomegaly", "Blue lunulae"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Serum Ceruloplasmin", finding: "Low (< 20 mg/dL)", significance: "Screening (Low in 90%)" },
+      { test: "24h Urine Copper", finding: "High (> 100 mcg)", significance: "Diagnostic" },
+      { test: "Slit Lamp Exam", finding: "KF Rings", significance: "Pathognomonic (Copper in Descemet's membrane)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Neuro vs Hepatic.", explanation: "Neurological WD almost ALWAYS has KF rings; Hepatic WD may not. Any young patient with movement disorder needs Slit Lamp exam." },
+      { pearl: "Paradoxical Worsening.", explanation: "Starting Penicillamine can transiently worsen neurological symptoms in 20-50% of patients." }
+    ],
+    
+    redFlags: ["Fulminant Hepatic Failure (Coombs neg hemolytic anemia + coagulopathy)", "Severe Dystonia", "Suicidality"],
+    differentials: ["Essential Tremor", "Chronic Active Hepatitis", "Parkinson's Disease", "Multiple Sclerosis"],
+
+    managementRationale: [
+      { 
+        drug: "Penicillamine", 
+        class: "Copper Chelator", 
+        dose: "250-500 mg", 
+        freq: "QID (Empty stomach)", 
+        indication: "First-line De-coppering", 
+        rationale: "Promotes urinary copper excretion. Requires Pyridoxine (B6) supplementation." 
+      },
+      { 
+        drug: "Zinc Acetate", 
+        class: "Metallothionein Inducer", 
+        dose: "50 mg elemental", 
+        freq: "TID", 
+        indication: "Maintenance / Presymptomatic", 
+        rationale: "Blocks intestinal absorption of copper. Safer than chelators." 
+      },
+      { 
+        drug: "Trientine", 
+        class: "Chelator", 
+        dose: "500 mg", 
+        freq: "BD", 
+        indication: "Penicillamine Intolerance", 
+        rationale: "Alternative chelator with fewer side effects (Lupus-like reaction/nephrotoxicity)." 
+      }
+    ],
+
+    lifestyle: ["Screen siblings (25% risk).", "Lifetime therapy adherence.", "Liver transplant assessment (if fulminant)."],
+    
+    diet: {
+      eat: ["Low Copper foods initially"],
+      avoid: ["Shellfish/Oysters", "Organ meats (Liver)", "Chocolate/Nuts (High Copper)", "Mushrooms"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.0 g/dL", wbc: "5,000 /cmm", plt: "120,000 /cmm (Hypersplenism)", hct: "33%" },
+      progression: [{ day: 1, hb: "11.0 g/dL", wbc: "5,000 /cmm", plt: "120,000 /cmm", hct: "33%" }]
+    },
+    specialTests: [
+      { name: "Ceruloplasmin", result: "10 mg/dL", notes: "Low" },
+      { name: "Slit Lamp", result: "KF Rings Present", notes: "Diagnostic" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Cap. Penicillamine 250mg QID", "Tab. Pyridoxine 25mg OD"] }
+    ]
+  },
+
+  "Essential Tremor (ET)": {
+    category: "Neurology",
+    pathophysiology: "Most common movement disorder. Idiopathic progressive kinetic tremor involving a central oscillator (Cerebello-thalamo-cortical circuit). Usually Autosomal Dominant pattern.",
+    
+    clinicalFeatures: {
+      symptoms: ["Shaking hands while eating/writing", "Head tremor ('Yes-Yes' or 'No-No')", "Voice tremor"],
+      signs: ["Postural & Kinetic Tremor (Absent at rest)", "Cogwheel rigidity (mild)", "Normal gait"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Clinical Criteria", finding: "Bilateral action tremor > 3 years", significance: "Diagnosis of exclusion" },
+      { test: "Thyroid Profile", finding: "Normal", significance: "Rule out Thyrotoxicosis" },
+      { test: "Drawing Spirals", finding: "Large, tremulous loops", significance: "Distinguishes from Parkinsonian micrographia" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Alcohol Response.", explanation: "Tremor significantly improves with small amounts of alcohol (diagnostic clue), unlike Parkinson's." },
+      { pearl: "Action vs Rest.", explanation: "ET is an ACTION tremor (spills coffee); Parkinson's is a REST tremor (pill-rolling, stops on movement)." }
+    ],
+    
+    redFlags: ["Unilateral onset (Parkinson's)", "Rapid progression", "Gait Ataxia (Cerebellar disease)", "Rest tremor"],
+    differentials: ["Parkinson's Disease", "Hyperthyroidism", "Dystonic Tremor", "Drug-induced (Valproate/Lithium)"],
+
+    managementRationale: [
+      { 
+        drug: "Propranolol", 
+        class: "Beta Blocker (Non-selective)", 
+        dose: "40-120 mg", 
+        freq: "BD/LA", 
+        indication: "First-line", 
+        rationale: "Blocks peripheral beta-2 receptors in muscle spindles. Efficacy 50-70%." 
+      },
+      { 
+        drug: "Primidone", 
+        class: "Barbiturate", 
+        dose: "50-250 mg", 
+        freq: "HS", 
+        indication: "First-line / Beta-blocker failure", 
+        rationale: "Metabolized to Phenobarbital. Start low to avoid sedation." 
+      },
+      { 
+        drug: "Topiramate", 
+        class: "Anticonvulsant", 
+        dose: "25-100 mg", 
+        freq: "BD", 
+        indication: "Add-on", 
+        rationale: "Effective but side effects (paresthesia/cognitive dulling) limit use." 
+      }
+    ],
+
+    lifestyle: ["Use heavy utensils/weighted wrist cuffs.", "Avoid caffeine.", "Deep Brain Stimulation (DBS) for severe cases."],
+    
+    diet: {
+      eat: ["Magnesium rich foods"],
+      avoid: ["Caffeine (Stimulant worsens tremor)", "Alcohol (Rebound worsening next day)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "40%" },
+      progression: [{ day: 1, hb: "13.5 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "40%" }]
+    },
+    specialTests: [
+      { name: "Thyroid Function", result: "Normal", notes: "Excluded Hyperthyroid" },
+      { name: "Spiral Draw", result: "Tremulous", notes: "Classic ET" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Propranolol 40mg BD", "Weighted Pen"] }
+    ]
+  },
+
+  "Restless Legs Syndrome (Willis-Ekbom)": {
+    category: "Neurology / Sleep Medicine",
+    pathophysiology: "Sensorimotor disorder characterized by an urge to move limbs. Involves CNS Dopamine dysfunction and Brain Iron deficiency (low ferritin alters dopamine synthesis).",
+    
+    clinicalFeatures: {
+      symptoms: ["Urge to move legs", "Creepy-crawly sensation", "Worsens at rest/night", "Relieved by movement"],
+      signs: ["Periodic Limb Movements of Sleep (PLMS)", "Normal neuro exam", "Sleep deprivation"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Serum Ferritin", finding: "< 50-75 ng/mL", significance: "Iron deficiency is the most common reversible cause" },
+      { test: "Renal Function", finding: "Normal", significance: "Rule out Uremic RLS" },
+      { test: "Polysomnography", finding: "PLMS", significance: "Supportive, not mandatory for diagnosis" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "URGE Criteria.", explanation: "Urge to move, Rest worsens it, Gyration (movement) relieves it, Evening/Night worsening." },
+      { pearl: "Augmentation.", explanation: "Dopamine agonists can paradoxically worsen symptoms (earlier onset, greater intensity) over time. Alpha-2-delta ligands are now preferred." }
+    ],
+    
+    redFlags: ["Peripheral Neuropathy signs", "Radiculopathy mimic", "Drug induced (Antihistamines/Antidepressants)"],
+    differentials: ["Peripheral Neuropathy", "Nocturnal Leg Cramps", "Akathisia (Drug induced)", "Varicose Veins"],
+
+    managementRationale: [
+      { 
+        drug: "Pramipexole / Ropinirole", 
+        class: "Dopamine Agonist", 
+        dose: "Low dose", 
+        freq: "2h before bed", 
+        indication: "Intermittent Symptoms", 
+        rationale: "Rapid relief but high risk of Augmentation long-term." 
+      },
+      { 
+        drug: "Gabapentin Enacarbil / Pregabalin", 
+        class: "Alpha-2-Delta Ligand", 
+        dose: "300-600 mg / 75 mg", 
+        freq: "Evening", 
+        indication: "First-line Chronic", 
+        rationale: "Treats sensory symptoms without augmentation risk. Benefits sleep." 
+      },
+      { 
+        drug: "Ferrous Bisglycinate", 
+        class: "Iron Supplement", 
+        dose: "325 mg", 
+        freq: "OD with Vit C", 
+        indication: "Ferritin < 75 ng/mL", 
+        rationale: "Brain iron repletion is curative in many cases." 
+      }
+    ],
+
+    lifestyle: ["Sleep hygiene.", "Moderate exercise (not heavy).", "Massage/Hot baths."],
+    
+    diet: {
+      eat: ["Iron rich foods (Spinach, Jaggery)", "Vitamin C"],
+      avoid: ["Caffeine (Worsens jitteriness)", "Alcohol (Fragments sleep)", "Antihistamines (Trigger RLS)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "33%" },
+      progression: [{ day: 1, hb: "11.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "33%" }]
+    },
+    specialTests: [
+      { name: "Ferritin", result: "30 ng/mL", notes: "Deficient CNS Iron" },
+      { name: "Creatinine", result: "0.9 mg/dL", notes: "Normal" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Ferrous Ascorbate BD", "Tab. Pregabalin 75mg HS"] }
+    ]
+  },
+  "Trigeminal Neuralgia (Tic Douloureux)": {
+    category: "Neurology / Pain Medicine",
+    pathophysiology: "Compression of the Trigeminal nerve root (CN V) by an aberrant vessel (usually Superior Cerebellar Artery) leads to demyelination and ectopic impulse generation, causing paroxysmal facial pain.",
+    
+    clinicalFeatures: {
+      symptoms: ["Sudden, lancinating, electric-shock pain", "Unilateral face (V2/V3 distribution)", "Triggered by touch/chewing/wind"],
+      signs: ["Normal facial sensation (if idiopathic)", "Pain-free intervals", "Trigger zones"]
+    },
+
+    diagnosticWorkup: [
+      { test: "MRI Brain (CISS/FIESTA sequence)", finding: "Neurovascular compression", significance: "Gold Standard for surgical planning" },
+      { test: "Clinical Criteria", finding: "Paroxysmal pain < 2 min + Triggers", significance: "Primary Diagnosis" },
+      { test: "Reflex Testing", finding: "Normal Corneal Reflex", significance: "Abnormal reflex suggests secondary cause (Tumor/MS)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Carbamazepine Specificity.", explanation: "Excellent response to Carbamazepine is almost diagnostic. If no relief, reconsider diagnosis." },
+      { pearl: "Red Flags.", explanation: "Bilateral pain, sensory loss, or age < 40 suggests Multiple Sclerosis or Tumor rather than idiopathic TN." }
+    ],
+    
+    redFlags: ["Continuous background pain (Atypical TN)", "Facial numbness", "Bilateral involvement", "Diplopia"],
+    differentials: ["Dental Abscess", "Temporomandibular Joint (TMJ) Disorder", "Cluster Headache", "Post-Herpetic Neuralgia"],
+
+    managementRationale: [
+      { 
+        drug: "Carbamazepine", 
+        class: "Sodium Channel Blocker", 
+        dose: "100-200 mg", 
+        freq: "BD (Titrate up)", 
+        indication: "First-line", 
+        rationale: "Stabilizes hyperexcitable nerve membranes. Only FDA-approved drug for TN. Monitor Na+ and WBC." 
+      },
+      { 
+        drug: "Oxcarbazepine", 
+        class: "Anticonvulsant", 
+        dose: "300 mg", 
+        freq: "BD", 
+        indication: "First-line Alternative", 
+        rationale: "Better tolerability and fewer drug interactions than Carbamazepine, though higher risk of Hyponatremia." 
+      },
+      { 
+        drug: "Gabapentin", 
+        class: "Calcium Channel Blocker", 
+        dose: "300 mg", 
+        freq: "TID", 
+        indication: "Add-on / 2nd Line", 
+        rationale: "Used if Carbamazepine is contraindicated or ineffective; fewer side effects." 
+      }
+    ],
+
+    lifestyle: ["Avoid triggers (cold wind, shaving).", "Soft diet during flare.", "Surgery (MVD) if refractory."],
+    
+    diet: {
+      eat: ["Soft/Liquid diet (to avoid chewing trigger)", "Room temperature food"],
+      avoid: ["Very hot/cold foods", "Crunchy foods"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "MRI Brain", result: "Vascular Loop", notes: "Compressing CN V" },
+      { name: "Sodium", result: "138 mEq/L", notes: "Monitor on CBZ" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Carbamazepine 100mg BD", "Tab. Gabapentin 300mg HS"] }
+    ]
+  },
+
+  "Bell's Palsy": {
+    category: "Neurology",
+    pathophysiology: "Acute idiopathic unilateral lower motor neuron facial paralysis (CN VII). Likely due to HSV-1 reactivation causing inflammation and edema of the facial nerve within the narrow Fallopian canal.",
+    
+    clinicalFeatures: {
+      symptoms: ["Sudden facial droop (<72h)", "Loss of taste (anterior 2/3 tongue)", "Hyperacusis (loud sounds painful)", "Dry eye"],
+      signs: ["Inability to close eye/raise eyebrow (LMN)", "Bell's Phenomenon (Eyeball rolls up on attempt to close)", "Loss of nasolabial fold"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Clinical Diagnosis", finding: "Unilateral LMN Palsy", significance: "Exclusion of other causes" },
+      { test: "MRI Brain", finding: "Normal or CN VII enhancement", significance: "Rule out tumor/stroke if atypical course" },
+      { test: "Blood Glucose", finding: "High", significance: "Diabetes is a risk factor and affects steroid dosing" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Stroke vs Bell's.", explanation: "Stroke (UMN) spares the forehead (can wrinkle brow due to bilateral innervation). Bell's (LMN) affects the ENTIRE half of the face including forehead." },
+      { pearl: "Ramsey Hunt Syndrome.", explanation: "Bell's Palsy + Ear vesicles (Zoster). Requires aggressive antiviral therapy and has poorer prognosis." }
+    ],
+    
+    redFlags: ["Forehead sparing (Stroke)", "Slow progression > 3 weeks (Tumor)", "Bilateral Palsy (Guillain-Barre/Lyme)", "Hearing loss"],
+    differentials: ["Stroke", "Parotid Tumor", "Otitis Media", "Lyme Disease"],
+
+    managementRationale: [
+      { 
+        drug: "Prednisolone", 
+        class: "Corticosteroid", 
+        dose: "60 mg", 
+        freq: "OD x 5 days -> Taper", 
+        indication: "Start < 72 hours", 
+        rationale: "Reduces nerve edema in the canal. Significantly improves recovery rate." 
+      },
+      { 
+        drug: "Valacyclovir", 
+        class: "Antiviral", 
+        dose: "1 g", 
+        freq: "TID x 7 days", 
+        indication: "Severe Cases (House-Brackmann IV+)", 
+        rationale: "Added to steroids for severe palsy or suspected Zoster, though evidence is mixed for pure Bell's." 
+      },
+      { 
+        drug: "Artificial Tears / Ointment", 
+        class: "Lubricant", 
+        dose: "Frequent", 
+        freq: "Day/Night", 
+        indication: "Eye Care", 
+        rationale: "Crucial to prevent exposure keratitis due to lagophthalmos (inability to close eye)." 
+      }
+    ],
+
+    lifestyle: ["Eye taping at night.", "Facial physiotherapy (mirror exercises).", "Wear sunglasses."],
+    
+    diet: {
+      eat: ["Soft foods (if chewing affected)", "Use straw for liquids"],
+      avoid: ["Chewing gum (fatigue)", "Hard nuts"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "14.0 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "42%" },
+      progression: [{ day: 1, hb: "14.0 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "42%" }]
+    },
+    specialTests: [
+      { name: "Audiometry", result: "Intact", notes: "No acoustic neuroma" },
+      { name: "HbA1c", result: "6.0%", notes: "Normal" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Prednisolone 60mg OD", "Eye Lubrication Protocol"] }
+    ]
+  },
+
+  "Cluster Headache": {
+    category: "Neurology / Headache",
+    pathophysiology: "Primary neurovascular headache involving hypothalamic activation and trigeminal autonomic reflex. Characterized by severe unilateral pain and ipsilateral autonomic symptoms.",
+    
+    clinicalFeatures: {
+      symptoms: ["Excruciating orbital pain ('Suicide headache')", "Restlessness (pacing)", "Strictly unilateral"],
+      signs: ["Ipsilateral Lacrimation/Rhinorrhea", "Ptosis/Miosis (Horner's syndrome)", "Conjunctival injection"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Clinical Criteria", finding: "5 attacks, 15-180 min duration", significance: "ICHD-3 Criteria" },
+      { test: "MRI Brain", finding: "Normal", significance: "Rule out Pituitary/Cavernous Sinus lesions (mimics)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Circadian Rhythm.", explanation: "Attacks often occur at the exact same time each day (often night), linked to hypothalamic clock." },
+      { pearl: "Agitation.", explanation: "Unlike Migraine patients who seek dark quiet rooms, Cluster patients are restless, rocking, or pacing during an attack." }
+    ],
+    
+    redFlags: ["First onset > 50y", "Change in pattern", "Abnormal neuro exam", "Visual field cut"],
+    differentials: ["Paroxysmal Hemicrania (Indomethacin responsive)", "Migraine", "Trigeminal Neuralgia", "Glaucoma"],
+
+    managementRationale: [
+      { 
+        drug: "Oxygen", 
+        class: "Medical Gas", 
+        dose: "100% via Non-rebreather", 
+        freq: "12-15 L/min x 15 min", 
+        indication: "Abortive (First-line)", 
+        rationale: "Vasoconstriction via serotonin pathways; effective in 70% within 15 mins." 
+      },
+      { 
+        drug: "Sumatriptan", 
+        class: "Triptan", 
+        dose: "6 mg", 
+        freq: "SC Stat", 
+        indication: "Abortive", 
+        rationale: "Subcutaneous route is essential for rapid onset (Oral is too slow for short attacks)." 
+      },
+      { 
+        drug: "Verapamil", 
+        class: "Calcium Channel Blocker", 
+        dose: "240-480 mg", 
+        freq: "Divided (High dose)", 
+        indication: "Prophylaxis", 
+        rationale: "Drug of choice for prevention. Requires ECG monitoring for PR prolongation." 
+      }
+    ],
+
+    lifestyle: ["Avoid alcohol (potent trigger during cluster period).", "Avoid naps (sleep triggers).", "Smoking cessation."],
+    
+    diet: {
+      eat: ["Magnesium/Melatonin rich foods"],
+      avoid: ["Alcohol (Absolute contraindication during cycle)", "Nitrates (Preserved meats)", "Strong smells"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "15.0 g/dL", wbc: "8,000 /cmm", plt: "280,000 /cmm", hct: "45%" },
+      progression: [{ day: 1, hb: "15.0 g/dL", wbc: "8,000 /cmm", plt: "280,000 /cmm", hct: "45%" }]
+    },
+    specialTests: [
+      { name: "MRI", result: "Normal", notes: "No structural lesion" },
+      { name: "ECG", result: "Normal PR interval", notes: "Safe for Verapamil" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Home Oxygen 100%", "Inj. Sumatriptan 6mg SC", "Tab. Verapamil 80mg TID"] }
+    ]
+  },
+
+  "Idiopathic Intracranial Hypertension (Pseudotumor Cerebri)": {
+    category: "Neurology",
+    pathophysiology: "Elevated Intracranial Pressure (ICP) without a mass lesion or hydrocephalus. Impaired CSF resorption through arachnoid granulations. Strongly associated with obesity and female gender.",
+    
+    clinicalFeatures: {
+      symptoms: ["Headache (worse flat/morning)", "Transient Visual Obscurations (TVOs)", "Pulsatile Tinnitus ('Whooshing')", "Diplopia"],
+      signs: ["Papilledema (Bilateral disc swelling)", "CN VI Palsy (False localizing sign)", "Visual field loss (enlarged blind spot)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "MRI Brain + MRV", finding: "Normal parenchyma + Empty Sella + Transverse Sinus Stenosis", significance: "Excludes mass/thrombosis" },
+      { test: "Lumbar Puncture", finding: "Opening Pressure > 25 cmH2O", significance: "Diagnostic + Therapeutic (temporary relief)" },
+      { test: "Perimetry", finding: "Enlarged blind spot / Peripheral constriction", significance: "Monitors vision threat" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Vitamin A Risk.", explanation: "Excess Vitamin A (Isotretinoin/Supplements) or Tetracyclines are classic drug triggers for Secondary IIH." },
+      { pearl: "Vision First.", explanation: "Management is driven by VISION preservation, not just headache relief. Fulminant IIH requires urgent surgery." }
+    ],
+    
+    redFlags: ["Rapid visual loss", "Thin male patient (unusual - suspect venous thrombosis)", "Unilateral Papilledema"],
+    differentials: ["Cerebral Venous Sinus Thrombosis (CVST)", "Brain Tumor", "Meningitis", "Optic Neuritis"],
+
+    managementRationale: [
+      { 
+        drug: "Acetazolamide", 
+        class: "Carbonic Anhydrase Inhibitor", 
+        dose: "500-1000 mg", 
+        freq: "BD", 
+        indication: "First-line", 
+        rationale: "Reduces CSF production by choroid plexus. High doses often needed." 
+      },
+      { 
+        drug: "Topiramate", 
+        class: "Anticonvulsant", 
+        dose: "25-100 mg", 
+        freq: "BD", 
+        indication: "Headache + Weight Loss", 
+        rationale: "Weak CAI activity + appetite suppression helps weight loss (synergistic)." 
+      },
+      { 
+        drug: "Furosemide", 
+        class: "Loop Diuretic", 
+        dose: "40 mg", 
+        freq: "BD", 
+        indication: "Adjunct", 
+        rationale: "Added if Acetazolamide alone is insufficient or poorly tolerated." 
+      }
+    ],
+
+    lifestyle: ["Weight Loss (critical - 5-10% loss can induce remission).", "Low sodium diet."],
+    
+    diet: {
+      eat: ["Potassium rich foods (Acetazolamide causes K+ loss)", "High fiber (Weight loss)"],
+      avoid: ["Salt (Fluid retention)", "Vitamin A supplements/Liver", "High calorie foods"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.5 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "38%" },
+      progression: [{ day: 1, hb: "12.5 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "38%" }]
+    },
+    specialTests: [
+      { name: "LP Opening Pressure", result: "35 cmH2O", notes: "High" },
+      { name: "Visual Fields", result: "Enlarged Blind Spot", notes: "Threatened vision" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Acetazolamide 500mg BD", "Weight Loss Program"] }
+    ]
+  },
+
+  "Meniere's Disease": {
+    category: "Neurology / ENT",
+    pathophysiology: "Endolymphatic Hydrops: Accumulation of excess endolymph in the inner ear, causing distension and rupture of membranous labyrinth, mixing fluids and depolarizing hair cells.",
+    
+    clinicalFeatures: {
+      symptoms: ["Episodic Vertigo (20 mins - 24 hours)", "Fluctuating Hearing Loss", "Aural Fullness", "Tinnitus (Roaring)"],
+      signs: ["Nystagmus (during attack)", "Sensorineural Hearing Loss (Low frequency initially)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Audiometry", finding: "Low frequency SNHL", significance: "Classic pattern (upsloping curve)" },
+      { test: "MRI IAC (Internal Auditory Canal)", finding: "Normal", significance: "Rule out Acoustic Neuroma" },
+      { test: "Electrocochleography", finding: "Elevated SP/AP ratio", significance: "Suggests hydrops" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "The Triad.", explanation: "Vertigo + Tinnitus + Hearing Loss. Unlike BPPV (seconds) or Labrynthitis (days), attacks last hours." },
+      { pearl: "Burnout.", explanation: "Over years, vertigo attacks may cease, but hearing loss becomes permanent and severe." }
+    ],
+    
+    redFlags: ["Continuous Vertigo > 24h (Stroke/Neuritis)", "Focal neuro deficits", "Vertical Nystagmus (Central cause)", "Loss of consciousness"],
+    differentials: ["BPPV", "Vestibular Migraine", "Acoustic Neuroma", "TIA (Vertebrobasilar)"],
+
+    managementRationale: [
+      { 
+        drug: "Betahistine", 
+        class: "Histamine Analog", 
+        dose: "16-24 mg", 
+        freq: "TID", 
+        indication: "Prophylaxis", 
+        rationale: "Improves microcirculation in stria vascularis, reducing endolymph pressure." 
+      },
+      { 
+        drug: "Hydrochlorothiazide / Acetazolamide", 
+        class: "Diuretic", 
+        dose: "Standard", 
+        freq: "OD", 
+        indication: "Maintenance", 
+        rationale: "Reduces fluid accumulation in the inner ear." 
+      },
+      { 
+        drug: "Meclizine / Promethazine", 
+        class: "Vestibular Suppressant", 
+        dose: "25 mg", 
+        freq: "SOS", 
+        indication: "Acute Attack", 
+        rationale: "Symptomatic relief for nausea and spinning sensation." 
+      }
+    ],
+
+    lifestyle: ["Low Salt Diet (< 1.5g/day) is CORNERSTONE.", "Stress reduction.", "Vestibular Rehab."],
+    
+    diet: {
+      eat: ["Fresh fruits/vegetables"],
+      avoid: ["Salt (Pickles, Chips, Soy sauce)", "Caffeine (Tinnitus trigger)", "Alcohol", "MSG"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "Audiogram", result: "Left Low Freq SNHL", notes: "Meniere's pattern" },
+      { name: "MRI Brain", result: "Normal", notes: "No tumor" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Betahistine 16mg TID", "Low Salt Diet"] }
+    ]
+  },
+  "Neuromyelitis Optica Spectrum Disorder (NMOSD)": {
+    category: "Neurology / Autoimmune",
+    pathophysiology: "Autoimmune demyelination targeting Aquaporin-4 water channels (AQP4) on astrocytes. Leads to severe necrosis (more than MS) specifically in the Optic Nerves and Spinal Cord.",
+    
+    clinicalFeatures: {
+      symptoms: ["Severe Optic Neuritis (Blindness)", "Transverse Myelitis (Paraplegia)", "Intractable vomiting/hiccups (Area Postrema syndrome)"],
+      signs: ["Bilateral vision loss", "Longitudinally Extensive Transverse Myelitis (LETM > 3 segments)", "Sensory level"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Anti-AQP4 Antibody", finding: "Positive", significance: "Highly specific Gold Standard (NMO-IgG)" },
+      { test: "MRI Spine", finding: "LETM (Long lesion > 3 segments)", significance: "Distinguishes from MS (short segments)" },
+      { test: "MRI Brain", finding: "Normal or periependymal lesions", significance: "Often normal unlike MS" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "MS Mimic.", explanation: "Treating NMO with MS drugs (Interferons/Natalizumab) can WORSEN the disease. Accurate diagnosis is critical." },
+      { pearl: "Area Postrema.", explanation: "Unexplained intractable nausea/hiccups is a classic brainstem relapse sign in NMO." }
+    ],
+    
+    redFlags: ["Bilateral blindness", "Respiratory failure (Cervical cord lesion)", "Severe neuropathic pain", "Tonic spasms"],
+    differentials: ["Multiple Sclerosis", "MOG Antibody Disease", "Acute Disseminated Encephalomyelitis (ADEM)", "Sarcoidosis"],
+
+    managementRationale: [
+      { 
+        drug: "Methylprednisolone", 
+        class: "Corticosteroid", 
+        dose: "1 g", 
+        freq: "IV OD x 5 days", 
+        indication: "Acute Attack", 
+        rationale: "High dose pulse therapy to halt acute inflammation. Follow with Plasma Exchange if poor response." 
+      },
+      { 
+        drug: "Eculizumab", 
+        class: "Monoclonal Antibody (C5 Inhibitor)", 
+        dose: "900-1200 mg", 
+        freq: "IV q2 weeks", 
+        indication: "Maintenance (AQP4+)", 
+        rationale: "Prevents complement-mediated astrocyte destruction. Highly effective." 
+      },
+      { 
+        drug: "Rituximab", 
+        class: "Anti-CD20 mAb", 
+        dose: "1 g", 
+        freq: "IV q6 months", 
+        indication: "Maintenance", 
+        rationale: "Depletes B-cells (source of antibodies); standard off-label preventive therapy." 
+      }
+    ],
+
+    lifestyle: ["Avoid infections (trigger relapses).", "Vaccination (Pneumococcal/Meningococcal) before Eculizumab.", "Cooling vests (heat sensitivity)."],
+    
+    diet: {
+      eat: ["Anti-inflammatory diet"],
+      avoid: ["Salt (if on steroids)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "8,000 /cmm", plt: "250,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "Anti-AQP4", result: "Positive", notes: "Diagnostic" },
+      { name: "MRI Spine", result: "C2-T1 Hyperintensity", notes: "LETM" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Inj. Methylprednisolone 1g", "Plasma Exchange Consult"] }
+    ]
+  },
+
+  "Lambert-Eaton Myasthenic Syndrome (LEMS)": {
+    category: "Neurology / Paraneoplastic",
+    pathophysiology: "Autoantibodies against Presynaptic Voltage-Gated Calcium Channels (VGCC) at the neuromuscular junction, preventing acetylcholine release. 60% cases associated with Small Cell Lung Cancer (SCLC).",
+    
+    clinicalFeatures: {
+      symptoms: ["Leg weakness (difficulty rising from chair)", "Dry mouth", "Erectile dysfunction", "Ptosis (mild)"],
+      signs: ["Areflexia (Absent reflexes)", "Post-tetanic Potentiation (Reflexes return after exercise)", "Waddling gait"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Anti-VGCC Antibody", finding: "Positive", significance: "Confirmatory Serology" },
+      { test: "Repetitive Nerve Stimulation", finding: "Incremental response (>100%)", significance: "Opposite of Myasthenia Gravis (Decremental)" },
+      { test: "CT Chest", finding: "Lung Mass", significance: "Screen for SCLC (mandatory)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Facilitation.", explanation: "Weakness IMPROVES with repetitive use (briefly) as calcium builds up presynaptically, unlike MG where weakness worsens." },
+      { pearl: "Autonomic Signs.", explanation: "Dry mouth, constipation, and impotence are prominent early signs due to autonomic ganglia involvement." }
+    ],
+    
+    redFlags: ["Rapid weight loss (Cancer)", "Hemoptysis", "Respiratory failure (late stage)"],
+    differentials: ["Myasthenia Gravis", "Botulism", "Guillain-Barre Syndrome", "Myopathy"],
+
+    managementRationale: [
+      { 
+        drug: "Amifampridine (3,4-DAP)", 
+        class: "Potassium Channel Blocker", 
+        dose: "15-30 mg", 
+        freq: "TID", 
+        indication: "Symptomatic", 
+        rationale: "Prolongs depolarization, keeping calcium channels open longer to release ACh." 
+      },
+      { 
+        drug: "Pyridostigmine", 
+        class: "AChE Inhibitor", 
+        dose: "60 mg", 
+        freq: "QID", 
+        indication: "Adjunct", 
+        rationale: "Less effective than in MG, but used in combination." 
+      },
+      { 
+        drug: "Chemotherapy (Etoposide/Platinum)", 
+        class: "Antineoplastic", 
+        dose: "Protocol", 
+        freq: "Cycle", 
+        indication: "Underlying SCLC", 
+        rationale: "Treating the cancer often resolves the paraneoplastic syndrome." 
+      }
+    ],
+
+    lifestyle: ["Cancer surveillance.", "Avoid hot baths (worsens weakness).", "Fall prevention."],
+    
+    diet: {
+      eat: ["High calorie (if cancer cachexia)", "Small frequent meals"],
+      avoid: ["Foods requiring vigorous chewing (if bulbar weakness - rare)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "11.0 g/dL", wbc: "9,000 /cmm", plt: "300,000 /cmm", hct: "33%" },
+      progression: [{ day: 1, hb: "11.0 g/dL", wbc: "9,000 /cmm", plt: "300,000 /cmm", hct: "33%" }]
+    },
+    specialTests: [
+      { name: "Anti-VGCC", result: "Positive", notes: "Diagnostic" },
+      { name: "CT Chest", result: "2cm Hilar Mass", notes: "SCLC Suspected" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Amifampridine", "Oncology Referral"] }
+    ]
+  },
+
+  "Narcolepsy": {
+    category: "Neurology / Sleep Medicine",
+    pathophysiology: "Loss of Orexin (Hypocretin) producing neurons in the lateral hypothalamus, leading to inability to stabilize wakefulness and intrusion of REM sleep phenomena into wakefulness.",
+    
+    clinicalFeatures: {
+      symptoms: ["Excessive Daytime Sleepiness (EDS)", "Cataplexy (loss of tone with emotion)", "Sleep Paralysis", "Hypnagogic Hallucinations"],
+      signs: ["Sleep attacks", "Obesity (metabolic change)", "Normal neurological exam"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Polysomnography (PSG)", finding: "Short REM latency (<15 min)", significance: "Rule out apnea/other causes" },
+      { test: "MSLT (Multiple Sleep Latency Test)", finding: "Mean latency < 8 min + 2 SOREMPs", significance: "Gold Standard Diagnosis" },
+      { test: "CSF Hypocretin-1", finding: "Low (<110 pg/mL)", significance: "Specific for Type 1 (with Cataplexy)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Cataplexy Trigger.", explanation: "Sudden muscle weakness triggered specifically by strong emotions like laughter, surprise, or anger." },
+      { pearl: "Sleep Attacks.", explanation: "Patients fall asleep refreshing for 10-15 minutes, unlike the groggy sleep of sleep apnea." }
+    ],
+    
+    redFlags: ["Accidents (Driving)", "Depression", "Social isolation", "Metabolic Syndrome"],
+    differentials: ["Obstructive Sleep Apnea", "Idiopathic Hypersomnia", "Seizures (Atonic)", "Depression"],
+
+    managementRationale: [
+      { 
+        drug: "Modafinil", 
+        class: "Wakefulness Promoter", 
+        dose: "200 mg", 
+        freq: "Morning", 
+        indication: "Daytime Sleepiness", 
+        rationale: "First-line; non-amphetamine stimulant with low abuse potential." 
+      },
+      { 
+        drug: "Sodium Oxybate", 
+        class: "CNS Depressant (GHB)", 
+        dose: "2.25-4.5 g", 
+        freq: "Twice nightly", 
+        indication: "Cataplexy + EDS", 
+        rationale: "Consolidates night sleep to improve day alertness. Highly regulated." 
+      },
+      { 
+        drug: "Venlafaxine", 
+        class: "SNRI", 
+        dose: "75 mg", 
+        freq: "OD", 
+        indication: "Cataplexy", 
+        rationale: "Suppress REM sleep (off-label) to control cataplexy/paralysis." 
+      }
+    ],
+
+    lifestyle: ["Scheduled naps (15 mins every 4 hours).", "Strict sleep hygiene.", "Avoid driving if sleepy."],
+    
+    diet: {
+      eat: ["Light lunches (Heavy meals induce sleep)", "Low carb (prevents post-prandial dip)"],
+      avoid: ["Alcohol (fragments sleep)", "Caffeine late in day"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "14.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "42%" },
+      progression: [{ day: 1, hb: "14.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "42%" }]
+    },
+    specialTests: [
+      { name: "MSLT", result: "Latency 4 min, 3 SOREMPs", notes: "Diagnostic" },
+      { name: "Epworth Scale", result: "18/24", notes: "Severe EDS" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Modafinil 200mg OD", "Scheduled Naps"] }
+    ]
+  },
+
+  "Transverse Myelitis": {
+    category: "Neurology / Autoimmune",
+    pathophysiology: "Focal inflammation of the spinal cord (transverse section) leading to demyelination and axonal injury. Can be idiopathic, post-infectious, or part of MS/NMO.",
+    
+    clinicalFeatures: {
+      symptoms: ["Sudden leg weakness", "Sensory band (tight sensation around torso)", "Urinary retention", "Back pain"],
+      signs: ["Paraparesis/Quadriparesis", "Sensory level", "Babinski positive", "Hyperreflexia (late)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "MRI Spine with Contrast", finding: "Enhancing cord lesion", significance: "Gold Standard (Determine length for NMO vs MS)" },
+      { test: "Lumbar Puncture", finding: "Pleocytosis + High Protein", significance: "Confirms inflammation; rule out infection" },
+      { test: "Autoantibody Panel", finding: "NMO/MOG antibodies", significance: "Determine etiology" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Time Course.", explanation: "Nadir of deficits usually reached within 4 hours to 21 days. Rapid onset (<4h) suggests ischemia (Spinal Stroke) rather than myelitis." },
+      { pearl: "Sensory Level.", explanation: "Dermatomal level of sensory loss pinpoints the spinal cord lesion site (e.g., T10 = Umbilicus)." }
+    ],
+    
+    redFlags: ["Respiratory Compromise (Cervical lesion)", "Spinal Shock (Flaccidity/Areflexia)", "Autonomic Dysreflexia"],
+    differentials: ["Spinal Cord Infarction", "Epidural Abscess", "Guillain-Barre Syndrome", "Disc Herniation"],
+
+    managementRationale: [
+      { 
+        drug: "Methylprednisolone", 
+        class: "Corticosteroid", 
+        dose: "1 g", 
+        freq: "IV OD x 3-5 days", 
+        indication: "Acute Inflammation", 
+        rationale: "Standard first-line therapy to reduce edema and immune attack." 
+      },
+      { 
+        drug: "Plasma Exchange (PLEX)", 
+        class: "Procedure", 
+        dose: "5 sessions", 
+        freq: "Alternate days", 
+        indication: "Steroid Refractory", 
+        rationale: "Removes circulating antibodies; improves recovery in severe cases." 
+      },
+      { 
+        drug: "Baclofen", 
+        class: "Muscle Relaxant", 
+        dose: "10 mg", 
+        freq: "TID", 
+        indication: "Spasticity (Chronic)", 
+        rationale: "Manages long-term stiffness post-recovery." 
+      }
+    ],
+
+    lifestyle: ["Bladder training (Catheterization).", "Physiotherapy (Gait training).", "Skin care (Pressure ulcers)."],
+    
+    diet: {
+      eat: ["High fiber (Constipation management)", "Calcium/Vit D"],
+      avoid: ["Excess calories (reduced mobility obesity risk)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "8,000 /cmm", plt: "220,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "8,000 /cmm", plt: "220,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "MRI Thoracic", result: "T6 Enhancing Lesion", notes: "Short segment" },
+      { name: "NMO IgG", result: "Negative", notes: "Idiopathic likely" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Inj. Solu-Medrol 1g IV", "Foley Catheter"] }
+    ]
+  },
+
+  "Tourette Syndrome": {
+    category: "Neurology / Psychiatry",
+    pathophysiology: "Neurodevelopmental disorder involving dysfunction in cortico-striato-thalamo-cortical circuits and Dopamine hypersensitivity. Characterized by multiple motor and at least one vocal tic.",
+    
+    clinicalFeatures: {
+      symptoms: ["Uncontrollable urges (Premonitory urge)", "Blinking/Grimacing", "Throat clearing/Grunting", "Coprolalia (rare - swearing)"],
+      signs: ["Motor Tics", "Vocal Tics", "Waxing and waning course"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Clinical Criteria", finding: "Multiple motor + 1 vocal tic > 1 year", significance: "DSM-5 Diagnosis" },
+      { test: "Apha-fetoprotein", finding: "N/A", significance: "Diagnosis is purely clinical; rule out Wilson's/ seizures if atypical" },
+      { test: "MRI Brain", finding: "Normal", significance: "Rule out structural causes (PANDAS/Huntington's)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Premonitory Urge.", explanation: "Most patients feel an uncomfortable sensation (itch/tingle) that is relieved by performing the tic." },
+      { pearl: "Comorbidities.", explanation: "ADHD and OCD are present in >50% of patients and often cause more impairment than the tics themselves." }
+    ],
+    
+    redFlags: ["New onset in adulthood (Drug/Tumor)", "Dystonia", "Myoclonus", "Neuroregression"],
+    differentials: ["Transient Tic Disorder", "Sydenham's Chorea", "Wilson's Disease", "Autism Spectrum Disorder"],
+
+    managementRationale: [
+      { 
+        drug: "Clonidine", 
+        class: "Alpha-2 Agonist", 
+        dose: "0.1 mg", 
+        freq: "BD", 
+        indication: "Mild-Moderate Tics / ADHD", 
+        rationale: "Modulates norepinephrine; first-line due to benign side effect profile vs antipsychotics." 
+      },
+      { 
+        drug: "Aripiprazole", 
+        class: "Atypical Antipsychotic", 
+        dose: "2-5 mg", 
+        freq: "OD", 
+        indication: "Severe Tics", 
+        rationale: "Dopamine stabilizer; effective for tic suppression with lower metabolic risk than Risperidone." 
+      },
+      { 
+        drug: "Tetrabenazine", 
+        class: "VMAT2 Inhibitor", 
+        dose: "12.5 mg", 
+        freq: "BD", 
+        indication: "Refractory", 
+        rationale: "Dopamine depleter; avoids tardive dyskinesia risk of neuroleptics." 
+      }
+    ],
+
+    lifestyle: ["CBIT (Comprehensive Behavioral Intervention for Tics).", "School accommodations.", "Stress reduction."],
+    
+    diet: {
+      eat: ["Magnesium/B6 (Anecdotal benefit)", "Balanced diet"],
+      avoid: ["Caffeine (Worsens tics)", "Dyes/Preservatives (Feingold hypothesis - limited evidence)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "YGTSS Score", result: "25/50", notes: "Moderate Impairment" },
+      { name: "EEG", result: "Normal", notes: "No seizures" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Tab. Clonidine 0.1mg BD", "Behavioral Therapy"] }
+    ]
+  },
+  "Spinal Muscular Atrophy (SMA)": {
+    category: "Neurology / Genetic",
+    pathophysiology: "Autosomal Recessive degeneration of anterior horn cells (Lower Motor Neurons) in the spinal cord due to homozygous deletion of the SMN1 gene. SMN2 copy number determines severity (Type 1-4).",
+    
+    clinicalFeatures: {
+      symptoms: ["Hypotonia ('Floppy baby')", "Muscle weakness (Proximal > Distal)", "Poor feeding", "Respiratory distress"],
+      signs: ["Areflexia (Absent DTRs)", "Tongue fasciculations", "Bell-shaped chest (Paradoxical breathing)", "Frog-leg posture"]
+    },
+
+    diagnosticWorkup: [
+      { test: "Genetic Testing (MLPA)", finding: "Homozygous deletion of SMN1 exon 7", significance: "Gold Standard Confirmation" },
+      { test: "CK (Creatine Kinase)", finding: "Normal or mildly elevated", significance: "Distinguishes from Muscular Dystrophy (High CK)" },
+      { test: "EMG", finding: "Neurogenic pattern", significance: "Large amplitude motor units (rarely needed if genetics available)" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "SMN2 Rescue.", explanation: "The severity of SMA is inversely proportional to the number of SMN2 'backup' gene copies. Therapies target this gene to increase functional protein." },
+      { pearl: "Cognition Spared.", explanation: "SMA patients typically have normal or above-average intelligence despite severe motor disability." }
+    ],
+    
+    redFlags: ["Respiratory Failure (Type 2)", "Aspiration Pneumonia", "Scoliosis (Rapid progression)", "Contractures"],
+    differentials: ["Duchenne Muscular Dystrophy", "Prader-Willi Syndrome", "Congenital Myopathy", "Botulism"],
+
+    managementRationale: [
+      { 
+        drug: "Nusinersen", 
+        class: "Antisense Oligonucleotide", 
+        dose: "12 mg", 
+        freq: "Intrathecal (Loading -> q4mo)", 
+        indication: "SMA (All types)", 
+        rationale: "Modifies SMN2 splicing to include exon 7, increasing production of functional SMN protein." 
+      },
+      { 
+        drug: "Risdiplam", 
+        class: "Splicing Modifier", 
+        dose: "Weight based", 
+        freq: "Oral Daily", 
+        indication: "SMA (All types)", 
+        rationale: "Systemic small molecule that crosses BBB; easier administration than intrathecal injections." 
+      },
+      { 
+        drug: "Onasemnogene abeparvovec", 
+        class: "Gene Therapy", 
+        dose: "Single infusion", 
+        freq: "Once lifetime", 
+        indication: "SMA Type 1 (<2 years)", 
+        rationale: "Viral vector (AAV9) delivers a functional copy of the SMN1 gene." 
+      }
+    ],
+
+    lifestyle: ["Respiratory support (BiPAP/Cough Assist).", "Scoliosis bracing.", "Genetic counseling."],
+    
+    diet: {
+      eat: ["High calorie (if failing to thrive)", "Low calorie (if non-ambulatory to prevent obesity)"],
+      avoid: ["Choking hazards (Dysphagia)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "36%" },
+      progression: [{ day: 1, hb: "12.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "36%" }]
+    },
+    specialTests: [
+      { name: "SMN1 Deletion", result: "Positive", notes: "Homozygous" },
+      { name: "SMN2 Copies", result: "2 copies", notes: "Predicts Type 1 (Severe)" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Intrathecal Nusinersen", "BiPAP at night"] }
+    ]
+  },
+
+  "Cerebral Palsy (CP)": {
+    category: "Neurology / Pediatrics",
+    pathophysiology: "Non-progressive disorder of movement and posture caused by damage to the developing brain (fetal or infant). Etiologies include prematurity (PVL), HIE, or kernicterus.",
+    
+    clinicalFeatures: {
+      symptoms: ["Delayed motor milestones", "Stiffness", "Toe walking", "Poor coordination"],
+      signs: ["Spasticity (Clasp-knife)", "Hyperreflexia", "Scissoring gait", "Persistent primitive reflexes (Moro/ATNR)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "MRI Brain", finding: "Periventricular Leukomalacia (PVL)", significance: "Common in ex-preemies (Spastic Diplegia)" },
+      { test: "Clinical Assessment", finding: "GMFCS Level I-V", significance: "Classifies functional mobility severity" },
+      { test: "Metabolic Screen", finding: "Normal", significance: "Rule out progressive metabolic mimics" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Not Progressive.", explanation: "The brain lesion is static; however, musculoskeletal complications (contractures/scoliosis) worsen with growth if untreated." },
+      { pearl: "HIE vs PVL.", explanation: "Hypoxic Ischemic Encephalopathy typically causes Spastic Quadriplegia (Grey matter); PVL causes Spastic Diplegia (White matter/Legs)." }
+    ],
+    
+    redFlags: ["Regression of milestones (suggests metabolic disease)", "Seizures", "Hip Dislocation (Silent)", "Failure to thrive"],
+    differentials: ["Metachromatic Leukodystrophy", "Spinal Cord Tumor", "Duchenne Muscular Dystrophy", "Rett Syndrome"],
+
+    managementRationale: [
+      { 
+        drug: "Baclofen", 
+        class: "Muscle Relaxant", 
+        dose: "Titrated", 
+        freq: "TID / Intrathecal Pump", 
+        indication: "Generalized Spasticity", 
+        rationale: "GABA-B agonist. Reduces tone to improve comfort and hygiene." 
+      },
+      { 
+        drug: "Botulinum Toxin A", 
+        class: "Neurotoxin", 
+        dose: "Muscle/Weight based", 
+        freq: "IM q3-6 months", 
+        indication: "Focal Spasticity", 
+        rationale: "Blocks ACh release. Targets specific muscles (e.g., Gastrocnemius for toe walking) to delay surgery." 
+      },
+      { 
+        drug: "Diazepam", 
+        class: "Benzodiazepine", 
+        dose: "Low dose", 
+        freq: "HS", 
+        indication: "Muscle Spasm / Sleep", 
+        rationale: "Adjunct for severe stiffness affecting sleep." 
+      }
+    ],
+
+    lifestyle: ["Physiotherapy (Stretching/Strengthening).", "Orthotics (AFOs).", "Hip surveillance X-rays."],
+    
+    diet: {
+      eat: ["High fiber (Constipation due to immobility)", "Calcium/Vit D (Osteopenia)"],
+      avoid: ["Aspiration risks (Thicken fluids if dysphagic)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "12.5 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "38%" },
+      progression: [{ day: 1, hb: "12.5 g/dL", wbc: "7,000 /cmm", plt: "250,000 /cmm", hct: "38%" }]
+    },
+    specialTests: [
+      { name: "MRI Brain", result: "PVL", notes: "Spastic Diplegia" },
+      { name: "GMFCS", result: "Level III", notes: "Walks with aid" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Syr. Baclofen 5mg TID", "Physiotherapy"] }
+    ]
+  },
+
+  "Brain Abscess": {
+    category: "Neurology / Infectious Disease",
+    pathophysiology: "Focal pyogenic infection within the brain parenchyma. Arises from direct extension (Otitis/Sinusitis), hematogenous spread (Endocarditis/Lung abscess), or trauma.",
+    
+    clinicalFeatures: {
+      symptoms: ["Headache (severe, localized)", "Fever (50% cases only)", "Seizures", "Focal weakness"],
+      signs: ["Papilledema", "Hemiparesis", "Nuchal rigidity (rare unless ruptured into ventricle)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "MRI Brain with Contrast", finding: "Ring-enhancing lesion with restricted diffusion", significance: "Differentiates abscess (bright on DWI) from tumor" },
+      { test: "Stereotactic Aspiration", finding: "Pus", significance: "Gold Standard for Culture & Sensitivity" },
+      { test: "Blood Culture", finding: "Positive", significance: "Identify source if hematogenous" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Don't Tap.", explanation: "Lumbar Puncture is CONTRAINDICATED in large brain abscesses due to high risk of herniation from mass effect." },
+      { pearl: "Source Rules.", explanation: "Frontal lobe = Sinusitis. Temporal lobe = Otitis Media. Multiple lesions = Hematogenous (Endocarditis)." }
+    ],
+    
+    redFlags: ["Herniation (Cushing's triad)", "Intraventricular rupture (Fatal meningitis)", "Status Epilepticus"],
+    differentials: ["Glioblastoma (Ring enhancing)", "Metastasis", "Toxoplasmosis", "Neurocysticercosis"],
+
+    managementRationale: [
+      { 
+        drug: "Ceftriaxone", 
+        class: "Cephalosporin (3rd Gen)", 
+        dose: "2 g", 
+        freq: "IV BD", 
+        indication: "Empiric Therapy", 
+        rationale: "Excellent CNS penetration; covers Strep and Gram-negatives." 
+      },
+      { 
+        drug: "Metronidazole", 
+        class: "Nitroimidazole", 
+        dose: "500 mg", 
+        freq: "IV Q8H", 
+        indication: "Empiric Therapy", 
+        rationale: "Covers Anaerobes (Bacteroides) common in dental/sinus sources." 
+      },
+      { 
+        drug: "Vancomycin", 
+        class: "Glycopeptide", 
+        dose: "15-20 mg/kg", 
+        freq: "IV BD", 
+        indication: "MRSA Coverage", 
+        rationale: "Added if post-neurosurgery or trauma." 
+      }
+    ],
+
+    lifestyle: ["Seizure precautions.", "Dental hygiene (Source control).", "ENT evaluation."],
+    
+    diet: {
+      eat: ["High protein (healing)", "NPO if surgery planned"],
+      avoid: ["None specific"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "16,000 /cmm (Neutrophilia)", plt: "250,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "16,000 /cmm", plt: "250,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "MRI DWI", result: "Restricted Diffusion", notes: "Pus confirmed" },
+      { name: "Culture", result: "Streptococcus milleri", notes: "Sensitive to Penicillin" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Inj. Ceftriaxone + Metronidazole", "Neurosurgical Drainage"] }
+    ]
+  },
+
+  "Rabies": {
+    category: "Infectious Disease / Neurology",
+    pathophysiology: "Fatal viral encephalitis (Lyssavirus) transmitted by animal bite (Dog/Bat). Virus travels retrograde via peripheral nerves to CNS, causing Negri bodies and neuronal destruction.",
+    
+    clinicalFeatures: {
+      symptoms: ["Hydrophobia (Fear of water - laryngeal spasm)", "Aerophobia", "Agitation/Aggression (Furious)", "Paralysis (Dumb)"],
+      signs: ["Autonomic instability (Hypersalivation/Sweating)", "Fever", "Coma (late)"]
+    },
+
+    diagnosticWorkup: [
+      { test: "nuchal Skin Biopsy", finding: "Viral Antigen (DFA)", significance: "Antemortem diagnosis (High specificity)" },
+      { test: "Saliva PCR", finding: "Positive", significance: "Viral shedding detection" },
+      { test: "MRI Brain", finding: "Normal or nonspecific inflammation", significance: "Rule out other encephalitis" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "100% Fatal.", explanation: "Once symptoms appear, Rabies is universally fatal. Prevention (PEP) is the ONLY cure." },
+      { pearl: "Wound Washing.", explanation: "Immediate washing with soap/water for 15 minutes reduces viral load by 50%." }
+    ],
+    
+    redFlags: ["Bite on Face/Neck (Short incubation)", "Category III exposure (Transdermal bite)", "Wildlife vector"],
+    differentials: ["Tetanus (Trismus vs Hydrophobia)", "Viral Encephalitis", "Psychosis", "Strychnine poisoning"],
+
+    managementRationale: [
+      { 
+        drug: "Rabies Immunoglobulin (RIG)", 
+        class: "Passive Immunity", 
+        dose: "20 IU/kg", 
+        freq: "Stat (Day 0)", 
+        indication: "Category III Bite", 
+        rationale: "Infiltrate into/around the wound to neutralize virus before nerve entry. Lifesaving." 
+      },
+      { 
+        drug: "Rabies Vaccine", 
+        class: "Active Immunity", 
+        dose: "0.5/1 ml (IM/ID)", 
+        freq: "Day 0, 3, 7, 14, 28", 
+        indication: "Post-Exposure Prophylaxis", 
+        rationale: "Stimulates antibody production. Never give in same syringe/site as RIG." 
+      },
+      { 
+        drug: "Midazolam / Haloperidol", 
+        class: "Sedative", 
+        dose: "Titrated", 
+        freq: "PRN", 
+        indication: "Symptomatic Care", 
+        rationale: "Palliation for agitation and spasms in established disease." 
+      }
+    ],
+
+    lifestyle: ["Dog vaccination.", "Avoid contact with stray animals.", "Palliative care if symptomatic."],
+    
+    diet: {
+      eat: ["IV Fluids (Hydrophobia prevents drinking)"],
+      avoid: ["Oral intake (trigger spasms)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "N", wbc: "N", plt: "N", hct: "N" },
+      progression: [{ day: 1, hb: "N", wbc: "N", plt: "N", hct: "N" }]
+    },
+    specialTests: [
+      { name: "Direct Fluorescent Antibody", result: "Positive", notes: "Nuchal Skin" },
+      { name: "CSF", result: "Lymphocytic Pleocytosis", notes: "Encephalitis" }
+    ],
+    treatment: [
+      { day: 1, meds: ["Palliative Sedation", "Isolation"] }
+    ]
+  },
+
+  "Normal Pressure Hydrocephalus (NPH)": {
+    category: "Neurology / Geriatrics",
+    pathophysiology: "Accumulation of CSF leading to ventriculomegaly without significant elevation in intracranial pressure. Compression of periventricular white matter tracts causes the clinical triad.",
+    
+    clinicalFeatures: {
+      symptoms: ["Gait disturbance ('Magnetic gait')", "Urinary Incontinence", "Dementia (Cognitive slowing)"],
+      signs: ["Wide-based gait", "Hyperreflexia (legs)", "Apraxia"]
+    },
+
+    diagnosticWorkup: [
+      { test: "MRI Brain", finding: "Ventriculomegaly disproportionate to atrophy", significance: "Evan's Index > 0.3" },
+      { test: "Large Volume Lumbar Puncture (Tap Test)", finding: "Gait improvement", significance: "Predicts shunt responsiveness" },
+      { test: "CSF Flow Study", finding: "Hyperdynamic flow", significance: "Aqueductal stroke volume" }
+    ],
+
+    clinicalPearls: [
+      { pearl: "Wet, Wacky, Wobbly.", explanation: "The classic triad: Incontinence (Wet), Dementia (Wacky), Gait (Wobbly). Gait usually appears FIRST." },
+      { pearl: "Reversible Dementia.", explanation: "One of the few treatable causes of dementia. Shunting improves gait most, cognition least." }
+    ],
+    
+    redFlags: ["Rapid decline", "Papilledema (Not NPH - High pressure)", "Obstructive Hydrocephalus"],
+    differentials: ["Alzheimer's Disease", "Parkinson's Disease", "Vascular Dementia", "Lumbar Stenosis"],
+
+    managementRationale: [
+      { 
+        drug: "Acetazolamide", 
+        class: "Carbonic Anhydrase Inhibitor", 
+        dose: "250-500 mg", 
+        freq: "BD", 
+        indication: "Non-surgical candidate", 
+        rationale: "Reduces CSF production. Limited efficacy compared to surgery." 
+      },
+      { 
+        drug: "Ventriculoperitoneal (VP) Shunt", 
+        class: "Surgical Device", 
+        dose: "N/A", 
+        freq: "Continuous", 
+        indication: "Definitive Treatment", 
+        rationale: "Drains excess CSF to peritoneal cavity. Programmable valves prevent over-drainage." 
+      }
+    ],
+
+    lifestyle: ["Fall precautions.", "Timed voiding (bladder training).", "Gait rehabilitation."],
+    
+    diet: {
+      eat: ["Fiber (prevent constipation)", "Hydration"],
+      avoid: ["Excess Caffeine (Urgency)"]
+    },
+
+    // Legacy Data
+    hematology: {
+      baseline: { hb: "13.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "39%" },
+      progression: [{ day: 1, hb: "13.0 g/dL", wbc: "6,000 /cmm", plt: "250,000 /cmm", hct: "39%" }]
+    },
+    specialTests: [
+      { name: "Tap Test", result: "Gait improved", notes: "Responder" },
+      { name: "Evan's Index", result: "0.35", notes: "Ventriculomegaly" }
+    ],
+    treatment: [
+      { day: 1, meds: ["VP Shunt Surgery Referral", "Physiotherapy"] }
+    ]
   }
 };
