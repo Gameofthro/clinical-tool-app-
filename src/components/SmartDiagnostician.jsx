@@ -5,7 +5,7 @@ import {
   BookOpen, AlertOctagon, Microscope, ClipboardList
 } from 'lucide-react';
 
-// IMPORT DATABASE
+// ✅ FIX 1: Correct Import Path (Up one level to src, then to data)
 import { diseaseDatabase } from '../data/diseases';
 
 // --- Helper: Clean Text for Matching ---
@@ -41,15 +41,24 @@ export default function App() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchContainerRef = useRef(null);
 
-  // --- 1. Flatten Symptom List from Detailed Schema ---
+  // --- ✅ FIX 2: Correctly Extract Symptoms from Detailed Schema ---
   const availableSymptoms = useMemo(() => {
     const allKeys = new Set();
     if (diseaseDatabase) {
       Object.values(diseaseDatabase).forEach(disease => {
-        // Look in clinicalFeatures.symptoms AND signs
-        const symptoms = disease.clinicalFeatures?.symptoms || [];
-        const signs = disease.clinicalFeatures?.signs || [];
-        [...symptoms, ...signs].forEach(s => allKeys.add(s));
+        // 1. Check for Detailed Schema (clinicalFeatures array)
+        if (disease.clinicalFeatures) {
+            const syms = disease.clinicalFeatures.symptoms || [];
+            const signs = disease.clinicalFeatures.signs || [];
+            [...syms, ...signs].forEach(s => allKeys.add(s));
+        }
+        // 2. Check for Simple Schema (symptoms object keys)
+        else if (disease.symptoms && typeof disease.symptoms === 'object' && !Array.isArray(disease.symptoms)) {
+             Object.keys(disease.symptoms).forEach(key => {
+                 // Convert "abdominal_pain" -> "Abdominal Pain" for display
+                 allKeys.add(key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
+             });
+        }
       });
     }
     return Array.from(allKeys).sort();
@@ -99,6 +108,7 @@ export default function App() {
         const cleanText = text.replace(/```json|```/g, '').trim();
         const foundKeys = JSON.parse(cleanText);
         
+        // Filter to ensure we only add valid symptoms from our list
         const newSymptoms = foundKeys.filter(key => availableSymptoms.includes(key));
         if (newSymptoms.length > 0) {
           setSelectedSymptoms(prev => [...new Set([...prev, ...newSymptoms])]);
@@ -107,6 +117,7 @@ export default function App() {
       }
     } catch (e) {
       console.warn("AI Search failed, using local match", e);
+      // Fallback
       if (localSuggestions.length > 0) {
          setSelectedSymptoms(prev => [...prev, localSuggestions[0]]);
          setSearchQuery('');
@@ -120,10 +131,11 @@ export default function App() {
   const handleDrugClick = async (drugName, existingData) => {
     setSelectedDrug(drugName);
     
+    // Fallback Data (Shows immediately)
     const fallbackData = {
         drugClass: existingData?.class || "Pharmacological Agent",
         dosing: `${existingData?.dose || 'See Rx'} • ${existingData?.freq || ''}`,
-        mechanismOfAction: existingData?.rationale || "Loading mechanism...",
+        mechanismOfAction: existingData?.rationale || "Mechanism details loading...",
         commonSideEffects: ["Consult local formulary"],
         seriousAdverseReactions: [],
         isFallback: true
@@ -166,7 +178,7 @@ export default function App() {
     }
   };
 
-  // --- 5. Differential Engine (Updated for Arrays) ---
+  // --- ✅ FIX 3: Differential Engine (Compatible with Arrays) ---
   const results = useMemo(() => {
     if (selectedSymptoms.length === 0 || !diseaseDatabase) return [];
 
@@ -174,22 +186,34 @@ export default function App() {
       let matchCount = 0;
       let matchedSymptoms = [];
 
-      // Combine symptoms and signs for matching
-      const diseaseFeatures = [
-        ...(condition.clinicalFeatures?.symptoms || []), 
-        ...(condition.clinicalFeatures?.signs || [])
-      ];
+      // Unified Feature Extraction (Handles both schemas)
+      let diseaseFeatures = [];
+      
+      if (condition.clinicalFeatures) {
+          // Detailed Schema
+          diseaseFeatures = [
+            ...(condition.clinicalFeatures.symptoms || []), 
+            ...(condition.clinicalFeatures.signs || [])
+          ];
+      } else if (condition.symptoms) {
+          // Simple Schema
+          diseaseFeatures = Object.keys(condition.symptoms).map(k => 
+            k.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+          );
+      }
 
+      // Matching Logic
       selectedSymptoms.forEach(sel => {
-        if (diseaseFeatures.includes(sel)) {
+        // Check for exact match or substring match
+        if (diseaseFeatures.some(f => f.includes(sel) || sel.includes(f))) {
           matchCount++;
           matchedSymptoms.push(sel);
         }
       });
 
-      // Simple Scoring: (Matches / Total Selected) * 100
-      // Adjusted by total disease symptoms to favor specificity
-      const coverage = diseaseFeatures.length > 0 ? (matchCount / diseaseFeatures.length) * 100 : 0;
+      // Simple Scoring
+      const totalFeatures = diseaseFeatures.length || 1;
+      const coverage = (matchCount / totalFeatures) * 100;
       let score = coverage;
 
       // Age Modifiers
@@ -199,12 +223,12 @@ export default function App() {
       return { 
         ...condition, 
         id: key,
-        name: key, // Or condition.name if available
+        name: condition.name || key, 
         score: Math.min(score, 100).toFixed(0), 
         matchedSymptoms 
       };
     })
-    .filter(c => c.score > 0) // Show anything with a match
+    .filter(c => c.score > 0) // Show any matches
     .sort((a, b) => b.score - a.score);
   }, [selectedSymptoms, age]);
 
@@ -335,9 +359,9 @@ export default function App() {
                     <div className="relative z-10 flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-bold text-slate-800 dark:text-slate-100">{r.id}</h3>
+                          <h3 className="font-bold text-slate-800 dark:text-slate-100">{r.name}</h3>
                           {/* Fallback for urgency since detailed schema might not have it in root */}
-                          {r.redFlags && r.redFlags.length > 0 && <Badge type="Critical">Red Flags Present</Badge>}
+                          {r.redFlags && r.redFlags.length > 0 && <Badge type="Critical">Red Flags</Badge>}
                         </div>
                         <p className="text-xs text-slate-500 line-clamp-1">{r.pathophysiology}</p>
                       </div>
@@ -357,7 +381,7 @@ export default function App() {
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-2xl border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10 flex justify-between items-center">
               <div>
-                <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{selectedCondition.id}</h2>
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{selectedCondition.name}</h2>
                 <span className="text-xs text-slate-400 uppercase tracking-wider">{selectedCondition.category}</span>
               </div>
               <button onClick={() => setSelectedCondition(null)}><X className="h-6 w-6 text-slate-400 hover:text-red-500" /></button>
