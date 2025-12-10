@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { 
   Activity, Search, X, Trash2, Zap, Info, Stethoscope, 
-  AlertTriangle, Pill, Sparkles, Loader2, Utensils, Sun
+  AlertTriangle, Pill, Sparkles, Loader2, Utensils, Sun,
+  BookOpen, AlertOctagon, Microscope
 } from 'lucide-react';
 
-// ✅ FIX: Use '../' to go up from 'components' to 'src', then into 'data'
+// IMPORT DATABASE
 import { diseaseDatabase } from '../data/diseases';
 
 // --- Helper: Auto-Format Keys to Labels ---
@@ -49,12 +50,13 @@ export default function App() {
   // --- 1. Flatten Symptom List for Autocomplete ---
   const availableSymptoms = useMemo(() => {
     const allKeys = new Set();
+    // Safety check
     if (diseaseDatabase) {
-        Object.values(diseaseDatabase).forEach(disease => {
+      Object.values(diseaseDatabase).forEach(disease => {
         if (disease.symptoms) { 
-            Object.keys(disease.symptoms).forEach(key => allKeys.add(key));
+           Object.keys(disease.symptoms).forEach(key => allKeys.add(key));
         }
-        });
+      });
     }
     return Array.from(allKeys).sort();
   }, []);
@@ -69,11 +71,11 @@ export default function App() {
         !selectedSymptoms.find(s => s.id === key) && 
         key.toLowerCase().includes(lowerQuery)
       )
-      .slice(0, 8) 
+      .slice(0, 10) 
       .map(key => ({ id: key, label: formatLabel(key) }));
   }, [searchQuery, availableSymptoms, selectedSymptoms]);
 
-  // --- 3. AI Symptom Mapper ---
+  // --- 3. AI Symptom Mapper (On Demand) ---
   const handleAiSearch = async () => {
     if (!searchQuery.trim()) return;
     setIsAiLoading(true);
@@ -83,11 +85,9 @@ export default function App() {
       const prompt = `
         Act as a medical terminology mapper.
         User Input: "${searchQuery}"
-        Map the input to the closest matching symptom keys from this list:
+        Map the user's input to the closest matching symptom keys from this list:
         ${JSON.stringify(availableSymptoms)}
-        
-        Return ONLY a JSON array of strings. Example: ["abdominal_pain"]. 
-        If no match found, return [].
+        Return ONLY a JSON array of strings. Example: ["abdominal_pain"].
       `;
 
       const response = await fetch('/api/diagnose', {
@@ -96,14 +96,18 @@ export default function App() {
         body: JSON.stringify({ prompt })
       });
 
-      if (!response.ok) throw new Error("Server API Error");
+      if (!response.ok) throw new Error("API Error");
 
       const data = await response.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      // Handle different Gemini response structures
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 
+                   data.result || ""; 
       
       if (text) {
         const cleanText = text.replace(/```json|```/g, '').trim();
         const foundKeys = JSON.parse(cleanText);
+        
+        // Filter valid keys
         const newSymptoms = foundKeys.filter(key => availableSymptoms.includes(key));
         
         if (newSymptoms.length > 0) {
@@ -111,21 +115,36 @@ export default function App() {
           const toAdd = newSymptoms
             .filter(id => !currentIds.has(id))
             .map(id => ({ id, label: formatLabel(id) }));
+            
           setSelectedSymptoms(prev => [...prev, ...toAdd]);
           setSearchQuery('');
         }
       }
     } catch (e) {
-      console.warn("AI Search failed", e);
+      console.warn("AI Search failed, falling back to local match", e);
+      // Fallback: If AI fails, add exact local match if it exists
+      if (localSuggestions.length > 0) {
+         const firstMatch = localSuggestions[0];
+         setSelectedSymptoms(prev => [...prev, firstMatch]);
+         setSearchQuery('');
+      }
     } finally {
       setIsAiLoading(false);
     }
   };
 
-  // --- 4. Pharmacology AI Engine ---
-  const handleDrugClick = async (drugName) => {
+  // --- 4. Pharmacology Engine (Robust) ---
+  const handleDrugClick = async (drugName, existingData) => {
     setSelectedDrug(drugName);
-    setDrugData(null); 
+    
+    // 1. Initialize with basic data we already have (Fallback)
+    setDrugData({
+        drugClass: existingData.class || "Loading...",
+        dosing: `${existingData.dose} • ${existingData.freq}`,
+        mechanismOfAction: existingData.rationale || "Loading...",
+        isFallback: true
+    });
+    
     setIsDrugLoading(true);
 
     try {
@@ -142,7 +161,7 @@ export default function App() {
           "seriousAdverseReactions": ["Serious ADR 1", "Serious ADR 2"],
           "contraindications": "Key contraindications"
         }
-        Do not include markdown formatting. Just raw JSON.
+        Do not include markdown. Just JSON.
       `;
 
       const response = await fetch('/api/diagnose', {
@@ -151,7 +170,7 @@ export default function App() {
         body: JSON.stringify({ prompt })
       });
 
-      if (!response.ok) throw new Error("Drug API Error");
+      if (!response.ok) throw new Error("API Error");
 
       const data = await response.json();
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -159,11 +178,17 @@ export default function App() {
       if (text) {
         const cleanText = text.replace(/```json|```/g, '').trim();
         const parsedData = JSON.parse(cleanText);
-        setDrugData(parsedData);
+        setDrugData({ ...parsedData, isFallback: false }); // Success!
       }
     } catch (e) {
       console.error("Drug Info Fetch Error", e);
-      setDrugData({ error: "Failed to load pharmacological data. Check API connection." });
+      // Keep showing the fallback data we set earlier, just update status
+      setDrugData(prev => ({ 
+          ...prev, 
+          commonSideEffects: ["AI Unavailable - Check BNF/MIMS"],
+          seriousAdverseReactions: ["Check local protocols"],
+          isFallback: true
+      }));
     } finally {
       setIsDrugLoading(false);
     }
@@ -199,7 +224,7 @@ export default function App() {
         matchedSymptoms 
       };
     })
-    .filter(c => c.score > 15)
+    .filter(c => c.score > 15) 
     .sort((a, b) => b.score - a.score);
   }, [selectedSymptoms, age]);
 
@@ -223,6 +248,7 @@ export default function App() {
           <Activity className="h-6 w-6" />
           <span className="font-bold text-lg tracking-tight">SmartDiagnostician</span>
         </div>
+        <div className="text-xs font-medium text-slate-400 hidden sm:block">Pharm.D Clinical Decision Support</div>
       </div>
 
       <main className="max-w-5xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -245,6 +271,7 @@ export default function App() {
               <div className="flex items-center px-4 py-3">
                 <Search className="h-5 w-5 text-slate-400 mr-3" />
                 <input
+                  ref={searchInputRef}
                   type="text"
                   value={searchQuery}
                   onFocus={() => setShowSuggestions(true)}
@@ -253,7 +280,7 @@ export default function App() {
                     setShowSuggestions(true);
                   }}
                   onKeyDown={(e) => e.key === 'Enter' && handleAiSearch()}
-                  placeholder="Type symptoms (e.g. 'black urine')..."
+                  placeholder="Type symptoms (e.g. 'fever')..."
                   className="flex-1 bg-transparent outline-none text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
                 />
                 <button 
@@ -266,7 +293,7 @@ export default function App() {
                 </button>
               </div>
 
-              {/* Suggestions Dropdown */}
+              {/* Suggestions Dropdown (Instant Local) */}
               {showSuggestions && localSuggestions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto z-50">
                   {localSuggestions.map(sym => (
@@ -276,6 +303,7 @@ export default function App() {
                         setSelectedSymptoms(prev => [...prev, sym]);
                         setSearchQuery('');
                         setShowSuggestions(false);
+                        searchInputRef.current?.focus();
                       }}
                       className="w-full text-left px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 border-b border-slate-50 dark:border-slate-800 last:border-0 text-sm text-slate-700 dark:text-slate-200"
                     >
@@ -325,7 +353,7 @@ export default function App() {
                   <p>Waiting for clinical inputs...</p>
                 </div>
               ) : results.length === 0 ? (
-                <div className="text-center p-8 text-slate-400">No clear pattern found.</div>
+                <div className="text-center p-8 text-slate-400">No clear pattern found based on selected symptoms.</div>
               ) : (
                 results.map((r, i) => (
                   <button 
@@ -383,7 +411,7 @@ export default function App() {
                         <div className="flex justify-between items-center">
                           {/* AI Trigger Button */}
                           <button 
-                            onClick={() => handleDrugClick(m.drug)}
+                            onClick={() => handleDrugClick(m.drug, m)}
                             className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline text-left flex items-center gap-1 group"
                           >
                             {m.drug}
@@ -452,29 +480,32 @@ export default function App() {
             </div>
             
             <div className="p-6 max-h-[70vh] overflow-y-auto">
-              {isDrugLoading ? (
+              {isDrugLoading && !drugData ? (
                 <div className="flex flex-col items-center justify-center py-8 text-slate-400 gap-3">
                   <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
                   <p className="text-xs">Consulting Pharmacology Database...</p>
                 </div>
               ) : drugData ? (
-                drugData.error ? (
-                  <div className="text-red-500 text-center text-sm">{drugData.error}</div>
-                ) : (
-                  <div className="space-y-4 text-sm">
-                    <div>
-                      <h4 className="text-xs font-bold uppercase text-slate-400 mb-1">Class</h4>
-                      <p className="font-medium text-slate-800 dark:text-slate-200">{drugData.drugClass}</p>
+                <div className="space-y-4 text-sm animate-in fade-in">
+                  {drugData.isFallback && (
+                    <div className="bg-amber-50 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200 p-2 rounded text-xs text-center border border-amber-200 dark:border-amber-800">
+                      Live AI Unavailable. Showing standard database info.
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold uppercase text-slate-400 mb-1">Mechanism</h4>
-                      <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{drugData.mechanismOfAction}</p>
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold uppercase text-slate-400 mb-1">Standard Dosing</h4>
-                      <p className="text-slate-600 dark:text-slate-400 font-mono text-xs bg-slate-100 dark:bg-slate-800 p-2 rounded">{drugData.dosing}</p>
-                    </div>
-                    
+                  )}
+                  <div>
+                    <h4 className="text-xs font-bold uppercase text-slate-400 mb-1">Class</h4>
+                    <p className="font-medium text-slate-800 dark:text-slate-200">{drugData.drugClass}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold uppercase text-slate-400 mb-1">Mechanism</h4>
+                    <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{drugData.mechanismOfAction}</p>
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold uppercase text-slate-400 mb-1">Standard Dosing</h4>
+                    <p className="text-slate-600 dark:text-slate-400 font-mono text-xs bg-slate-100 dark:bg-slate-800 p-2 rounded">{drugData.dosing}</p>
+                  </div>
+                  
+                  {drugData.commonSideEffects && (
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <h4 className="text-xs font-bold uppercase text-slate-400 mb-1">Common ADRs</h4>
@@ -483,14 +514,14 @@ export default function App() {
                         </ul>
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold uppercase text-red-400 mb-1 flex items-center gap-1"><AlertTriangle className="h-3 w-3"/> Serious</h4>
+                        <h4 className="text-xs font-bold uppercase text-red-400 mb-1 flex items-center gap-1"><AlertOctagon className="h-3 w-3"/> Serious</h4>
                         <ul className="list-disc pl-3 text-red-600 dark:text-red-400 space-y-0.5">
                           {drugData.seriousAdverseReactions?.map((e, i) => <li key={i}>{e}</li>)}
                         </ul>
                       </div>
                     </div>
-                  </div>
-                )
+                  )}
+                </div>
               ) : null}
             </div>
           </div>
