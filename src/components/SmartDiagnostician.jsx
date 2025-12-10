@@ -2,20 +2,14 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { 
   Activity, Search, X, Trash2, Zap, Info, Stethoscope, 
   AlertTriangle, Pill, Sparkles, Loader2, Utensils, Sun,
-  BookOpen, AlertOctagon, Microscope
+  BookOpen, AlertOctagon, Microscope, ClipboardList
 } from 'lucide-react';
 
 // IMPORT DATABASE
 import { diseaseDatabase } from '../data/diseases';
 
-// --- Helper: Auto-Format Keys to Labels ---
-const formatLabel = (key) => {
-  if (!key) return '';
-  return key
-    .split('_')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
+// --- Helper: Clean Text for Matching ---
+const normalize = (text) => text?.toLowerCase().trim() || '';
 
 // --- Components ---
 const Badge = ({ children, type }) => {
@@ -47,15 +41,15 @@ export default function App() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchContainerRef = useRef(null);
 
-  // --- 1. Flatten Symptom List for Autocomplete ---
+  // --- 1. Flatten Symptom List from Detailed Schema ---
   const availableSymptoms = useMemo(() => {
     const allKeys = new Set();
-    // Safety check
     if (diseaseDatabase) {
       Object.values(diseaseDatabase).forEach(disease => {
-        if (disease.symptoms) { 
-           Object.keys(disease.symptoms).forEach(key => allKeys.add(key));
-        }
+        // Look in clinicalFeatures.symptoms AND signs
+        const symptoms = disease.clinicalFeatures?.symptoms || [];
+        const signs = disease.clinicalFeatures?.signs || [];
+        [...symptoms, ...signs].forEach(s => allKeys.add(s));
       });
     }
     return Array.from(allKeys).sort();
@@ -64,18 +58,17 @@ export default function App() {
   // --- 2. Live Local Search (Continuous) ---
   const localSuggestions = useMemo(() => {
     if (!searchQuery) return [];
-    const lowerQuery = searchQuery.toLowerCase().replace(/ /g, '_');
+    const lowerQuery = normalize(searchQuery);
     
     return availableSymptoms
-      .filter(key => 
-        !selectedSymptoms.find(s => s.id === key) && 
-        key.toLowerCase().includes(lowerQuery)
+      .filter(sym => 
+        !selectedSymptoms.includes(sym) && 
+        normalize(sym).includes(lowerQuery)
       )
-      .slice(0, 10) 
-      .map(key => ({ id: key, label: formatLabel(key) }));
+      .slice(0, 10);
   }, [searchQuery, availableSymptoms, selectedSymptoms]);
 
-  // --- 3. AI Symptom Mapper (On Demand) ---
+  // --- 3. AI Symptom Mapper ---
   const handleAiSearch = async () => {
     if (!searchQuery.trim()) return;
     setIsAiLoading(true);
@@ -85,9 +78,10 @@ export default function App() {
       const prompt = `
         Act as a medical terminology mapper.
         User Input: "${searchQuery}"
-        Map the user's input to the closest matching symptom keys from this list:
-        ${JSON.stringify(availableSymptoms)}
-        Return ONLY a JSON array of strings. Example: ["abdominal_pain"].
+        Map the user's input to the closest matching symptom strings from this list:
+        ${JSON.stringify(availableSymptoms.slice(0, 500))} 
+        
+        Return ONLY a JSON array of strings. Example: ["Nausea", "Headache"].
       `;
 
       const response = await fetch('/api/diagnose', {
@@ -99,33 +93,22 @@ export default function App() {
       if (!response.ok) throw new Error("API Error");
 
       const data = await response.json();
-      // Handle different Gemini response structures
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 
-                   data.result || ""; 
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || data.result;
       
       if (text) {
         const cleanText = text.replace(/```json|```/g, '').trim();
         const foundKeys = JSON.parse(cleanText);
         
-        // Filter valid keys
         const newSymptoms = foundKeys.filter(key => availableSymptoms.includes(key));
-        
         if (newSymptoms.length > 0) {
-          const currentIds = new Set(selectedSymptoms.map(s => s.id));
-          const toAdd = newSymptoms
-            .filter(id => !currentIds.has(id))
-            .map(id => ({ id, label: formatLabel(id) }));
-            
-          setSelectedSymptoms(prev => [...prev, ...toAdd]);
+          setSelectedSymptoms(prev => [...new Set([...prev, ...newSymptoms])]);
           setSearchQuery('');
         }
       }
     } catch (e) {
-      console.warn("AI Search failed, falling back to local match", e);
-      // Fallback: If AI fails, add exact local match if it exists
+      console.warn("AI Search failed, using local match", e);
       if (localSuggestions.length > 0) {
-         const firstMatch = localSuggestions[0];
-         setSelectedSymptoms(prev => [...prev, firstMatch]);
+         setSelectedSymptoms(prev => [...prev, localSuggestions[0]]);
          setSearchQuery('');
       }
     } finally {
@@ -133,15 +116,14 @@ export default function App() {
     }
   };
 
-  // --- 4. Pharmacology Engine (Crash-Proof) ---
+  // --- 4. Pharmacology Engine ---
   const handleDrugClick = async (drugName, existingData) => {
     setSelectedDrug(drugName);
     
-    // 1. IMMEDIATE FALLBACK: Set basic data so modal is never empty
     const fallbackData = {
-        drugClass: existingData.class || "Pharmacological Agent",
-        dosing: `${existingData.dose} • ${existingData.freq}`,
-        mechanismOfAction: existingData.rationale || "Mechanism details loading...",
+        drugClass: existingData?.class || "Pharmacological Agent",
+        dosing: `${existingData?.dose || 'See Rx'} • ${existingData?.freq || ''}`,
+        mechanismOfAction: existingData?.rationale || "Loading mechanism...",
         commonSideEffects: ["Consult local formulary"],
         seriousAdverseReactions: [],
         isFallback: true
@@ -152,19 +134,15 @@ export default function App() {
 
     try {
       const prompt = `
-        Act as a Clinical Pharmacologist.
-        Provide a concise pharmacological summary for the drug: "${drugName}".
-        
-        Return a JSON object with exactly these keys:
+        Act as a Clinical Pharmacologist. Drug: "${drugName}".
+        Return JSON (no markdown):
         {
-          "drugClass": "Pharmacological Class",
-          "mechanismOfAction": "1-2 sentences on MOA",
-          "dosing": "Standard adult dosing range",
-          "commonSideEffects": ["Side Effect 1", "Side Effect 2"],
-          "seriousAdverseReactions": ["Serious ADR 1", "Serious ADR 2"],
-          "contraindications": "Key contraindications"
+          "drugClass": "Class",
+          "mechanismOfAction": "MOA (2 sentences)",
+          "dosing": "Adult dosing range",
+          "commonSideEffects": ["SE1", "SE2"],
+          "seriousAdverseReactions": ["ADR1", "ADR2"]
         }
-        Do not include markdown. Just JSON.
       `;
 
       const response = await fetch('/api/diagnose', {
@@ -172,8 +150,6 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt })
       });
-
-      if (!response.ok) throw new Error("API Error");
 
       const data = await response.json();
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -184,49 +160,55 @@ export default function App() {
         setDrugData({ ...parsedData, isFallback: false }); 
       }
     } catch (e) {
-      console.error("Drug Info Fetch Error", e);
-      // Even if AI fails, we stick with the fallback data we already set
-      // We just stop the loading spinner
+      console.error("Drug fetch error", e);
     } finally {
       setIsDrugLoading(false);
     }
   };
 
-  // --- 5. Differential Engine ---
+  // --- 5. Differential Engine (Updated for Arrays) ---
   const results = useMemo(() => {
     if (selectedSymptoms.length === 0 || !diseaseDatabase) return [];
 
     return Object.entries(diseaseDatabase).map(([key, condition]) => {
-      let score = 0;
-      let maxScore = 0;
+      let matchCount = 0;
       let matchedSymptoms = [];
 
-      Object.entries(condition.symptoms || {}).forEach(([sId, weight]) => {
-        maxScore += weight;
-        const found = selectedSymptoms.find(s => s.id === sId);
-        if (found) {
-          score += weight;
-          matchedSymptoms.push(formatLabel(sId));
+      // Combine symptoms and signs for matching
+      const diseaseFeatures = [
+        ...(condition.clinicalFeatures?.symptoms || []), 
+        ...(condition.clinicalFeatures?.signs || [])
+      ];
+
+      selectedSymptoms.forEach(sel => {
+        if (diseaseFeatures.includes(sel)) {
+          matchCount++;
+          matchedSymptoms.push(sel);
         }
       });
 
+      // Simple Scoring: (Matches / Total Selected) * 100
+      // Adjusted by total disease symptoms to favor specificity
+      const coverage = diseaseFeatures.length > 0 ? (matchCount / diseaseFeatures.length) * 100 : 0;
+      let score = coverage;
+
+      // Age Modifiers
       const ageNum = parseInt(age);
-      if (ageNum > 60 && ["High", "Critical"].includes(condition.urgency)) score += 5;
-      
-      const probability = maxScore > 0 ? (score / maxScore) * 100 : 0;
+      if (ageNum > 60 && ["High", "Critical"].includes(condition.urgency)) score += 10;
 
       return { 
         ...condition, 
-        id: key, 
-        score: Math.min(probability, 100).toFixed(0), 
+        id: key,
+        name: key, // Or condition.name if available
+        score: Math.min(score, 100).toFixed(0), 
         matchedSymptoms 
       };
     })
-    .filter(c => c.score > 15) 
+    .filter(c => c.score > 0) // Show anything with a match
     .sort((a, b) => b.score - a.score);
   }, [selectedSymptoms, age]);
 
-  // Click Outside to Close Suggestions
+  // Click Outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target)) {
@@ -249,10 +231,10 @@ export default function App() {
         <div className="text-xs font-medium text-slate-400 hidden sm:block">Pharm.D Clinical Decision Support</div>
       </div>
 
-      <main className="max-w-5xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <main className="max-w-6xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
         
         {/* LEFT PANEL: Inputs */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="lg:col-span-4 space-y-6">
           <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 flex items-center justify-between">
             <label className="text-sm font-semibold text-slate-600 dark:text-slate-400">Patient Age</label>
             <input 
@@ -269,7 +251,6 @@ export default function App() {
               <div className="flex items-center px-4 py-3">
                 <Search className="h-5 w-5 text-slate-400 mr-3" />
                 <input
-                  ref={searchInputRef}
                   type="text"
                   value={searchQuery}
                   onFocus={() => setShowSuggestions(true)}
@@ -278,50 +259,43 @@ export default function App() {
                     setShowSuggestions(true);
                   }}
                   onKeyDown={(e) => e.key === 'Enter' && handleAiSearch()}
-                  placeholder="Type symptoms (e.g. 'fever')..."
+                  placeholder="Type symptoms (e.g. 'Fever')..."
                   className="flex-1 bg-transparent outline-none text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
                 />
                 <button 
                   onClick={handleAiSearch}
                   disabled={isAiLoading || !searchQuery}
                   className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 transition-colors disabled:opacity-50"
-                  title="AI Interpret"
                 >
                   {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
                 </button>
               </div>
 
-              {/* Suggestions Dropdown (Instant Local) */}
               {showSuggestions && localSuggestions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl overflow-hidden max-h-60 overflow-y-auto z-50">
-                  {localSuggestions.map(sym => (
+                  {localSuggestions.map((sym, idx) => (
                     <button
-                      key={sym.id}
+                      key={idx}
                       onClick={() => {
                         setSelectedSymptoms(prev => [...prev, sym]);
                         setSearchQuery('');
                         setShowSuggestions(false);
-                        searchInputRef.current?.focus();
                       }}
                       className="w-full text-left px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 border-b border-slate-50 dark:border-slate-800 last:border-0 text-sm text-slate-700 dark:text-slate-200"
                     >
-                      {sym.label}
+                      {sym}
                     </button>
                   ))}
                 </div>
               )}
             </div>
-            <p className="text-[10px] text-slate-400 px-2 flex gap-1">
-              <Info className="h-3 w-3" />
-              <span>Select from list or click <Sparkles className="h-3 w-3 inline text-indigo-500"/> for AI mapping.</span>
-            </p>
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {selectedSymptoms.map(sym => (
-              <span key={sym.id} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg shadow-sm animate-in zoom-in">
-                {sym.label}
-                <button onClick={() => setSelectedSymptoms(s => s.filter(i => i.id !== sym.id))} className="hover:text-indigo-200">
+            {selectedSymptoms.map((sym, idx) => (
+              <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg shadow-sm animate-in zoom-in">
+                {sym}
+                <button onClick={() => setSelectedSymptoms(s => s.filter(i => i !== sym))} className="hover:text-indigo-200">
                   <X className="h-3 w-3" />
                 </button>
               </span>
@@ -335,7 +309,7 @@ export default function App() {
         </div>
 
         {/* RIGHT PANEL: Results */}
-        <div className="lg:col-span-7">
+        <div className="lg:col-span-8">
           <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 min-h-[500px] flex flex-col">
             <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
               <h2 className="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2">
@@ -345,13 +319,11 @@ export default function App() {
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              {selectedSymptoms.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-slate-300 dark:text-slate-700 gap-4 opacity-50">
+              {results.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-slate-300 dark:text-slate-700 gap-4 opacity-50 p-8 text-center">
                   <Activity className="h-16 w-16" />
-                  <p>Waiting for clinical inputs...</p>
+                  <p>Enter symptoms to see differentials.</p>
                 </div>
-              ) : results.length === 0 ? (
-                <div className="text-center p-8 text-slate-400">No clear pattern found based on selected symptoms.</div>
               ) : (
                 results.map((r, i) => (
                   <button 
@@ -363,10 +335,11 @@ export default function App() {
                     <div className="relative z-10 flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="font-bold text-slate-800 dark:text-slate-100">{r.name || r.id}</h3>
-                          <Badge type={r.urgency}>{r.urgency || 'Unknown'}</Badge>
+                          <h3 className="font-bold text-slate-800 dark:text-slate-100">{r.id}</h3>
+                          {/* Fallback for urgency since detailed schema might not have it in root */}
+                          {r.redFlags && r.redFlags.length > 0 && <Badge type="Critical">Red Flags Present</Badge>}
                         </div>
-                        <p className="text-xs text-slate-500 line-clamp-1">{r.pathophysiology || 'No description available'}</p>
+                        <p className="text-xs text-slate-500 line-clamp-1">{r.pathophysiology}</p>
                       </div>
                       <span className={`text-2xl font-black ${i === 0 ? 'text-indigo-600' : 'text-slate-300'}`}>{r.score}%</span>
                     </div>
@@ -381,92 +354,121 @@ export default function App() {
       {/* Disease Detail Modal */}
       {selectedCondition && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10 flex justify-between">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-2xl border border-slate-200 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 sticky top-0 bg-white dark:bg-slate-900 z-10 flex justify-between items-center">
               <div>
-                <h2 className="text-xl font-bold text-slate-800 dark:text-white">{selectedCondition.name || selectedCondition.id}</h2>
-                <span className="text-xs text-slate-400">{selectedCondition.category || 'General'}</span>
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-white">{selectedCondition.id}</h2>
+                <span className="text-xs text-slate-400 uppercase tracking-wider">{selectedCondition.category}</span>
               </div>
-              <button onClick={() => setSelectedCondition(null)}><X className="h-6 w-6 text-slate-400" /></button>
+              <button onClick={() => setSelectedCondition(null)}><X className="h-6 w-6 text-slate-400 hover:text-red-500" /></button>
             </div>
             
-            <div className="p-6 space-y-6">
-              {/* Symptoms */}
-              <div className="space-y-2">
-                <h3 className="text-xs font-bold uppercase text-slate-400 flex gap-2"><Stethoscope className="h-4 w-4"/> Matched Symptoms</h3>
-                <div className="flex flex-wrap gap-1">
-                  {selectedCondition.matchedSymptoms?.map(s => <Badge key={s} type="Low">{s}</Badge>)}
-                </div>
+            <div className="p-6 space-y-8">
+              
+              {/* 1. Pathophysiology */}
+              <div className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed border-l-4 border-indigo-500 pl-4">
+                {selectedCondition.pathophysiology}
               </div>
 
-              {/* Management - CLICKABLE DRUGS */}
-              {selectedCondition.managementRationale && selectedCondition.managementRationale.length > 0 && (
-                <div className="space-y-2">
-                  <h3 className="text-xs font-bold uppercase text-slate-400 flex gap-2"><Pill className="h-4 w-4"/> Management</h3>
-                  <div className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg text-sm text-slate-700 dark:text-slate-300 space-y-2">
+              {/* 2. Clinical Features & Red Flags */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-xs font-bold uppercase text-slate-400 flex gap-2 mb-2"><Stethoscope className="h-4 w-4"/> Clinical Features</h3>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedCondition.clinicalFeatures?.symptoms?.map((s,i) => (
+                      <span key={i} className={`text-xs px-2 py-1 rounded border ${selectedSymptoms.includes(s) ? 'bg-green-100 border-green-200 text-green-800' : 'bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400'}`}>
+                        {s}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {selectedCondition.redFlags && (
+                  <div>
+                    <h3 className="text-xs font-bold uppercase text-red-400 flex gap-2 mb-2"><AlertOctagon className="h-4 w-4"/> Red Flags</h3>
+                    <ul className="list-disc pl-4 text-xs text-red-600 dark:text-red-400 space-y-1">
+                      {selectedCondition.redFlags.map((f, i) => <li key={i}>{f}</li>)}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              {/* 3. Diagnostics */}
+              {selectedCondition.diagnosticWorkup && (
+                <div>
+                  <h3 className="text-xs font-bold uppercase text-slate-400 flex gap-2 mb-3"><Microscope className="h-4 w-4"/> Diagnostic Workup</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {selectedCondition.diagnosticWorkup.map((d, i) => (
+                      <div key={i} className="bg-slate-50 dark:bg-slate-800 p-3 rounded-lg border border-slate-100 dark:border-slate-700">
+                        <div className="font-bold text-slate-700 dark:text-slate-200 text-sm">{d.test}</div>
+                        <div className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">{d.finding}</div>
+                        <div className="text-[10px] text-slate-400 mt-1">{d.significance}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 4. Management (Clickable Drugs) */}
+              {selectedCondition.managementRationale && (
+                <div>
+                  <h3 className="text-xs font-bold uppercase text-slate-400 flex gap-2 mb-3"><Pill className="h-4 w-4"/> Management Rationale</h3>
+                  <div className="space-y-3">
                     {selectedCondition.managementRationale.map((m, idx) => (
-                      <div key={idx} className="border-b border-slate-200 dark:border-slate-700 last:border-0 pb-2 last:pb-0">
-                        <div className="flex justify-between items-center">
-                          {/* AI Trigger Button */}
+                      <div key={idx} className="flex flex-col md:flex-row md:items-center justify-between p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-indigo-300 transition-colors">
+                        <div className="flex-1">
                           <button 
                             onClick={() => handleDrugClick(m.drug, m)}
-                            className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline text-left flex items-center gap-1 group"
+                            className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline text-left flex items-center gap-2 group"
                           >
                             {m.drug}
-                            <Sparkles className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <Sparkles className="h-3 w-3 opacity-0 group-hover:opacity-100 text-amber-500 transition-opacity" />
                           </button>
-                          <span className="text-xs bg-white dark:bg-slate-700 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-600">{m.class || 'Rx'}</span>
+                          <div className="text-xs text-slate-500 mt-1">{m.dose} • {m.freq}</div>
                         </div>
-                        <span className="text-xs text-slate-500 block mt-0.5">{m.dose} • {m.freq}</span>
-                        <span className="text-xs italic block mt-1 opacity-80">"{m.rationale}"</span>
+                        <div className="md:w-1/2 text-xs text-slate-600 dark:text-slate-400 italic mt-2 md:mt-0 pl-0 md:pl-4 border-l-0 md:border-l border-slate-200 dark:border-slate-700">
+                          {m.rationale}
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Diet (CRASH PROOFING: Added Safety Checks) */}
-              {selectedCondition.diet && (
-                <div className="space-y-2">
-                  <h3 className="text-xs font-bold uppercase text-slate-400 flex gap-2"><Utensils className="h-4 w-4"/> Lifestyle & Diet</h3>
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    {selectedCondition.diet.eat && (
-                      <div className="bg-green-50 dark:bg-green-900/10 p-3 rounded-lg border border-green-100 dark:border-green-800">
-                        <span className="block font-bold text-green-700 dark:text-green-400 mb-1">Eat</span>
-                        <ul className="list-disc pl-3 text-green-800 dark:text-green-300">
-                          {selectedCondition.diet.eat.map(i => <li key={i}>{i}</li>)}
-                        </ul>
-                      </div>
-                    )}
-                    {selectedCondition.diet.avoid && (
-                      <div className="bg-red-50 dark:bg-red-900/10 p-3 rounded-lg border border-red-100 dark:border-red-800">
-                        <span className="block font-bold text-red-700 dark:text-red-400 mb-1">Avoid</span>
-                        <ul className="list-disc pl-3 text-red-800 dark:text-red-300">
-                          {selectedCondition.diet.avoid.map(i => <li key={i}>{i}</li>)}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                  {selectedCondition.lifestyle && (
-                    <div className="text-sm text-slate-600 dark:text-slate-400 flex gap-2 items-start mt-2">
-                      <Sun className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                      <p>{selectedCondition.lifestyle.join('. ')}</p>
+              {/* 5. Lifestyle & Diet */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {selectedCondition.diet && (
+                  <div>
+                    <h3 className="text-xs font-bold uppercase text-slate-400 flex gap-2 mb-2"><Utensils className="h-4 w-4"/> Diet</h3>
+                    <div className="text-xs space-y-2">
+                      <div className="flex gap-2"><span className="font-bold text-green-600">Eat:</span> <span className="text-slate-600 dark:text-slate-400">{selectedCondition.diet.eat?.join(', ')}</span></div>
+                      <div className="flex gap-2"><span className="font-bold text-red-600">Avoid:</span> <span className="text-slate-600 dark:text-slate-400">{selectedCondition.diet.avoid?.join(', ')}</span></div>
                     </div>
-                  )}
+                  </div>
+                )}
+                {selectedCondition.lifestyle && (
+                  <div>
+                    <h3 className="text-xs font-bold uppercase text-slate-400 flex gap-2 mb-2"><Sun className="h-4 w-4"/> Lifestyle</h3>
+                    <ul className="list-disc pl-4 text-xs text-slate-600 dark:text-slate-400 space-y-1">
+                      {selectedCondition.lifestyle.map((l, i) => <li key={i}>{l}</li>)}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              {/* 6. Pearls */}
+              {selectedCondition.clinicalPearls && (
+                <div className="bg-amber-50 dark:bg-amber-900/10 p-4 rounded-xl border border-amber-100 dark:border-amber-800">
+                  <h3 className="text-xs font-bold uppercase text-amber-600 dark:text-amber-500 flex gap-2 mb-2"><AlertTriangle className="h-4 w-4"/> Clinical Pearls</h3>
+                  <div className="grid gap-2">
+                    {selectedCondition.clinicalPearls.map((p, i) => (
+                      <div key={i} className="text-xs text-amber-900 dark:text-amber-100">
+                        <span className="font-bold">{p.pearl}:</span> {p.explanation}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
-              {/* Pearls (Safety Checks) */}
-              {selectedCondition.clinicalPearls && selectedCondition.clinicalPearls.length > 0 && (
-                <div className="space-y-2">
-                  <h3 className="text-xs font-bold uppercase text-slate-400 flex gap-2"><AlertTriangle className="h-4 w-4"/> Clinical Pearls</h3>
-                  <ul className="list-disc pl-4 text-sm text-slate-600 dark:text-slate-400">
-                    {selectedCondition.clinicalPearls.map((p, i) => (
-                      <li key={i}><strong>{p.pearl}</strong> {p.explanation}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </div>
           </div>
         </div>
