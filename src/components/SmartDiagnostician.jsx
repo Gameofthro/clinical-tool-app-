@@ -133,18 +133,21 @@ export default function App() {
     }
   };
 
-  // --- 4. Pharmacology Engine (Robust) ---
+  // --- 4. Pharmacology Engine (Crash-Proof) ---
   const handleDrugClick = async (drugName, existingData) => {
     setSelectedDrug(drugName);
     
-    // 1. Initialize with basic data we already have (Fallback)
-    setDrugData({
-        drugClass: existingData.class || "Loading...",
+    // 1. IMMEDIATE FALLBACK: Set basic data so modal is never empty
+    const fallbackData = {
+        drugClass: existingData.class || "Pharmacological Agent",
         dosing: `${existingData.dose} • ${existingData.freq}`,
-        mechanismOfAction: existingData.rationale || "Loading...",
+        mechanismOfAction: existingData.rationale || "Mechanism details loading...",
+        commonSideEffects: ["Consult local formulary"],
+        seriousAdverseReactions: [],
         isFallback: true
-    });
+    };
     
+    setDrugData(fallbackData);
     setIsDrugLoading(true);
 
     try {
@@ -178,17 +181,12 @@ export default function App() {
       if (text) {
         const cleanText = text.replace(/```json|```/g, '').trim();
         const parsedData = JSON.parse(cleanText);
-        setDrugData({ ...parsedData, isFallback: false }); // Success!
+        setDrugData({ ...parsedData, isFallback: false }); 
       }
     } catch (e) {
       console.error("Drug Info Fetch Error", e);
-      // Keep showing the fallback data we set earlier, just update status
-      setDrugData(prev => ({ 
-          ...prev, 
-          commonSideEffects: ["AI Unavailable - Check BNF/MIMS"],
-          seriousAdverseReactions: ["Check local protocols"],
-          isFallback: true
-      }));
+      // Even if AI fails, we stick with the fallback data we already set
+      // We just stop the loading spinner
     } finally {
       setIsDrugLoading(false);
     }
@@ -427,23 +425,27 @@ export default function App() {
                 </div>
               )}
 
-              {/* Diet */}
+              {/* Diet (CRASH PROOFING: Added Safety Checks) */}
               {selectedCondition.diet && (
                 <div className="space-y-2">
                   <h3 className="text-xs font-bold uppercase text-slate-400 flex gap-2"><Utensils className="h-4 w-4"/> Lifestyle & Diet</h3>
                   <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div className="bg-green-50 dark:bg-green-900/10 p-3 rounded-lg border border-green-100 dark:border-green-800">
-                      <span className="block font-bold text-green-700 dark:text-green-400 mb-1">Eat</span>
-                      <ul className="list-disc pl-3 text-green-800 dark:text-green-300">
-                        {selectedCondition.diet.eat?.map(i => <li key={i}>{i}</li>)}
-                      </ul>
-                    </div>
-                    <div className="bg-red-50 dark:bg-red-900/10 p-3 rounded-lg border border-red-100 dark:border-red-800">
-                      <span className="block font-bold text-red-700 dark:text-red-400 mb-1">Avoid</span>
-                      <ul className="list-disc pl-3 text-red-800 dark:text-red-300">
-                        {selectedCondition.diet.avoid?.map(i => <li key={i}>{i}</li>)}
-                      </ul>
-                    </div>
+                    {selectedCondition.diet.eat && (
+                      <div className="bg-green-50 dark:bg-green-900/10 p-3 rounded-lg border border-green-100 dark:border-green-800">
+                        <span className="block font-bold text-green-700 dark:text-green-400 mb-1">Eat</span>
+                        <ul className="list-disc pl-3 text-green-800 dark:text-green-300">
+                          {selectedCondition.diet.eat.map(i => <li key={i}>{i}</li>)}
+                        </ul>
+                      </div>
+                    )}
+                    {selectedCondition.diet.avoid && (
+                      <div className="bg-red-50 dark:bg-red-900/10 p-3 rounded-lg border border-red-100 dark:border-red-800">
+                        <span className="block font-bold text-red-700 dark:text-red-400 mb-1">Avoid</span>
+                        <ul className="list-disc pl-3 text-red-800 dark:text-red-300">
+                          {selectedCondition.diet.avoid.map(i => <li key={i}>{i}</li>)}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                   {selectedCondition.lifestyle && (
                     <div className="text-sm text-slate-600 dark:text-slate-400 flex gap-2 items-start mt-2">
@@ -454,7 +456,7 @@ export default function App() {
                 </div>
               )}
 
-              {/* Pearls */}
+              {/* Pearls (Safety Checks) */}
               {selectedCondition.clinicalPearls && selectedCondition.clinicalPearls.length > 0 && (
                 <div className="space-y-2">
                   <h3 className="text-xs font-bold uppercase text-slate-400 flex gap-2"><AlertTriangle className="h-4 w-4"/> Clinical Pearls</h3>
