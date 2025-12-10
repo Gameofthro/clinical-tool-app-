@@ -508,3 +508,307 @@ Brain Abscess
 Rabies
 
 Normal Pressure Hydrocephalus (NPH)
+
+batch 42
+Diabetes Insipidus (DI)
+
+SIADH
+
+Primary Hyperaldosteronism (Conn's)
+
+Prolactinoma
+
+Thyroid Cancer
+
+batch 43
+Hyperosmolar Hyperglycemic State (HHS)
+
+Congenital Adrenal Hyperplasia (CAH)
+
+Subacute Thyroiditis (De Quervain's)
+
+Carcinoid Syndrome
+
+Zollinger-Ellison Syndrome
+
+Batch 44: Chronic & Interstitial Lung Diseases
+Idiopathic Pulmonary Fibrosis (IPF):
+
+Relevance: Progressive scarring of lungs. Pharmacologically unique as it uses anti-fibrotics (Pirfenidone/Nintedanib) rather than standard steroids.
+
+Sarcoidosis:
+
+Relevance: Multisystem granulomatous disease (Lung predominant). Treated with Steroids/Methotrexate. (Note: You asked for this in Batch 28, but we swapped it for Hyperlipidemia, so it is currently missing).
+
+Pulmonary Hypertension (PAH):
+
+Relevance: High pressure in lung arteries. Treated with specialized vasodilators (Sildenafil, Bosentan, Epoprostenol).
+
+Bronchiectasis:
+
+Relevance: Permanent dilation of airways with chronic sputum. Requires mucolytics, physiotherapy, and cycling antibiotics.
+
+Allergic Rhinitis:
+
+Relevance: Extremely common inflammation of nasal mucosa. Top pharmacological intervention (Intranasal Steroids/Antihistamines).
+
+Batch 45: Acute Respiratory & Pleural Disorders
+Pneumothorax:
+
+Relevance: Collapsed lung (air in pleural space). Management ranges from O2 to Intercostal Drainage (ICD).
+
+Pleural Effusion:
+
+Relevance: Fluid in pleural space (Transudate vs Exudate). Light's Criteria is key for diagnosis.
+
+Lung Abscess:
+
+Relevance: Necrotizing cavity with air-fluid level. Requires prolonged anaerobic coverage (Clindamycin).
+
+Croup (Laryngotracheobronchitis):
+
+Relevance: Pediatric viral infection with "Barking Cough". Treated with Dexamethasone/Nebulized Epinephrine.
+
+Acute Epiglottitis:
+
+Relevance: Life-threatening airway emergency (bacterial). "Thumb sign" on X-ray. Requires intubation readiness and IV antibiotics.
+
+Batch 46: Aortic & Peripheral Vascular Disease
+Aortic Dissection: Tear in the aortic intima creating a false lumen. Life-threatening emergency requiring "Anti-impulse therapy" (Beta-blockers).
+
+Peripheral Artery Disease (PAD): Atherosclerosis of leg arteries causing Intermittent Claudication. Treated with Cilostazol/Antiplatelets.
+
+Raynaud's Phenomenon: Vasospasm of digital arteries (White-Blue-Red). Treated with Calcium Channel Blockers.
+
+Abdominal Aortic Aneurysm (AAA): Dilation of abdominal aorta. Screening and BP control are key.
+
+Buerger's Disease (Thromboangiitis Obliterans): Non-atherosclerotic inflammation of small vessels in smokers. Smoking cessation is the only cure.
+
+Batch 47: Arrhythmias & Structural Heart Disease
+Supraventricular Tachycardia (SVT): Rapid regular rhythm. Adenosine is the diagnostic/therapeutic gold standard.
+
+Hypertrophic Cardiomyopathy (HCM): Genetic thickening of septum. Sudden death risk. Beta-blockers are first-line; Digoxin is contraindicated.
+
+Aortic Stenosis: Calcific valve narrowing. Angina/Syncope/Dyspnea triad. Caution with vasodilators (Preload dependent).
+
+Long QT Syndrome: Repolarization defect predisopsing to Torsades de Pointes. Magnesium sulfate is treatment.
+
+Cardiac Tamponade: Fluid compressing the heart (Beck's Triad). Emergency Pericardiocentesis required.
+
+Batch 48: Vasculitis (Inflammatory Vessel Disease)
+Giant Cell Arteritis (Temporal Arteritis): Granulomatous vasculitis of large vessels. Risk of blindness. High dose steroids immediately.
+
+Kawasaki Disease: Pediatric vasculitis (Coronary artery aneurysms). IVIG + Aspirin (rare indication for Aspirin in kids).
+
+Takayasu Arteritis: "Pulseless disease" affecting aorta/branches in young women. Steroids/Methotrexate.
+
+Polyarteritis Nodosa (PAN): Necrotizing vasculitis of medium vessels. Hepatitis B association.
+
+Varicose Veins: Chronic venous insufficiency. Sclerotherapy/Venotonics.
+
+Batch 49: Severe Autoimmune & Drug Reactions
+Stevens-Johnson Syndrome (SJS) / TEN: Life-threatening mucocutaneous reaction to drugs (e.g., Sulfonamides, Anticonvulsants). Critical for pharmacists to recognize.
+
+Pemphigus Vulgaris: Autoimmune blistering disease targeting Desmoglein (intra-epidermal). Nikolsky positive. Treated with Rituximab/Steroids.
+
+Bullous Pemphigoid: Autoimmune blistering targeting Hemidesmosomes (sub-epidermal). Elderly patients. Tense blisters.
+
+Lichen Planus: The "5 Ps" (Pruritic, Purple, Polygonal, Planar, Papules). Hepatitis C association.
+
+Hidradenitis Suppurativa: Chronic inflammatory condition of apocrine sweat glands (axilla/groin). Treated with Adalimumab (Biologic).
+
+Batch 50: Malignancy & Common Disorders
+Basal Cell Carcinoma (BCC): Most common skin cancer. "Pearly nodule". Treated with Mohs surgery or Imiquimod/Vismodegib.
+
+Squamous Cell Carcinoma (SCC) / Actinic Keratosis: UV-induced malignancy. Precursor treated with 5-Fluorouracil (5-FU).
+
+Herpes Zoster (Shingles): Reactivation of VZV in a dermatome. Post-Herpetic Neuralgia is a major complication managed with Gabapentin/TCAs.
+
+Rosacea: Facial erythema and pustules (no comedones). Triggers (alcohol/heat). Treated with Metronidazole/Doxycycline.
+
+Alopecia Areata: Autoimmune patchy hair loss. Treated with Intralesional Steroids or JAK inhibitors.
+
+batch 51
+Atopic Dermatitis (Eczema): Essential.
+
+Seborrheic Dermatitis: Essential (Dandruff/Cradle cap).
+
+Onychomycosis: Essential (Nail fungus requires different drugs).
+
+Tinea Versicolor: Essential (Distinct yeast).
+
+Pediculosis (Lice): Essential (Parasitic).
+
+batch 52
+
+Osteomyelitis
+
+Septic Arthritis
+
+Polymyalgia Rheumatica (PMR)
+
+Psoriatic Arthritis (PsA)
+
+Reactive Arthritis (Reiter's Syndrome)
+
+Batch 53: Metabolic, Genetic & Malignant Bone Disease
+Paget's Disease of Bone (Osteitis Deformans): Disordered bone remodeling (high turnover) leading to weak, expanded bones. "Cotton Wool" skull on X-ray. Treated with Bisphosphonates.
+
+Multiple Myeloma: Plasma cell malignancy causing lytic bone lesions, hypercalcemia, and renal failure (CRAB criteria). Treated with Bortezomib/Lenalidomide.
+
+Osteosarcoma: Primary bone malignancy (teens). "Sunburst" appearance on X-ray. Treated with Methotrexate/Cisplatin + Surgery.
+
+Osteogenesis Imperfecta: Genetic collagen defect ("Brittle Bone Disease"). Blue sclerae and frequent fractures. Treated with Bisphosphonates (Pamidronate).
+
+Avascular Necrosis (AVN) / Osteonecrosis: Death of bone tissue due to interrupted blood supply (often femoral head). Steroids and Alcohol are major risk factors.
+
+batch 55
+
+Chronic Lymphocytic Leukemia (CLL)
+
+Infectious Mononucleosis
+
+Tuberculous Lymphadenitis (Scrofula)
+
+Lymphedema
+
+Burkitt Lymphoma
+
+Batch 56: Esophagus & Stomach Disorders
+Achalasia Cardia: Motility disorder with failure of LES relaxation. "Bird's Beak" on Barium swallow. Treated with Nitrates/CCBs or Surgery.
+
+Gastroparesis: Delayed gastric emptying (usually Diabetic). Nausea/Vomiting. Treated with Prokinetics (Metoclopramide/Erythromycin).
+
+Esophageal Varices: Dilated veins due to Portal Hypertension. Bleeding emergency. Treated with Octreotide/Terlipressin and Non-selective Beta-blockers (Prophylaxis).
+
+Gastric Cancer: Adenocarcinoma linked to H. pylori and salt. "Leather Bottle" stomach (Linitis Plastica).
+
+Mallory-Weiss Tear: Mucosal tear at GE junction due to forceful vomiting (Alcoholics). Usually self-limiting.
+
+Input List (Batch 57):
+
+Clostridioides difficile Infection (CDI)
+
+Diverticulitis
+
+Hemorrhoids (Piles) & Anal Fissure
+
+Tropical Sprue
+
+Lactose Intolerance
+
+input List (Batch 58):
+
+Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)
+
+Hemochromatosis
+
+Autoimmune Hepatitis
+
+Primary Biliary Cholangitis (PBC)
+
+Hepatic Encephalopathy
+
+Batch 59: Renal Malignancy & Genetic Disorders
+Renal Cell Carcinoma (RCC): Most common kidney cancer. "Internist's Tumor" (paraneoplastic syndromes). Treated with Tyrosine Kinase Inhibitors (Sunitinib) or Immunotherapy; resistant to standard chemo.
+
+Bladder Cancer (Urothelial Carcinoma): Painless hematuria. Smoking is #1 risk. Treated with TURBT and Intravesical BCG (Immunotherapy).
+
+Autosomal Dominant Polycystic Kidney Disease (ADPKD): Genetic cyst formation destroying parenchyma. Hypertension/Aneurysm risk. Treated with Tolvaptan (V2 antagonist).
+
+Wilms Tumor (Nephroblastoma): Most common pediatric renal tumor. Abdominal mass. Treated with Vincristine/Actinomycin-D.
+
+Alport Syndrome: Genetic Type IV collagen defect leading to Nephritis + Deafness + Eye disorders.
+
+Input List (Batch 60):
+
+Urinary Incontinence (OAB/Stress)
+
+Renal Artery Stenosis (RAS)
+
+Interstitial Cystitis (Bladder Pain Syndrome)
+
+Hepatorenal Syndrome (HRS)
+
+Hemolytic Uremic Syndrome (HUS)
+
+Batch 61: Gynecologic Oncology
+Breast Cancer: Most common malignancy in women. Treatment depends on receptor status (ER/PR/HER2). Pharmacology includes SERMs (Tamoxifen), Aromatase Inhibitors (Letrozole), and Monoclonals (Trastuzumab).
+
+Cervical Cancer: Caused by HPV. Screening via Pap smear. Treated with Chemoradiation (Cisplatin) if advanced.
+
+Ovarian Cancer: "Silent Killer". Presents with ascites/bloating. Treated with debulking surgery and Platinum/Taxane chemotherapy.
+
+Endometrial Cancer: Cancer of the uterine lining. Presents with post-menopausal bleeding. Risk factors: Unopposed estrogen, Obesity.
+
+Gestational Trophoblastic Disease (Molar Pregnancy): Abnormal proliferation of placental tissue. extremely high Beta-HCG. Highly sensitive to Methotrexate.
+Batch 62: Benign Gynecology & Infections
+Polycystic Ovary Syndrome (PCOS): Metabolic/Reproductive disorder. Rotterdam criteria (Oligo-ovulation, Hyperandrogenism, Polycystic ovaries). Treated with OCPs, Metformin, Spironolactone.
+
+Uterine Fibroids (Leiomyoma): Benign smooth muscle tumors. Cause menorrhagia/pain. Treated with Tranexamic acid, GnRH agonists, or Myomectomy.
+
+Pelvic Inflammatory Disease (PID): Ascending infection (Chlamydia/Gonorrhea) causing salpingitis/endometritis. "Chandelier Sign". Treated with Ceftriaxone + Doxycycline.
+
+Bacterial Vaginosis (BV): Dysbiosis (loss of Lactobacillus, overgrowth of Gardnerella). Amsel criteria (Clue cells, Whiff test). Treated with Metronidazole.
+
+Menopause Syndrome: Vasomotor symptoms (hot flashes) due to estrogen withdrawal. Treated with HRT (Hormone Replacement Therapy) or SSRIs.
+
+Input List (Batch 63):
+
+Preeclampsia / Eclampsia
+
+Ectopic Pregnancy
+
+Postpartum Hemorrhage (PPH)
+
+Hyperemesis Gravidarum
+
+Testicular Torsion
+
+Input List (Batch 64):
+
+Attention Deficit Hyperactivity Disorder (ADHD)
+
+Obsessive-Compulsive Disorder (OCD)
+
+Post-Traumatic Stress Disorder (PTSD)
+
+Alcohol Withdrawal Syndrome
+
+Anorexia Nervosa
+
+Input List (Batch 65):
+
+Febrile Neutropenia
+
+Tumor Lysis Syndrome (TLS)
+
+Superior Vena Cava (SVC) Syndrome
+
+Myelodysplastic Syndrome (MDS)
+
+Essential Thrombocythemia (ET)
+
+Input List (Batch 66):
+
+Acute Otitis Media (AOM)
+
+Acute Bacterial Rhinosinusitis (ABRS)
+
+Streptococcal Pharyngitis (Strep Throat)
+
+Cholera
+
+Leptospirosis (Weil's Disease)
+
+Input List (Batch 67):
+
+Amyloidosis (AL/AA)
+
+Granulomatosis with Polyangiitis (Wegener's)
+
+Acute Intermittent Porphyria (AIP)
+
+Digoxin Toxicity
+
+Salicylate (Aspirin) Toxicity
