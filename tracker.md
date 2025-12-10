@@ -1,413 +1,610 @@
-MediSim Content Generation Plan (157 Diseases)
+Master Disease Index (Total Count: 354)
 
-Use this roadmap to generate content. Mark items as [x] when added to src/data/diseases.js.
+This document contains the consolidated list of 354 unique disease conditions derived from the MediSim roadmap (Batches 1-69), arranged by body system.
 
-🟢 ROUND 1: High Yield (Common Conditions)
+🫀 1. Cardiovascular & Vascular System (34)
 
-Batch 1 (Systems 1-5)
+Hypotension (Orthostatic/Shock)
 
-[ ] 1. Hypotension (Orthostatic/Shock)
+Hypertension (Essential/Secondary)
 
-[ ] 2. Chronic Obstructive Pulmonary Disease (COPD)
+Atherosclerosis
 
-[ ] 3. Parkinson’s Disease
+Arteriosclerosis
 
-[ ] 4. Type 1 Diabetes Mellitus
+Angina Pectoris
 
-[ ] 5. Peptic Ulcer Disease (PUD)
+Hypovolemic Shock
 
-Batch 2 (Systems 6-10)
+Myocardial Infarction (STEMI/NSTEMI)
 
-[ ] 6. Acute Kidney Injury (AKI)
+Congestive Heart Failure (CHF)
 
-[ ] 7. Iron Deficiency Anemia
+Cardiac Arrhythmias (Atrial Fibrillation)
 
-[ ] 8. Typhoid Fever
+Cardiogenic Shock
 
-[ ] 9. Systemic Lupus Erythematosus (SLE)
+Deep Vein Thrombosis (DVT)
 
-[ ] 10. Breast Cancer
+Pulmonary Embolism (PE)
 
-Batch 3 (Systems 11-15)
+Endocarditis
 
-[ ] 11. Lead Poisoning
+Pericarditis
 
-[ ] 12. Polycystic Ovary Syndrome (PCOS)
+Aortic Dissection
 
-[ ] 13. Osteoporosis
+Peripheral Artery Disease (PAD)
 
-[ ] 14. Eczema (Atopic Dermatitis)
+Raynaud's Phenomenon
 
-[ ] 15. Anaphylaxis
+Abdominal Aortic Aneurysm (AAA)
 
-🟡 ROUND 2: Chronic & Critical Care
+Buerger's Disease (Thromboangiitis Obliterans)
 
-Batch 4 (Systems 1-5)
+Supraventricular Tachycardia (SVT)
 
-[ ] 16. Atherosclerosis
+Hypertrophic Cardiomyopathy (HCM)
 
-[ ] 17. Tuberculosis (Pulmonary)
+Aortic Stenosis
 
-[ ] 18. Schizophrenia
+Long QT Syndrome
 
-[ ] 19. Hyperthyroidism (Graves')
+Cardiac Tamponade
 
-[ ] 20. Crohn’s Disease
+Giant Cell Arteritis (Temporal Arteritis)
 
-Batch 5 (Systems 6-10)
+Kawasaki Disease
 
-[ ] 21. Chronic Kidney Disease (CKD)
+Takayasu Arteritis
 
-[ ] 22. Megaloblastic Anemia (B12/Folate)
+Polyarteritis Nodosa (PAN)
 
-[ ] 23. Syphilis
+Varicose Veins
 
-[ ] 24. Rheumatoid Arthritis (RA)
+Superior Vena Cava (SVC) Syndrome
 
-[ ] 25. Lung Cancer
+Renal Artery Stenosis (RAS)
 
-Batch 6 (Systems 11-15)
+Hyperlipidemia
 
-[ ] 26. Organophosphate Poisoning
+Stroke (Ischemic)
 
-[ ] 27. Endometriosis
+Stroke (Hemorrhagic)
 
-[ ] 28. Osteoarthritis
+🫁 2. Respiratory System (25)
 
-[ ] 29. Acne Vulgaris
+Asthma
 
-[ ] 30. Septic Shock
+Chronic Obstructive Pulmonary Disease (COPD)
 
-🟠 ROUND 3: Acute & Specialty
+Tuberculosis (Pulmonary)
 
-Batch 7 (Systems 1-5)
+Lung Cancer
 
-[ ] 31. Angina Pectoris
+Hypoxia
 
-[ ] 32. Hypoxia
+Asphyxia
 
-[ ] 33. Major Depressive Disorder
+Dyspnea (Differential Diagnosis)
 
-[ ] 34. Hypothyroidism (Hashimoto's)
+Decompression Sickness (The Bends)
 
-[ ] 35. Ulcerative Colitis
+Cystic Fibrosis
 
-Batch 8 (Systems 6-10)
+ARDS (Acute Respiratory Distress Syndrome)
 
-[ ] 36. Nephrotic Syndrome
+Respiratory Distress Syndrome (Neonatal RDS)
 
-[ ] 37. Sickle Cell Disease
+Silicosis
 
-[ ] 38. Gonorrhea
+Asbestosis
 
-[ ] 39. Psoriasis
+Sleep Apnea
 
-[ ] 40. Prostate Cancer
+Idiopathic Pulmonary Fibrosis (IPF)
 
-Batch 9 (Systems 11-15)
+Sarcoidosis
 
-[ ] 41. Carbon Monoxide Poisoning
+Pulmonary Hypertension (PAH)
 
-[ ] 42. Erectile Dysfunction
+Bronchiectasis
 
-[ ] 43. Gout
+Pneumothorax
 
-[ ] 44. Cellulitis
+Pleural Effusion
 
-[ ] 45. Hypovolemic Shock
+Lung Abscess
 
-🔴 ROUND 4: Complex & Emergency
+Croup (Laryngotracheobronchitis)
 
-Batch 10 (Systems 1-5)
+Acute Epiglottitis
 
-[ ] 46. Myocardial Infarction (STEMI/NSTEMI)
+Allergic Rhinitis
 
-[ ] 47. Asphyxia
+Occupational Lung Diseases (General)
 
-[ ] 48. Bipolar Disorder
+🧠 3. Neurology & Psychiatry (44)
 
-[ ] 49. Cushing’s Syndrome
+Parkinson’s Disease
 
-[ ] 50. Hepatitis A
+Schizophrenia
 
-Batch 11 (Systems 6-10)
+Major Depressive Disorder
 
-[ ] 51. Nephritic Syndrome
+Bipolar Disorder
 
-[ ] 52. Thalassemia
+Epilepsy (Seizure Disorder)
 
-[ ] 53. Leprosy
+Generalized Anxiety Disorder
 
-[ ] 54. Ankylosing Spondylitis
+Alzheimer’s Disease
 
-[ ] 55. Colorectal Cancer
+Dementia
 
-Batch 12 (Systems 11-15)
+Multiple Sclerosis
 
-[ ] 56. Opioid Overdose
+Brain Tumors
 
-[ ] 57. Benign Prostatic Hyperplasia (BPH)
+Guillain-Barre Syndrome
 
-[ ] 58. Fibromyalgia
+Mania
 
-[ ] 59. Tinea Infections (Ringworm)
+Psychosis
 
-[ ] 60. Burn Injury (Thermal)
+Amyotrophic Lateral Sclerosis (ALS)
 
-🟣 ROUND 5: Advanced Pathologies
+Huntington's Disease
 
-Batch 13 (Systems 1-5)
+Wilson's Disease
 
-[ ] 61. Congestive Heart Failure (CHF)
+Essential Tremor
 
-[ ] 62. Dyspnea (Differential Diagnosis)
+Restless Legs Syndrome (Willis-Ekbom)
 
-[ ] 63. Epilepsy (Seizure Disorder)
+Trigeminal Neuralgia
 
-[ ] 64. Addison’s Disease
+Bell's Palsy
 
-[ ] 65. Hepatitis B
+Cluster Headache
 
-Batch 14 (Systems 6-10)
+Idiopathic Intracranial Hypertension (Pseudotumor Cerebri)
 
-[ ] 66. Renal Calculi (Kidney Stones)
+Meniere's Disease
 
-[ ] 67. Hemophilia A/B
+Neuromyelitis Optica (NMO / Devic's)
 
-[ ] 68. Bacterial Meningitis
+Lambert-Eaton Myasthenic Syndrome (LEMS)
 
-[ ] 69. Myasthenia Gravis
+Narcolepsy
 
-[ ] 70. Leukemia (ALL/AML)
+Insomnia
 
-Batch 15 (Systems 11-15)
+Transverse Myelitis
 
-[ ] 71. Paracetamol Toxicity
+Tourette Syndrome
 
-[ ] 72. Chlamydia Infection
+Spinal Muscular Atrophy (SMA)
 
-[ ] 73. Spondylitis
+Cerebral Palsy
 
-[ ] 74. Melanoma
+Brain Abscess
 
-[ ] 75. Hyperkalemia
+Normal Pressure Hydrocephalus (NPH)
 
-🔵 ROUND 6: Systemic & Rare
+Attention Deficit Hyperactivity Disorder (ADHD)
 
-Batch 16 (Systems 1-5)
+Obsessive-Compulsive Disorder (OCD)
 
-[ ] 76. Cardiac Arrhythmias (Atrial Fibrillation)
+Post-Traumatic Stress Disorder (PTSD)
 
-[ ] 77. Decompression Sickness (The Bends)
+Alcohol Withdrawal Syndrome
 
-[ ] 78. Generalized Anxiety Disorder
+Anorexia Nervosa
 
-[ ] 79. Acromegaly
+Hepatic Encephalopathy
 
-[ ] 80. Hepatitis C
+Migraine
 
-Batch 17 (Systems 6-10)
+Neuropathic Pain
 
-[ ] 81. Urinary Tract Infection (UTI)
+Myasthenia Gravis
 
-[ ] 82. Immune Thrombocytopenic Purpura (ITP)
+Dysbarism (Decompression Sickness - Listed here and Resp)
 
-[ ] 83. HIV/AIDS
+Stroke (Cerebrovascular Accident - General term)
 
-[ ] 84. Sjögren’s Syndrome
+💊 4. Endocrinology, Metabolism & Nutrition (36)
 
-[ ] 85. Lymphoma (Hodgkin’s)
+Type 1 Diabetes Mellitus
 
-Batch 18 (Systems 11-15)
+Type 2 Diabetes Mellitus
 
-[ ] 86. Arsenic Poisoning
+Hyperthyroidism (Graves')
 
-[ ] 87. Infertility (Male/Female)
+Hypothyroidism (Hashimoto's)
 
-[ ] 88. Myopathy
+Cushing’s Syndrome
 
-[ ] 89. Skin Infections (Impetigo)
+Addison’s Disease
 
-[ ] 90. Dehydration & Heat Stroke
+Hyperkalemia
 
-🟤 ROUND 7: Critical & Structural
+Acromegaly
 
-Batch 19 (Systems 1-5)
+Growth Hormone Deficiency
 
-[ ] 91. Cardiogenic Shock
+Electrolyte Imbalance (Hypocalcemia)
 
-[ ] 92. Cystic Fibrosis
+Hyperparathyroidism
 
-[ ] 93. Alzheimer’s Disease
+Hypoparathyroidism
 
-[ ] 94. Growth Hormone Deficiency
+Metabolic Syndrome
 
-[ ] 95. Alcoholic Liver Disease
+Obesity
 
-Batch 20 (Systems 6-10)
+Hypernatremia
 
-[ ] 96. Glomerulonephritis
+Diabetes Insipidus (DI)
 
-[ ] 97. Polycythemia Vera
+SIADH
 
-[ ] 98. Influenza (Seasonal)
+Primary Hyperaldosteronism (Conn's)
 
-[ ] 99. Inflammatory Myopathies
+Prolactinoma
 
-[ ] 100. Pancreatic Cancer
+Thyroid Cancer
 
-Batch 21 (Systems 11-15)
+Hyperosmolar Hyperglycemic State (HHS)
 
-[ ] 101. Drug Overdose (Benzodiazepines)
+Congenital Adrenal Hyperplasia (CAH)
 
-[ ] 102. Menstrual Disorders (Amenorrhea)
+Subacute Thyroiditis (De Quervain's)
 
-[ ] 103. Organ Transplant Rejection
+Carcinoid Syndrome
 
-[ ] 104. Fungal Skin Infections (Candidiasis)
+Zollinger-Ellison Syndrome
 
-[ ] 105. Electrolyte Imbalance (Hypocalcemia)
+Scurvy (Vit C Def)
 
-⚪ ROUND 8: Rare & Miscellaneous
+Pellagra (Vit B3 Def)
 
-Batch 22 (Systems 1-5)
+Beriberi (Vit B1 Def)
 
-[ ] 106. Deep Vein Thrombosis (DVT)
+Vitamin A Deficiency
 
-[ ] 107. ARDS (Acute Respiratory Distress Syndrome)
+Vitamin K Deficiency
 
-[ ] 108. Dementia
+Vitamin E Deficiency
 
-[ ] 109. Hyperparathyroidism
+Riboflavin Deficiency (B2)
 
-[ ] 110. Acute Pancreatitis
+Pyridoxine Deficiency (B6)
 
-Batch 23 (Systems 6-10)
+Pheochromocytoma
 
-[ ] 111. Renal Failure (End Stage)
+Phenylketonuria (PKU)
 
-[ ] 112. Aplastic Anemia
+Alkaptonuria
 
-[ ] 113. Herpes Simplex Virus (HSV)
+🤢 5. Gastrointestinal & Hepatobiliary (29)
 
-[ ] 114. Hashimoto’s Thyroiditis
+Peptic Ulcer Disease (PUD)
 
-[ ] 115. Non-Hodgkin’s Lymphoma
+Gastroesophageal Reflux Disease (GERD)
 
-Batch 24 (Systems 11-15)
+Acute Gastroenteritis
 
-[ ] 116. Mercury Poisoning
+Crohn’s Disease
 
-[ ] 117. Dysmenorrhea
+Ulcerative Colitis
 
-[ ] 118. Hypersensitivity Reactions
+Colorectal Cancer
 
-[ ] 119. Scabies
+Alcoholic Liver Disease
 
-[ ] 120. Hypernatremia
+Pancreatic Cancer
 
-⚫ ROUND 9: Final Coverage
+Acute Pancreatitis
 
-Batch 25 (Systems 1-5)
+Cholelithiasis
 
-[ ] 121. Pulmonary Embolism (PE)
+Irritable Bowel Syndrome (IBS)
 
-[ ] 122. Silicosis
+Celiac Disease
 
-[ ] 123. Stroke (Ischemic)
+Achalasia Cardia
 
-[ ] 124. Hypoparathyroidism
+Gastroparesis
 
-[ ] 125. Cholelithiasis
+Esophageal Varices
 
-Batch 26 (Systems 6-10)
+Gastric Cancer
 
-[ ] 126. Acute Tubular Necrosis
+Mallory-Weiss Tear
 
-[ ] 127. Disseminated Intravascular Coagulation (DIC)
+Clostridioides difficile Infection (CDI)
 
-[ ] 128. Dengue Fever
+Diverticulitis
 
-[ ] 129. Multiple Sclerosis
+Hemorrhoids (Piles) & Anal Fissure
 
-[ ] 130. Brain Tumors
+Tropical Sprue
 
-Batch 27 (Systems 11-15)
+Lactose Intolerance
 
-[ ] 131. Radiation Exposure
+Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)
 
-[ ] 132. Prostatitis
+Hemochromatosis
 
-[ ] 133. Lysosomal Storage Diseases
+Autoimmune Hepatitis
 
-[ ] 134. Warts (HPV)
+Primary Biliary Cholangitis (PBC)
 
-[ ] 135. Hypocalcemia
+Hepatitis A
 
-🏁 ROUND 10: Cleanup & Remaining
+Hepatitis B
 
-Batch 28
+Hepatitis C
 
-[ ] 136. Hyperlipidemia
+Appendicitis
 
-[ ] 137. Asbestosis
+Cirrhosis (General)
 
-[ ] 138. Stroke (Hemorrhagic)
+Constipation (Chronic)
 
-[ ] 139. Metabolic Syndrome
+🚽 6. Renal & Urology (20)
 
-[ ] 140. Irritable Bowel Syndrome (IBS)
+Acute Kidney Injury (AKI)
 
-Batch 29
+Chronic Kidney Disease (CKD)
 
-[ ] 141. Urolithiasis
+Nephrotic Syndrome
 
-[ ] 142. Paroxysmal Nocturnal Hemoglobinuria
+Nephritic Syndrome
 
-[ ] 143. COVID-19 (Severe)
+Benign Prostatic Hyperplasia (BPH)
 
-[ ] 144. Guillain-Barre Syndrome
+Renal Calculi (Kidney Stones)
 
-[ ] 145. Testicular Cancer
+Urinary Tract Infection (UTI)
 
-Batch 30
+Glomerulonephritis
 
-[ ] 146. Snake Bite (Toxicology)
+Renal Failure (End Stage)
 
-[ ] 147. Sexual Dysfunction (Psychogenic)
+Acute Tubular Necrosis
 
-[ ] 148. Rhabdomyolysis
+Prostatitis
 
-[ ] 149. Vitiligo
+Urolithiasis
 
-[ ] 150. Sleep Apnea
+Renal Cell Carcinoma (RCC)
 
-Batch 31 (Bonus/Remaining)
+Bladder Cancer (Urothelial Carcinoma)
 
-[ ] 151. Endocarditis
+Autosomal Dominant Polycystic Kidney Disease (ADPKD)
 
-[ ] 152. Pericarditis
+Wilms Tumor (Nephroblastoma)
 
-[ ] 153. Mania
+Urinary Incontinence (OAB/Stress)
 
-[ ] 154. Pheochromocytoma
+Interstitial Cystitis (Bladder Pain Syndrome)
 
-[ ] 155. Celiac Disease
+Hepatorenal Syndrome (HRS)
 
-[ ] 156. Malaria (Complicated)
+Hemolytic Uremic Syndrome (HUS)
 
-[ ] 157. Tetanus
-batch 32
+🩸 7. Hematology & Oncology (23)
+
+Iron Deficiency Anemia
+
+Megaloblastic Anemia (B12/Folate)
+
+Sickle Cell Disease
+
+Thalassemia
+
+Hemophilia A/B
+
+Leukemia (ALL/AML)
+
+Melanoma
+
+Immune Thrombocytopenic Purpura (ITP)
+
+Lymphoma (Hodgkin’s)
+
+Polycythemia Vera
+
+Aplastic Anemia
+
+Non-Hodgkin’s Lymphoma
+
+Paroxysmal Nocturnal Hemoglobinuria
+
+Testicular Cancer
+
+Chronic Myeloid Leukemia (CML)
+
+Chronic Lymphocytic Leukemia (CLL)
+
+Burkitt Lymphoma
+
+Febrile Neutropenia
+
+Tumor Lysis Syndrome (TLS)
+
+Myelodysplastic Syndrome (MDS)
+
+Essential Thrombocythemia (ET)
+
+Disseminated Intravascular Coagulation (DIC)
+
+Anemia (General)
+
+🦠 8. Infectious Diseases (37)
+
+Typhoid Fever
+
+Syphilis
+
+Gonorrhea
+
+Cellulitis
+
+Tinea Infections (Ringworm)
+
+Chlamydia Infection
+
+HIV/AIDS
+
+Skin Infections (Impetigo)
+
+Influenza (Seasonal)
+
+Fungal Skin Infections (Candidiasis)
+
+Herpes Simplex Virus (HSV)
+
+Dengue Fever
+
+Warts (HPV)
+
+COVID-19 (Severe)
+
+Malaria (Complicated)
+
+Tetanus
+
+Bacterial Meningitis
+
+Rabies
+
+Amebiasis (Amebic Dysentery)
+
+Visceral Leishmaniasis (Kala-Azar)
+
+Giardiasis
+
+Toxoplasmosis
+
+Trichomoniasis
+
+Neurocysticercosis (NCC)
+
+Hydatid Disease
+
+Ascariasis (Roundworm)
+
+Hookworm Infection
+
+Enterobiasis (Pinworm)
+
+Infectious Mononucleosis
+
+Tuberculous Lymphadenitis (Scrofula)
+
+Acute Otitis Media (AOM)
+
+Acute Bacterial Rhinosinusitis (ABRS)
+
+Streptococcal Pharyngitis (Strep Throat)
+
+Cholera
+
+Leptospirosis (Weil's Disease)
+
+Aspergillosis
+
+Cryptococcosis
+
+Tapeworm Infection (Taeniasis)
+
+🦴 9. Musculoskeletal & Rheumatology (18)
+
+Osteoporosis
+
+Rheumatoid Arthritis (RA)
+
+Osteoarthritis
+
+Gout
+
+Ankylosing Spondylitis
+
+Fibromyalgia
+
+Spondylitis
+
+Myopathy
+
+Inflammatory Myopathies
+
+Rhabdomyolysis
+
+Osteomyelitis
+
+Septic Arthritis
+
+Polymyalgia Rheumatica (PMR)
+
+Psoriatic Arthritis (PsA)
+
+Reactive Arthritis (Reiter's Syndrome)
+
+Paget's Disease of Bone
+
+Multiple Myeloma (Bone involvement)
+
+Osteosarcoma
+
+🧴 10. Dermatology (17)
+
+Eczema (Atopic Dermatitis)
+
+Acne Vulgaris
+
+Psoriasis
+
+Scabies
+
+Vitiligo
+
+Stevens-Johnson Syndrome (SJS) / TEN
+
+Pemphigus Vulgaris
+
+Bullous Pemphigoid
+
+Lichen Planus
+
+Hidradenitis Suppurativa
+
+Basal Cell Carcinoma (BCC)
+
+Squamous Cell Carcinoma (SCC)
+
+Herpes Zoster (Shingles)
+
+Rosacea
+
+Alopecia Areata
+
+Seborrheic Dermatitis
+
+Onychomycosis
+
+🧬 11. Pediatrics, Genetics & Congenital (17)
+
 Down Syndrome
 
 Turner Syndrome
 
 Klinefelter Syndrome
 
-Chronic Myeloid Leukemia (CML) (Ph Chromosome)
-
 Prader-Willi Syndrome
-
 
 Edward's (Trisomy 18)
 
@@ -425,335 +622,53 @@ Williams Syndrome (7q11)
 
 Wolf-Hirschhorn (4p-)
 
+Alport Syndrome
 
-Scurvy (C)
+Osteogenesis Imperfecta
 
-Pellagra (B3)
+Lysosomal Storage Diseases
 
-Beriberi (B1)
+Avascular Necrosis (AVN)
 
-Vitamin A Deficiency
+Patent Ductus Arteriosus (PDA - implied in congenital)
 
-Vitamin K Deficiency
+🤰 12. Reproductive, Obstetrics & Gynecology (17)
 
-Vitamin E Deficiency (rare, ataxia)
+Polycystic Ovary Syndrome (PCOS)
 
-Riboflavin Deficiency (B2 - Cheilitis)
+Endometriosis
 
-Pyridoxine Deficiency (B6)
+Erectile Dysfunction
 
-Batch 36: Protozoa & Tissue Parasites
+Infertility (Male/Female)
 
-Amebiasis (Amebic Dysentery/Liver Abscess):
+Menstrual Disorders (Amenorrhea)
 
-Visceral Leishmaniasis (Kala-Azar):
+Dysmenorrhea
 
-Giardiasis:
+Sexual Dysfunction (Psychogenic)
 
-Toxoplasmosis:
+Breast Cancer (Oncology)
 
-Trichomoniasis:
+Cervical Cancer
 
-Batch 37: Helminths (Worm Infestations)
-Neurocysticercosis (NCC)
+Ovarian Cancer
 
-Hydatid Disease
+Endometrial Cancer
 
-Ascariasis (Roundworm)
+Gestational Trophoblastic Disease (Molar Pregnancy)
 
-Hookworm Infection
+Uterine Fibroids (Leiomyoma)
 
-Enterobiasis (Pinworm)
+Pelvic Inflammatory Disease (PID)
 
-Batch 38: Movement & Neurodegenerative Disorders
-Amyotrophic Lateral Sclerosis (ALS)
+Bacterial Vaginosis (BV)
 
-Huntington's Disease
+Menopause Syndrome
 
-Wilson's Disease
+Testicular Torsion
 
-Essential Tremor:
-
-Restless Legs Syndrome (Willis-Ekbom)
-
-Batch 39: Cranial Nerves, Pain & Headache
-Trigeminal Neuralgia
-
-Bell's Palsy
-
-Cluster Headache
-
-Idiopathic Intracranial Hypertension (Pseudotumor Cerebri): 
-
-Meniere's Disease: 
-
-Batch 40: Autoimmune & Sleep Neurology
-Neuromyelitis Optica (NMO / Devic's)
-
-Lambert-Eaton Myasthenic Syndrome (LEMS)
-
-Narcolepsy
-
-Transverse Myelitis
-
-Tourette Syndrome
-
-Batch 41: Pediatric, Structural & Infection
-Spinal Muscular Atrophy (SMA)
-
-Cerebral Palsy
-
-Brain Abscess
-
-Rabies
-
-Normal Pressure Hydrocephalus (NPH)
-
-batch 42
-Diabetes Insipidus (DI)
-
-SIADH
-
-Primary Hyperaldosteronism (Conn's)
-
-Prolactinoma
-
-Thyroid Cancer
-
-batch 43
-Hyperosmolar Hyperglycemic State (HHS)
-
-Congenital Adrenal Hyperplasia (CAH)
-
-Subacute Thyroiditis (De Quervain's)
-
-Carcinoid Syndrome
-
-Zollinger-Ellison Syndrome
-
-Batch 44: Chronic & Interstitial Lung Diseases
-Idiopathic Pulmonary Fibrosis (IPF):
-
-Relevance: Progressive scarring of lungs. Pharmacologically unique as it uses anti-fibrotics (Pirfenidone/Nintedanib) rather than standard steroids.
-
-Sarcoidosis:
-
-Relevance: Multisystem granulomatous disease (Lung predominant). Treated with Steroids/Methotrexate. (Note: You asked for this in Batch 28, but we swapped it for Hyperlipidemia, so it is currently missing).
-
-Pulmonary Hypertension (PAH):
-
-Relevance: High pressure in lung arteries. Treated with specialized vasodilators (Sildenafil, Bosentan, Epoprostenol).
-
-Bronchiectasis:
-
-Relevance: Permanent dilation of airways with chronic sputum. Requires mucolytics, physiotherapy, and cycling antibiotics.
-
-Allergic Rhinitis:
-
-Relevance: Extremely common inflammation of nasal mucosa. Top pharmacological intervention (Intranasal Steroids/Antihistamines).
-
-Batch 45: Acute Respiratory & Pleural Disorders
-Pneumothorax:
-
-Relevance: Collapsed lung (air in pleural space). Management ranges from O2 to Intercostal Drainage (ICD).
-
-Pleural Effusion:
-
-Relevance: Fluid in pleural space (Transudate vs Exudate). Light's Criteria is key for diagnosis.
-
-Lung Abscess:
-
-Relevance: Necrotizing cavity with air-fluid level. Requires prolonged anaerobic coverage (Clindamycin).
-
-Croup (Laryngotracheobronchitis):
-
-Relevance: Pediatric viral infection with "Barking Cough". Treated with Dexamethasone/Nebulized Epinephrine.
-
-Acute Epiglottitis:
-
-Relevance: Life-threatening airway emergency (bacterial). "Thumb sign" on X-ray. Requires intubation readiness and IV antibiotics.
-
-Batch 46: Aortic & Peripheral Vascular Disease
-Aortic Dissection: Tear in the aortic intima creating a false lumen. Life-threatening emergency requiring "Anti-impulse therapy" (Beta-blockers).
-
-Peripheral Artery Disease (PAD): Atherosclerosis of leg arteries causing Intermittent Claudication. Treated with Cilostazol/Antiplatelets.
-
-Raynaud's Phenomenon: Vasospasm of digital arteries (White-Blue-Red). Treated with Calcium Channel Blockers.
-
-Abdominal Aortic Aneurysm (AAA): Dilation of abdominal aorta. Screening and BP control are key.
-
-Buerger's Disease (Thromboangiitis Obliterans): Non-atherosclerotic inflammation of small vessels in smokers. Smoking cessation is the only cure.
-
-Batch 47: Arrhythmias & Structural Heart Disease
-Supraventricular Tachycardia (SVT): Rapid regular rhythm. Adenosine is the diagnostic/therapeutic gold standard.
-
-Hypertrophic Cardiomyopathy (HCM): Genetic thickening of septum. Sudden death risk. Beta-blockers are first-line; Digoxin is contraindicated.
-
-Aortic Stenosis: Calcific valve narrowing. Angina/Syncope/Dyspnea triad. Caution with vasodilators (Preload dependent).
-
-Long QT Syndrome: Repolarization defect predisopsing to Torsades de Pointes. Magnesium sulfate is treatment.
-
-Cardiac Tamponade: Fluid compressing the heart (Beck's Triad). Emergency Pericardiocentesis required.
-
-Batch 48: Vasculitis (Inflammatory Vessel Disease)
-Giant Cell Arteritis (Temporal Arteritis): Granulomatous vasculitis of large vessels. Risk of blindness. High dose steroids immediately.
-
-Kawasaki Disease: Pediatric vasculitis (Coronary artery aneurysms). IVIG + Aspirin (rare indication for Aspirin in kids).
-
-Takayasu Arteritis: "Pulseless disease" affecting aorta/branches in young women. Steroids/Methotrexate.
-
-Polyarteritis Nodosa (PAN): Necrotizing vasculitis of medium vessels. Hepatitis B association.
-
-Varicose Veins: Chronic venous insufficiency. Sclerotherapy/Venotonics.
-
-Batch 49: Severe Autoimmune & Drug Reactions
-Stevens-Johnson Syndrome (SJS) / TEN: Life-threatening mucocutaneous reaction to drugs (e.g., Sulfonamides, Anticonvulsants). Critical for pharmacists to recognize.
-
-Pemphigus Vulgaris: Autoimmune blistering disease targeting Desmoglein (intra-epidermal). Nikolsky positive. Treated with Rituximab/Steroids.
-
-Bullous Pemphigoid: Autoimmune blistering targeting Hemidesmosomes (sub-epidermal). Elderly patients. Tense blisters.
-
-Lichen Planus: The "5 Ps" (Pruritic, Purple, Polygonal, Planar, Papules). Hepatitis C association.
-
-Hidradenitis Suppurativa: Chronic inflammatory condition of apocrine sweat glands (axilla/groin). Treated with Adalimumab (Biologic).
-
-Batch 50: Malignancy & Common Disorders
-Basal Cell Carcinoma (BCC): Most common skin cancer. "Pearly nodule". Treated with Mohs surgery or Imiquimod/Vismodegib.
-
-Squamous Cell Carcinoma (SCC) / Actinic Keratosis: UV-induced malignancy. Precursor treated with 5-Fluorouracil (5-FU).
-
-Herpes Zoster (Shingles): Reactivation of VZV in a dermatome. Post-Herpetic Neuralgia is a major complication managed with Gabapentin/TCAs.
-
-Rosacea: Facial erythema and pustules (no comedones). Triggers (alcohol/heat). Treated with Metronidazole/Doxycycline.
-
-Alopecia Areata: Autoimmune patchy hair loss. Treated with Intralesional Steroids or JAK inhibitors.
-
-batch 51
-Atopic Dermatitis (Eczema): Essential.
-
-Seborrheic Dermatitis: Essential (Dandruff/Cradle cap).
-
-Onychomycosis: Essential (Nail fungus requires different drugs).
-
-Tinea Versicolor: Essential (Distinct yeast).
-
-Pediculosis (Lice): Essential (Parasitic).
-
-batch 52
-
-Osteomyelitis
-
-Septic Arthritis
-
-Polymyalgia Rheumatica (PMR)
-
-Psoriatic Arthritis (PsA)
-
-Reactive Arthritis (Reiter's Syndrome)
-
-Batch 53: Metabolic, Genetic & Malignant Bone Disease
-Paget's Disease of Bone (Osteitis Deformans): Disordered bone remodeling (high turnover) leading to weak, expanded bones. "Cotton Wool" skull on X-ray. Treated with Bisphosphonates.
-
-Multiple Myeloma: Plasma cell malignancy causing lytic bone lesions, hypercalcemia, and renal failure (CRAB criteria). Treated with Bortezomib/Lenalidomide.
-
-Osteosarcoma: Primary bone malignancy (teens). "Sunburst" appearance on X-ray. Treated with Methotrexate/Cisplatin + Surgery.
-
-Osteogenesis Imperfecta: Genetic collagen defect ("Brittle Bone Disease"). Blue sclerae and frequent fractures. Treated with Bisphosphonates (Pamidronate).
-
-Avascular Necrosis (AVN) / Osteonecrosis: Death of bone tissue due to interrupted blood supply (often femoral head). Steroids and Alcohol are major risk factors.
-
-batch 55
-
-Chronic Lymphocytic Leukemia (CLL)
-
-Infectious Mononucleosis
-
-Tuberculous Lymphadenitis (Scrofula)
-
-Lymphedema
-
-Burkitt Lymphoma
-
-Batch 56: Esophagus & Stomach Disorders
-Achalasia Cardia: Motility disorder with failure of LES relaxation. "Bird's Beak" on Barium swallow. Treated with Nitrates/CCBs or Surgery.
-
-Gastroparesis: Delayed gastric emptying (usually Diabetic). Nausea/Vomiting. Treated with Prokinetics (Metoclopramide/Erythromycin).
-
-Esophageal Varices: Dilated veins due to Portal Hypertension. Bleeding emergency. Treated with Octreotide/Terlipressin and Non-selective Beta-blockers (Prophylaxis).
-
-Gastric Cancer: Adenocarcinoma linked to H. pylori and salt. "Leather Bottle" stomach (Linitis Plastica).
-
-Mallory-Weiss Tear: Mucosal tear at GE junction due to forceful vomiting (Alcoholics). Usually self-limiting.
-
-Input List (Batch 57):
-
-Clostridioides difficile Infection (CDI)
-
-Diverticulitis
-
-Hemorrhoids (Piles) & Anal Fissure
-
-Tropical Sprue
-
-Lactose Intolerance
-
-input List (Batch 58):
-
-Non-Alcoholic Fatty Liver Disease (NAFLD/NASH)
-
-Hemochromatosis
-
-Autoimmune Hepatitis
-
-Primary Biliary Cholangitis (PBC)
-
-Hepatic Encephalopathy
-
-Batch 59: Renal Malignancy & Genetic Disorders
-Renal Cell Carcinoma (RCC): Most common kidney cancer. "Internist's Tumor" (paraneoplastic syndromes). Treated with Tyrosine Kinase Inhibitors (Sunitinib) or Immunotherapy; resistant to standard chemo.
-
-Bladder Cancer (Urothelial Carcinoma): Painless hematuria. Smoking is #1 risk. Treated with TURBT and Intravesical BCG (Immunotherapy).
-
-Autosomal Dominant Polycystic Kidney Disease (ADPKD): Genetic cyst formation destroying parenchyma. Hypertension/Aneurysm risk. Treated with Tolvaptan (V2 antagonist).
-
-Wilms Tumor (Nephroblastoma): Most common pediatric renal tumor. Abdominal mass. Treated with Vincristine/Actinomycin-D.
-
-Alport Syndrome: Genetic Type IV collagen defect leading to Nephritis + Deafness + Eye disorders.
-
-Input List (Batch 60):
-
-Urinary Incontinence (OAB/Stress)
-
-Renal Artery Stenosis (RAS)
-
-Interstitial Cystitis (Bladder Pain Syndrome)
-
-Hepatorenal Syndrome (HRS)
-
-Hemolytic Uremic Syndrome (HUS)
-
-Batch 61: Gynecologic Oncology
-Breast Cancer: Most common malignancy in women. Treatment depends on receptor status (ER/PR/HER2). Pharmacology includes SERMs (Tamoxifen), Aromatase Inhibitors (Letrozole), and Monoclonals (Trastuzumab).
-
-Cervical Cancer: Caused by HPV. Screening via Pap smear. Treated with Chemoradiation (Cisplatin) if advanced.
-
-Ovarian Cancer: "Silent Killer". Presents with ascites/bloating. Treated with debulking surgery and Platinum/Taxane chemotherapy.
-
-Endometrial Cancer: Cancer of the uterine lining. Presents with post-menopausal bleeding. Risk factors: Unopposed estrogen, Obesity.
-
-Gestational Trophoblastic Disease (Molar Pregnancy): Abnormal proliferation of placental tissue. extremely high Beta-HCG. Highly sensitive to Methotrexate.
-Batch 62: Benign Gynecology & Infections
-Polycystic Ovary Syndrome (PCOS): Metabolic/Reproductive disorder. Rotterdam criteria (Oligo-ovulation, Hyperandrogenism, Polycystic ovaries). Treated with OCPs, Metformin, Spironolactone.
-
-Uterine Fibroids (Leiomyoma): Benign smooth muscle tumors. Cause menorrhagia/pain. Treated with Tranexamic acid, GnRH agonists, or Myomectomy.
-
-Pelvic Inflammatory Disease (PID): Ascending infection (Chlamydia/Gonorrhea) causing salpingitis/endometritis. "Chandelier Sign". Treated with Ceftriaxone + Doxycycline.
-
-Bacterial Vaginosis (BV): Dysbiosis (loss of Lactobacillus, overgrowth of Gardnerella). Amsel criteria (Clue cells, Whiff test). Treated with Metronidazole.
-
-Menopause Syndrome: Vasomotor symptoms (hot flashes) due to estrogen withdrawal. Treated with HRT (Hormone Replacement Therapy) or SSRIs.
-
-Input List (Batch 63):
+🤰 13. Obstetric Complications (5)
 
 Preeclampsia / Eclampsia
 
@@ -763,52 +678,70 @@ Postpartum Hemorrhage (PPH)
 
 Hyperemesis Gravidarum
 
-Testicular Torsion
+Teratogenicity (implied)
 
-Input List (Batch 64):
+🛡️ 14. Autoimmune & Immunology (6)
 
-Attention Deficit Hyperactivity Disorder (ADHD)
+Systemic Lupus Erythematosus (SLE)
 
-Obsessive-Compulsive Disorder (OCD)
+Anaphylaxis
 
-Post-Traumatic Stress Disorder (PTSD)
+Sjögren’s Syndrome
 
-Alcohol Withdrawal Syndrome
+Organ Transplant Rejection
 
-Anorexia Nervosa
-
-Input List (Batch 65):
-
-Febrile Neutropenia
-
-Tumor Lysis Syndrome (TLS)
-
-Superior Vena Cava (SVC) Syndrome
-
-Myelodysplastic Syndrome (MDS)
-
-Essential Thrombocythemia (ET)
-
-Input List (Batch 66):
-
-Acute Otitis Media (AOM)
-
-Acute Bacterial Rhinosinusitis (ABRS)
-
-Streptococcal Pharyngitis (Strep Throat)
-
-Cholera
-
-Leptospirosis (Weil's Disease)
-
-Input List (Batch 67):
+Hypersensitivity Reactions
 
 Amyloidosis (AL/AA)
 
-Granulomatosis with Polyangiitis (Wegener's)
+☠️ 15. Toxicology & Environmental (9)
 
-Acute Intermittent Porphyria (AIP)
+Lead Poisoning
+
+Organophosphate Poisoning
+
+Carbon Monoxide Poisoning
+
+Opioid Overdose
+
+Burn Injury (Thermal)
+
+Paracetamol Toxicity
+
+Arsenic Poisoning
+
+Mercury Poisoning
+
+Drug Overdose (Benzodiazepines)
+
+Radiation Exposure
+
+Snake Bite
 
 Digoxin Toxicity
 
 Salicylate (Aspirin) Toxicity
+
+👂 16. ENT & Miscellaneous (11)
+
+Acute Intermittent Porphyria (AIP)
+
+Granulomatosis with Polyangiitis (Wegener's)
+
+Tinea Versicolor
+
+Pediculosis (Lice)
+
+Lymphedema
+
+Prostate Cancer
+
+Benign Prostatic Hyperplasia (BPH)
+
+Prostatitis
+
+Onychomycosis
+
+Seborrheic Dermatitis
+
+Dehydration & Heat Stroke

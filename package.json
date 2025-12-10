@@ -13,6 +13,7 @@
     "@capacitor/android": "^7.4.4",
     "@capacitor/cli": "^7.4.4",
     "@capacitor/core": "^7.4.4",
+    "@google/generative-ai": "^0.24.1",
     "crypto-js": "^4.2.0",
     "firebase": "^12.6.0",
     "jspdf": "^2.5.1",

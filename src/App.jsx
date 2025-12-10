@@ -9,7 +9,8 @@ import { diseaseDatabase } from "./data/diseases";
 import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
 import DiseaseModal from "./components/DiseaseModal";
-import SymptomChecker from "./components/SymptomCheckerComponent"; // renamed to avoid case-only issues
+// Replaced old SymptomChecker with the new AI SmartDiagnostician
+import SmartDiagnostician from "./components/SmartDiagnostician"; 
 import { calculatePediatricDose, calculateBMI, calculateGFR, calculateMAP, calculateMaintenanceFluid } from "./utils/calculators";
 
 const THEME_KEY = "clinical_theme";
@@ -202,7 +203,7 @@ export default function ClinicalTool() {
         <div className="flex p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
           {[
             { id: "search", label: "Search", icon: Search },
-            { id: "diagnosis", label: "Diagnosis", icon: ClipboardList }, // New Tab
+            { id: "diagnosis", label: "Diagnosis", icon: ClipboardList }, // AI-Powered
             { id: "tools", label: "Tools", icon: Calculator }
           ].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} 
@@ -239,9 +240,9 @@ export default function ClinicalTool() {
             </div>
           )}
 
-          {/* TAB 2: DIAGNOSIS (NEW) */}
+          {/* TAB 2: DIAGNOSIS (AI INTEGRATED) */}
           {activeTab === "diagnosis" && (
-            <SymptomChecker onSelectDisease={setSelectedDisease} />
+            <SmartDiagnostician />
           )}
 
           {/* TAB 3: TOOLS */}

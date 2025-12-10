@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Pill, Thermometer, Activity, AlertTriangle, Scale, Lightbulb, Microscope, Utensils, Ban, CheckCircle2, HeartPulse, Stethoscope, BookOpen } from "lucide-react";
+import DrugLink from './DrugLink';
 
 export default function DiseaseModal({ name, data, onClose }) {
   if (!data) return null;
@@ -156,8 +157,9 @@ export default function DiseaseModal({ name, data, onClose }) {
                      <div key={i} className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-blue-100 dark:border-blue-900/50 shadow-sm flex flex-col h-full">
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <div className="font-bold text-slate-800 dark:text-white text-sm">{item.drug}</div>
-                            <div className="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400">{item.class}</div>
+                            {/* Replaced static div with DrugLink component */}
+                            <DrugLink drugName={item.drug} />
+                            <div className="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400 mt-1">{item.class}</div>
                           </div>
                           <div className="text-right">
                             <div className="text-xs font-semibold text-slate-700 dark:text-slate-300">{item.dose}</div>
@@ -214,7 +216,6 @@ export default function DiseaseModal({ name, data, onClose }) {
                 </div>
              </div>
           </div>
-
         </div>
       </div>
     </div>
