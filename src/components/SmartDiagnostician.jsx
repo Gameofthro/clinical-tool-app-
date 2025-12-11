@@ -5,7 +5,6 @@ import {
   BookOpen, AlertOctagon, Microscope, ClipboardList
 } from 'lucide-react';
 
-// ✅ FIX 1: Correct Import Path (Up one level to src, then to data)
 import { diseaseDatabase } from '../data/diseases';
 
 // --- Helper: Clean Text for Matching ---
@@ -41,21 +40,20 @@ export default function App() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchContainerRef = useRef(null);
 
-  // --- ✅ FIX 2: Correctly Extract Symptoms from Detailed Schema ---
+  // --- 1. Universal Symptom Extractor (Handles Arrays & Objects) ---
   const availableSymptoms = useMemo(() => {
     const allKeys = new Set();
     if (diseaseDatabase) {
       Object.values(diseaseDatabase).forEach(disease => {
-        // 1. Check for Detailed Schema (clinicalFeatures array)
+        // Detailed Schema (Arrays inside clinicalFeatures)
         if (disease.clinicalFeatures) {
             const syms = disease.clinicalFeatures.symptoms || [];
             const signs = disease.clinicalFeatures.signs || [];
             [...syms, ...signs].forEach(s => allKeys.add(s));
-        }
-        // 2. Check for Simple Schema (symptoms object keys)
-        else if (disease.symptoms && typeof disease.symptoms === 'object' && !Array.isArray(disease.symptoms)) {
+        } 
+        // Simple Schema (Object keys in symptoms)
+        else if (disease.symptoms && typeof disease.symptoms === 'object') {
              Object.keys(disease.symptoms).forEach(key => {
-                 // Convert "abdominal_pain" -> "Abdominal Pain" for display
                  allKeys.add(key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
              });
         }
@@ -68,12 +66,8 @@ export default function App() {
   const localSuggestions = useMemo(() => {
     if (!searchQuery) return [];
     const lowerQuery = normalize(searchQuery);
-    
     return availableSymptoms
-      .filter(sym => 
-        !selectedSymptoms.includes(sym) && 
-        normalize(sym).includes(lowerQuery)
-      )
+      .filter(sym => !selectedSymptoms.includes(sym) && normalize(sym).includes(lowerQuery))
       .slice(0, 10);
   }, [searchQuery, availableSymptoms, selectedSymptoms]);
 
@@ -88,8 +82,7 @@ export default function App() {
         Act as a medical terminology mapper.
         User Input: "${searchQuery}"
         Map the user's input to the closest matching symptom strings from this list:
-        ${JSON.stringify(availableSymptoms.slice(0, 500))} 
-        
+        ${JSON.stringify(availableSymptoms.slice(0, 300))} 
         Return ONLY a JSON array of strings. Example: ["Nausea", "Headache"].
       `;
 
@@ -99,16 +92,14 @@ export default function App() {
         body: JSON.stringify({ prompt })
       });
 
-      if (!response.ok) throw new Error("API Error");
+      if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
       const data = await response.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || data.result;
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
       
       if (text) {
         const cleanText = text.replace(/```json|```/g, '').trim();
         const foundKeys = JSON.parse(cleanText);
-        
-        // Filter to ensure we only add valid symptoms from our list
         const newSymptoms = foundKeys.filter(key => availableSymptoms.includes(key));
         if (newSymptoms.length > 0) {
           setSelectedSymptoms(prev => [...new Set([...prev, ...newSymptoms])]);
@@ -117,7 +108,6 @@ export default function App() {
       }
     } catch (e) {
       console.warn("AI Search failed, using local match", e);
-      // Fallback
       if (localSuggestions.length > 0) {
          setSelectedSymptoms(prev => [...prev, localSuggestions[0]]);
          setSearchQuery('');
@@ -131,12 +121,12 @@ export default function App() {
   const handleDrugClick = async (drugName, existingData) => {
     setSelectedDrug(drugName);
     
-    // Fallback Data (Shows immediately)
+    // Immediate Fallback (Prevents "Unable to load" error)
     const fallbackData = {
         drugClass: existingData?.class || "Pharmacological Agent",
         dosing: `${existingData?.dose || 'See Rx'} • ${existingData?.freq || ''}`,
-        mechanismOfAction: existingData?.rationale || "Mechanism details loading...",
-        commonSideEffects: ["Consult local formulary"],
+        mechanismOfAction: existingData?.rationale || "Consult local formulary for details.",
+        commonSideEffects: ["Consult BNF/MIMS"],
         seriousAdverseReactions: [],
         isFallback: true
     };
@@ -163,6 +153,8 @@ export default function App() {
         body: JSON.stringify({ prompt })
       });
 
+      if (!response.ok) throw new Error(`API Error: ${response.status}`);
+
       const data = await response.json();
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
       
@@ -173,12 +165,13 @@ export default function App() {
       }
     } catch (e) {
       console.error("Drug fetch error", e);
+      // We purposefully don't show an error UI, we just stick to the fallback data
     } finally {
       setIsDrugLoading(false);
     }
   };
 
-  // --- ✅ FIX 3: Differential Engine (Compatible with Arrays) ---
+  // --- 5. Differential Engine (Handles Arrays & Objects) ---
   const results = useMemo(() => {
     if (selectedSymptoms.length === 0 || !diseaseDatabase) return [];
 
@@ -186,37 +179,26 @@ export default function App() {
       let matchCount = 0;
       let matchedSymptoms = [];
 
-      // Unified Feature Extraction (Handles both schemas)
       let diseaseFeatures = [];
-      
       if (condition.clinicalFeatures) {
-          // Detailed Schema
-          diseaseFeatures = [
-            ...(condition.clinicalFeatures.symptoms || []), 
-            ...(condition.clinicalFeatures.signs || [])
-          ];
+          diseaseFeatures = [...(condition.clinicalFeatures.symptoms || []), ...(condition.clinicalFeatures.signs || [])];
       } else if (condition.symptoms) {
-          // Simple Schema
-          diseaseFeatures = Object.keys(condition.symptoms).map(k => 
-            k.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
-          );
+          diseaseFeatures = Object.keys(condition.symptoms).map(k => k.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
       }
 
-      // Matching Logic
       selectedSymptoms.forEach(sel => {
-        // Check for exact match or substring match
-        if (diseaseFeatures.some(f => f.includes(sel) || sel.includes(f))) {
+        const selNorm = normalize(sel);
+        const hasMatch = diseaseFeatures.some(f => normalize(f).includes(selNorm) || selNorm.includes(normalize(f)));
+        if (hasMatch) {
           matchCount++;
           matchedSymptoms.push(sel);
         }
       });
 
-      // Simple Scoring
       const totalFeatures = diseaseFeatures.length || 1;
       const coverage = (matchCount / totalFeatures) * 100;
       let score = coverage;
 
-      // Age Modifiers
       const ageNum = parseInt(age);
       if (ageNum > 60 && ["High", "Critical"].includes(condition.urgency)) score += 10;
 
@@ -228,7 +210,7 @@ export default function App() {
         matchedSymptoms 
       };
     })
-    .filter(c => c.score > 0) // Show any matches
+    .filter(c => c.score > 0)
     .sort((a, b) => b.score - a.score);
   }, [selectedSymptoms, age]);
 
@@ -360,7 +342,6 @@ export default function App() {
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="font-bold text-slate-800 dark:text-slate-100">{r.name}</h3>
-                          {/* Fallback for urgency since detailed schema might not have it in root */}
                           {r.redFlags && r.redFlags.length > 0 && <Badge type="Critical">Red Flags</Badge>}
                         </div>
                         <p className="text-xs text-slate-500 line-clamp-1">{r.pathophysiology}</p>
