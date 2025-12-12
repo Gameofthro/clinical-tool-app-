@@ -10,6 +10,7 @@ import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
 import DiseaseModal from "./components/DiseaseModal";
 import SmartDiagnostician from "./components/SmartDiagnostician"; 
+// --- NEW IMPORTS (Corrected case sensitivity) ---
 import Footer from "./components/footer";
 import LegalModal from "./components/legalModel";
 

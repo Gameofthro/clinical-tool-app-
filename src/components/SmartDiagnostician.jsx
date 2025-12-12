@@ -25,6 +25,7 @@ const Badge = ({ children, type }) => {
   );
 };
 
+// FIXED: Renamed component from 'App' to 'SmartDiagnostician' to match file name and avoid confusion
 export default function SmartDiagnostician() {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
