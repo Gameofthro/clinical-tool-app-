@@ -25,8 +25,8 @@ const Badge = ({ children, type }) => {
   );
 };
 
-// FIXED: Renamed component from 'App' to 'SmartDiagnostician' to match file name and avoid confusion
-export default function SmartDiagnostician() {
+// Main Component Definition (Defined first, then exported)
+function SmartDiagnostician() {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -546,3 +546,6 @@ export default function SmartDiagnostician() {
     </div>
   );
 }
+
+// Explicit export at the end to prevent build system confusion
+export default SmartDiagnostician;
