@@ -12,7 +12,7 @@ import DiseaseModal from "./components/DiseaseModal";
 import DiagnosisTool from "./components/DiagnosisTool"; 
 // --- NEW IMPORTS (Corrected case sensitivity) ---
 import Footer from "./components/footer";
-import LegalModal from "./components/legalModel";
+import LegalModal from "./components/legalModal";
 
 import { calculatePediatricDose, calculateBMI, calculateGFR, calculateMAP, calculateMaintenanceFluid } from "./utils/calculators";
 
@@ -26,7 +26,7 @@ export default function ClinicalTool() {
   // --- STATE ---
   const [user, setUser] = useState(null);
   const [selectedDisease, setSelectedDisease] = useState(null);
-  const [prescriptions] = useState(diseaseDatabase);
+  const [prescriptions] = useState(diseaseDatabase || {}); // Safety init
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState("search");
   const [activeTool, setActiveTool] = useState("pediatric");
@@ -70,7 +70,7 @@ export default function ClinicalTool() {
             setMandatoryTerms(true); // Forces user to accept
         }
     }
-  }, [user]); // <--- Dependency on [user] ensures this runs immediately after login
+  }, [user]);
 
   // --- ACTIONS ---
   const toggleTheme = () => {
@@ -84,8 +84,6 @@ export default function ClinicalTool() {
   const handleLogout = () => {
     localStorage.removeItem("clinical_current_user");
     setUser(null);
-    // Note: We do NOT clear TERMS_KEY here. 
-    // Usually, you only need to accept terms once per device, not every single session.
   };
 
   const handleLogin = (userData) => {
@@ -115,6 +113,7 @@ export default function ClinicalTool() {
   // --- SEARCH LOGIC ---
   const filteredResults = useMemo(() => {
     if (!query) return [];
+    if (!prescriptions) return []; // Safety check
     const lowerQ = query.toLowerCase().trim();
     
     return Object.entries(prescriptions).filter(([key, data]) => {
@@ -165,7 +164,7 @@ export default function ClinicalTool() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans flex flex-col transition-colors duration-300">
       
-      {/* --- NEW: Legal Modal (Renders on top of everything) --- */}
+      {/* --- NEW: Legal Modal --- */}
       <LegalModal 
         isOpen={showTerms} 
         onAccept={handleAcceptTerms} 
@@ -280,7 +279,7 @@ export default function ClinicalTool() {
 
           {/* TAB 2: DIAGNOSIS (AI INTEGRATED) */}
           {activeTab === "diagnosis" && (
-            <AiDiagnostician />
+            <DiagnosisTool />
           )}
 
           {/* TAB 3: TOOLS */}
