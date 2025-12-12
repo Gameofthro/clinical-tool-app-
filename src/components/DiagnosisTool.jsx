@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { 
   Activity, Search, X, Trash2, Zap, Stethoscope, 
   AlertTriangle, Pill, Sparkles, Loader2, Utensils, Sun,
-  AlertOctagon, Microscope
+  Microscope
 } from 'lucide-react';
 
 import { diseaseDatabase } from '../data/diseases';
@@ -25,7 +25,7 @@ const Badge = ({ children, type }) => {
   );
 };
 
-// Main Component Definition (Defined first, then exported)
+// Main Component Definition
 function DiagnosisTool() {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -41,9 +41,22 @@ function DiagnosisTool() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchContainerRef = useRef(null);
 
+  // --- SAFETY CHECK: Prevent Crash if DB is Missing ---
+  if (!diseaseDatabase) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px] text-slate-400">
+        <div className="text-center">
+          <AlertTriangle className="h-10 w-10 mx-auto mb-2 text-amber-500" />
+          <p>Medical Database Unavailable</p>
+        </div>
+      </div>
+    );
+  }
+
   // --- 1. Universal Symptom Extractor (Handles Arrays & Objects) ---
   const availableSymptoms = useMemo(() => {
     const allKeys = new Set();
+    // Safety check inside useMemo just in case
     if (diseaseDatabase) {
       Object.values(diseaseDatabase).forEach(disease => {
         // Detailed Schema (Arrays inside clinicalFeatures)
@@ -72,61 +85,37 @@ function DiagnosisTool() {
       .slice(0, 10);
   }, [searchQuery, availableSymptoms, selectedSymptoms]);
 
-  // --- 3. AI Symptom Mapper ---
+  // --- 3. SMART Symptom Search (Local Only - No API) ---
   const handleAiSearch = async () => {
     if (!searchQuery.trim()) return;
     setIsAiLoading(true);
-    setShowSuggestions(false);
+    
+    // Simulate thinking time for UX
+    await new Promise(r => setTimeout(r, 600));
 
-    try {
-      const prompt = `
-        Act as a medical terminology mapper.
-        User Input: "${searchQuery}"
-        Map the user's input to the closest matching symptom strings from this list:
-        ${JSON.stringify(availableSymptoms.slice(0, 300))} 
-        Return ONLY a JSON array of strings. Example: ["Nausea", "Headache"].
-      `;
+    const lowerQuery = normalize(searchQuery);
+    const bestMatch = availableSymptoms.find(sym => 
+        normalize(sym).includes(lowerQuery) || lowerQuery.includes(normalize(sym))
+    );
 
-      // Updated for Step 3: Fetching from the single API route
-      const response = await fetch('/api/diagnose', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt })
-      });
-
-      if (!response.ok) throw new Error(`API Error: ${response.status}`);
-
-      const data = await response.json();
-      
-      // Updated parsing logic: Access 'diagnosis' key directly
-      // This matches the { diagnosis: text } structure from the updated API
-      const text = data.diagnosis; 
-      
-      if (text) {
-        const cleanText = text.replace(/```json|```/g, '').trim();
-        const foundKeys = JSON.parse(cleanText);
-        const newSymptoms = foundKeys.filter(key => availableSymptoms.includes(key));
-        if (newSymptoms.length > 0) {
-          setSelectedSymptoms(prev => [...new Set([...prev, ...newSymptoms])]);
-          setSearchQuery('');
+    if (bestMatch && !selectedSymptoms.includes(bestMatch)) {
+        setSelectedSymptoms(prev => [...prev, bestMatch]);
+        setSearchQuery('');
+        setShowSuggestions(false);
+    } else {
+        if (localSuggestions.length > 0) {
+             setSelectedSymptoms(prev => [...prev, localSuggestions[0]]);
+             setSearchQuery('');
+             setShowSuggestions(false);
         }
-      }
-    } catch (e) {
-      console.warn("AI Search failed, using local match", e);
-      if (localSuggestions.length > 0) {
-         setSelectedSymptoms(prev => [...prev, localSuggestions[0]]);
-         setSearchQuery('');
-      }
-    } finally {
-      setIsAiLoading(false);
     }
+    setIsAiLoading(false);
   };
 
   // --- 4. Pharmacology Engine ---
   const handleDrugClick = async (drugName, existingData) => {
     setSelectedDrug(drugName);
     
-    // Immediate Fallback (Prevents "Unable to load" error)
     const fallbackData = {
         drugClass: existingData?.class || "Pharmacological Agent",
         dosing: `${existingData?.dose || 'See Rx'} • ${existingData?.freq || ''}`,
@@ -136,43 +125,35 @@ function DiagnosisTool() {
         isFallback: true
     };
     
-    setDrugData(fallbackData);
+    setDrugData(fallbackData); 
     setIsDrugLoading(true);
 
     try {
-      const prompt = `
-        Act as a Clinical Pharmacologist. Drug: "${drugName}".
-        Return JSON (no markdown):
-        {
-          "drugClass": "Class",
-          "mechanismOfAction": "MOA (2 sentences)",
-          "dosing": "Adult dosing range",
-          "commonSideEffects": ["SE1", "SE2"],
-          "seriousAdverseReactions": ["ADR1", "ADR2"]
-        }
-      `;
-
       const response = await fetch('/api/diagnose', {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt })
+        body: JSON.stringify({ 
+            mode: 'search', 
+            query: `Pharmacology of ${drugName}. Include class, mechanism, dosing, side effects.` 
+        })
       });
 
       if (!response.ok) throw new Error(`API Error: ${response.status}`);
 
       const data = await response.json();
       
-      // Updated parsing logic here as well
-      const text = data.diagnosis;
-      
-      if (text) {
-        const cleanText = text.replace(/```json|```/g, '').trim();
-        const parsedData = JSON.parse(cleanText);
-        setDrugData({ ...parsedData, isFallback: false }); 
+      if (data) {
+        setDrugData({
+            drugClass: data.name || fallbackData.drugClass, 
+            mechanismOfAction: data.summary || data.mechanism || fallbackData.mechanismOfAction,
+            dosing: fallbackData.dosing, 
+            commonSideEffects: data.symptoms || data.side_effects || fallbackData.commonSideEffects,
+            seriousAdverseReactions: data.warning ? [data.warning] : [],
+            isFallback: false
+        }); 
       }
     } catch (e) {
       console.error("Drug fetch error", e);
-      // We purposefully don't show an error UI, we just stick to the fallback data
     } finally {
       setIsDrugLoading(false);
     }
@@ -396,7 +377,7 @@ function DiagnosisTool() {
                 </div>
                 {selectedCondition.redFlags && (
                   <div>
-                    <h3 className="text-xs font-bold uppercase text-red-400 flex gap-2 mb-2"><AlertOctagon className="h-4 w-4"/> Red Flags</h3>
+                    <h3 className="text-xs font-bold uppercase text-red-400 flex gap-2 mb-2"><AlertTriangle className="h-4 w-4"/> Red Flags</h3>
                     <ul className="list-disc pl-4 text-xs text-red-600 dark:text-red-400 space-y-1">
                       {selectedCondition.redFlags.map((f, i) => <li key={i}>{f}</li>)}
                     </ul>
@@ -530,7 +511,7 @@ function DiagnosisTool() {
                         </ul>
                       </div>
                       <div>
-                        <h4 className="text-xs font-bold uppercase text-red-400 mb-1 flex items-center gap-1"><AlertOctagon className="h-3 w-3"/> Serious</h4>
+                        <h4 className="text-xs font-bold uppercase text-red-400 mb-1 flex items-center gap-1"><AlertTriangle className="h-3 w-3"/> Serious</h4>
                         <ul className="list-disc pl-3 text-red-600 dark:text-red-400 space-y-0.5">
                           {drugData.seriousAdverseReactions?.map((e, i) => <li key={i}>{e}</li>)}
                         </ul>
