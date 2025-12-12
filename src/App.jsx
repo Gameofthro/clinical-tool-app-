@@ -9,10 +9,10 @@ import { diseaseDatabase } from "./data/diseases";
 import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
 import DiseaseModal from "./components/DiseaseModal";
-import AiDiagnostician from "./components/AiDiagnostician"; 
+import DiagnosisTool from "./components/DiagnosisTool"; 
 // --- NEW IMPORTS (Corrected case sensitivity) ---
 import Footer from "./components/footer";
-import LegalModal from "./components/LegalModel";
+import LegalModal from "./components/legalModel";
 
 import { calculatePediatricDose, calculateBMI, calculateGFR, calculateMAP, calculateMaintenanceFluid } from "./utils/calculators";
 

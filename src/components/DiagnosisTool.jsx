@@ -1,8 +1,8 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { 
-  Activity, Search, X, Trash2, Zap, Info, Stethoscope, 
+  Activity, Search, X, Trash2, Zap, Stethoscope, 
   AlertTriangle, Pill, Sparkles, Loader2, Utensils, Sun,
-  BookOpen, AlertOctagon, Microscope, ClipboardList
+  AlertOctagon, Microscope
 } from 'lucide-react';
 
 import { diseaseDatabase } from '../data/diseases';
@@ -26,7 +26,7 @@ const Badge = ({ children, type }) => {
 };
 
 // Main Component Definition (Defined first, then exported)
-function AiDiagnostician() {
+function DiagnosisTool() {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -548,4 +548,4 @@ function AiDiagnostician() {
 }
 
 // Explicit export at the end to prevent build system confusion
-export default AiDiagnostician;
+export default DiagnosisTool;
