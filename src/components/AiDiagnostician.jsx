@@ -26,7 +26,7 @@ const Badge = ({ children, type }) => {
 };
 
 // Main Component Definition (Defined first, then exported)
-function SmartDiagnostician() {
+function AiDiagnostician() {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -548,4 +548,6 @@ function SmartDiagnostician() {
 }
 
 // Explicit export at the end to prevent build system confusion
-export default SmartDiagnostician;
+export default AiDiagnostician;
+
+
