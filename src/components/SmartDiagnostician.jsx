@@ -25,7 +25,7 @@ const Badge = ({ children, type }) => {
   );
 };
 
-export default function App() {
+export default function SmartDiagnostician() {
   const [selectedSymptoms, setSelectedSymptoms] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [isAiLoading, setIsAiLoading] = useState(false);
