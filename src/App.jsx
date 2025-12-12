@@ -9,11 +9,14 @@ import { diseaseDatabase } from "./data/diseases";
 import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
 import DiseaseModal from "./components/DiseaseModal";
-// Replaced old SymptomChecker with the new AI SmartDiagnostician
 import SmartDiagnostician from "./components/SmartDiagnostician"; 
+import Footer from "./components/footer";
+import LegalModal from "./components/legalModel";
+
 import { calculatePediatricDose, calculateBMI, calculateGFR, calculateMAP, calculateMaintenanceFluid } from "./utils/calculators";
 
 const THEME_KEY = "clinical_theme";
+const TERMS_KEY = "clinical_terms_accepted_v1"; // Versioned key
 
 // --- CONFIGURATION ---
 const SUPPORT_EMAIL = "clinicalassist.center@gmail.com"; 
@@ -29,12 +32,14 @@ export default function ClinicalTool() {
   const [darkMode, setDarkMode] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
   
+  // --- LEGAL STATE ---
+  const [showTerms, setShowTerms] = useState(false);
+  const [mandatoryTerms, setMandatoryTerms] = useState(false);
+
   // Calculator Inputs
   const [doseData, setDoseData] = useState({ weight: "", adultDose: "", unit: "kg" });
   const [bmiData, setBmiData] = useState({ height: "", weight: "", wUnit: "kg", hUnit: "cm" });
   const [gfrData, setGfrData] = useState({ creatinine: "", age: "", gender: "male", unit: "mg/dl" });
-
-  // New: MAP & Maintenance fluid states
   const [mapData, setMapData] = useState({ sbp: "", dbp: "" });
   const [maintData, setMaintData] = useState({ weight: "", unit: "kg" });
   
@@ -42,9 +47,11 @@ export default function ClinicalTool() {
 
   // --- INITIALIZATION ---
   useEffect(() => {
+    // 1. User Auth Check
     const savedUser = localStorage.getItem("clinical_current_user");
     if (savedUser) setUser(JSON.parse(savedUser));
     
+    // 2. Theme Check
     const savedTheme = localStorage.getItem(THEME_KEY);
     const isDark = savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
     setDarkMode(isDark);
@@ -52,12 +59,23 @@ export default function ClinicalTool() {
     else document.documentElement.classList.remove("dark");
   }, []);
 
+  // --- CRITICAL: WATCH FOR LOGIN TO SHOW TERMS ---
+  useEffect(() => {
+    // Only run this check if a user is actually logged in
+    if (user) {
+        const hasAccepted = localStorage.getItem(TERMS_KEY);
+        if (!hasAccepted) {
+            setShowTerms(true);
+            setMandatoryTerms(true); // Forces user to accept
+        }
+    }
+  }, [user]); // <--- Dependency on [user] ensures this runs immediately after login
+
   // --- ACTIONS ---
   const toggleTheme = () => {
     const newMode = !darkMode;
     setDarkMode(newMode);
     localStorage.setItem(THEME_KEY, newMode ? "dark" : "light");
-    
     if (newMode) document.documentElement.classList.add("dark");
     else document.documentElement.classList.remove("dark");
   };
@@ -65,6 +83,8 @@ export default function ClinicalTool() {
   const handleLogout = () => {
     localStorage.removeItem("clinical_current_user");
     setUser(null);
+    // Note: We do NOT clear TERMS_KEY here. 
+    // Usually, you only need to accept terms once per device, not every single session.
   };
 
   const handleLogin = (userData) => {
@@ -79,7 +99,19 @@ export default function ClinicalTool() {
     });
   };
 
-  // --- FIXED SEARCH LOGIC ---
+  // --- LEGAL HANDLERS ---
+  const handleAcceptTerms = () => {
+    localStorage.setItem(TERMS_KEY, "true");
+    setShowTerms(false);
+    setMandatoryTerms(false);
+  };
+
+  const handleOpenTermsReview = () => {
+    setMandatoryTerms(false); // Can be closed via X button
+    setShowTerms(true);
+  };
+
+  // --- SEARCH LOGIC ---
   const filteredResults = useMemo(() => {
     if (!query) return [];
     const lowerQ = query.toLowerCase().trim();
@@ -95,7 +127,6 @@ export default function ClinicalTool() {
     });
   }, [query, prescriptions]);
 
-  // --- HELPER FOR COLORS ---
   const getCategoryColor = (category) => {
     if (category.includes("Respiratory")) return "blue";
     if (category.includes("Cardiology")) return "red";
@@ -118,23 +149,29 @@ export default function ClinicalTool() {
     const res = calculateGFR(gfrData.creatinine, gfrData.age, gfrData.gender, gfrData.unit);
     setResults(prev => ({...prev, gfr: res}));
   };
-
-  // --- NEW CALCULATOR HANDLERS ---
   const handleMAPCalc = () => {
     const res = calculateMAP(mapData.sbp, mapData.dbp);
     setResults(prev => ({...prev, map: res}));
   };
-
   const handleMaintenanceCalc = () => {
     const res = calculateMaintenanceFluid(maintData.weight, maintData.unit);
     setResults(prev => ({...prev, maintenance: res}));
   };
 
+  // Ensure Auth check is handled first
   if (!user) return <Auth onLogin={handleLogin} />;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans pb-24 transition-colors duration-300">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans flex flex-col transition-colors duration-300">
       
+      {/* --- NEW: Legal Modal (Renders on top of everything) --- */}
+      <LegalModal 
+        isOpen={showTerms} 
+        onAccept={handleAcceptTerms} 
+        onClose={() => setShowTerms(false)}
+        isMandatory={mandatoryTerms}
+      />
+
       {/* HEADER */}
       <div className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 shadow-sm">
         <div className="max-w-3xl mx-auto px-4 py-3">
@@ -196,8 +233,8 @@ export default function ClinicalTool() {
         </div>
       </div>
 
-      {/* CONTENT */}
-      <div className="max-w-3xl mx-auto px-4 mt-4 space-y-6">
+      {/* CONTENT (Flex-grow ensures footer pushes down) */}
+      <div className="flex-grow max-w-3xl mx-auto px-4 mt-4 space-y-6 w-full">
         
         {/* Navigation Tabs */}
         <div className="flex p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
@@ -215,7 +252,7 @@ export default function ClinicalTool() {
         </div>
 
         {/* Results Area */}
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 pb-10">
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
           
           {/* TAB 1: SEARCH */}
           {activeTab === "search" && (
@@ -406,6 +443,9 @@ export default function ClinicalTool() {
           onClose={() => setSelectedDisease(null)} 
         />
       )}
+
+      {/* --- NEW: FOOTER --- */}
+      <Footer onOpenTerms={handleOpenTermsReview} />
 
     </div>
   );
