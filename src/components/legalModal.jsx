@@ -18,7 +18,7 @@ export default function LegalModal({ isOpen, onClose, onAccept, isMandatory }) {
               <h2 className="text-xl font-bold text-slate-800 dark:text-white leading-none">
                 Terms of Service & Privacy
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Last Updated: {new Date().toLocaleDateString()}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Last Updated: December 12, 2024</p>
             </div>
           </div>
           {/* Only show close button if NOT mandatory (View Only Mode) */}
@@ -33,7 +33,7 @@ export default function LegalModal({ isOpen, onClose, onAccept, isMandatory }) {
         <div className="p-6 overflow-y-auto text-slate-600 dark:text-slate-300 space-y-6 text-sm leading-relaxed custom-scrollbar">
           
           {/* Emergency Warning */}
-          <div className="p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800 rounded-xl flex gap-3">
+          <div className="p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-slate-800 rounded-xl flex gap-3">
             <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5"/>
             <div>
               <h3 className="font-bold text-rose-800 dark:text-rose-400 text-sm uppercase tracking-wide mb-1">
