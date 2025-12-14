@@ -294,7 +294,7 @@ export default function ClinicalTool() {
       </div>
 
       {/* CONTENT AREA (Main Scrollable Body - Uses flex-1 to fill space) */}
-      <div className="flex-grow max-w-3xl mx-auto px-4 mt-4 space-y-6 w-full flex flex-col">
+      <div className="flex-grow max-w-3xl mx-auto px-4 mt-4 w-full flex flex-col"> {/* Removed space-y-6 */}
         
         {/* Results/Tool View (Uses entire remaining vertical space) */}
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 flex-1 w-full h-full">
@@ -306,16 +306,18 @@ export default function ClinicalTool() {
                 <button
                   key={tile.id}
                   onClick={() => handleCardClick(tile.id)}
-                  className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl hover:shadow-2xl transition-all text-left group min-h-32"
+                  // Adjusted padding and min-height for better fit
+                  className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl hover:shadow-2xl transition-all text-left group min-h-[120px]" 
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <tile.icon size={28} className={`text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform`} />
+                  <div className="flex items-center justify-between mb-2">
+                    {/* Reduced icon size for better fit */}
+                    <tile.icon size={24} className={`text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform`} />
                     <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{tile.id.toUpperCase()}</span>
                   </div>
-                  <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <h3 className="text-base font-bold text-slate-800 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {tile.label}
                   </h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2"> 
                     {tile.description}
                   </p>
                 </button>
@@ -323,7 +325,7 @@ export default function ClinicalTool() {
             </div>
           )}
 
-          {/* TAB 1: DISEASE SEARCH (Visible only after search starts or explicitly selected) */}
+          {/* TAB 1: DISEASE SEARCH */}
           {activeTab === "search" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {filteredResults.length > 0 ? filteredResults.map((result) => {
