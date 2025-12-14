@@ -70,7 +70,7 @@ const DrugDictionaryTool = () => {
 
     const handleSelectDrug = (drug) => {
         setSelectedDrug(drug);
-        // FIX 3: Scroll monograph content to the top when a new drug is selected
+        // FIX: Scroll monograph content to the top when a new drug is selected
         const monographElement = document.getElementById('monographContent');
         if (monographElement) {
             monographElement.scrollTop = 0;
@@ -90,10 +90,10 @@ const DrugDictionaryTool = () => {
         );
 
         return (
-            // FIX 3: Ensures internal scrolling is handled by this flex item
+            // FIX: Ensures internal scrolling is handled by this flex item
             <div id="monographContent" className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
               
-              <div className="border-b border-slate-100 dark:border-slate-800 pb-6">
+              <div className="border-b border-slate-100 dark:border-slate-800 pb-6 shrink-0"> {/* shrink-0 added */}
                 <div className="flex items-center gap-3 mb-3">
                   <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                     {drug.drug_name}
@@ -109,8 +109,8 @@ const DrugDictionaryTool = () => {
                 </div>
               </div>
 
-              {/* Indications & Mechanism Section */}
-              <section className="space-y-4">
+              {/* Scrollable sections below header */}
+              <section className="space-y-4 shrink-0"> {/* shrink-0 added */}
                 <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
                   <Activity size={20} className="text-emerald-500" />
                   Clinical Pharmacology
@@ -132,7 +132,7 @@ const DrugDictionaryTool = () => {
               </section>
 
               {/* Safety Profile Grid */}
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-6 shrink-0"> {/* shrink-0 added */}
                 {/* Side Effects */}
                 <div className="bg-yellow-50/50 dark:bg-yellow-900/10 rounded-xl p-6 border border-yellow-200 dark:border-yellow-700/30">
                   <h3 className="text-sm font-bold text-yellow-800 dark:text-yellow-200 mb-4 uppercase tracking-wide flex items-center gap-2">
@@ -163,7 +163,7 @@ const DrugDictionaryTool = () => {
               </div>
 
               {/* Footer / FDA Link */}
-              <div className="pt-6 border-t border-slate-200 dark:border-slate-700 flex justify-end">
+              <div className="pt-6 border-t border-slate-200 dark:border-slate-700 flex justify-end shrink-0"> {/* shrink-0 added */}
                 <a 
                   href={drug.adr_reporting_link}
                   target="_blank"
