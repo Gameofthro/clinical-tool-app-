@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { 
   Search, Stethoscope, Baby, Activity, Mail, LogOut, 
-  Calculator, Scale, Moon, Sun, BookOpen, Check, ClipboardList, Heart, Droplet, Pill
+  Calculator, Scale, Moon, Sun, BookOpen, Check, ClipboardList, Heart, Droplet, Pill, ArrowLeft
 } from "lucide-react";
 
 // --- IMPORTS ---
@@ -36,7 +36,7 @@ export default function ClinicalTool() {
   const [prescriptions] = useState(diseaseDatabase || {}); 
 
   const [query, setQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("search");
+  const [activeTab, setActiveTab] = useState("home"); // Changed default to 'home'
   const [activeTool, setActiveTool] = useState("pediatric");
   const [darkMode, setDarkMode] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
@@ -189,8 +189,28 @@ export default function ClinicalTool() {
     setResults(prev => ({...prev, maintenance: res}));
   };
 
+  const handleCardClick = (tabId) => {
+    // If clicking a card, set the active tab
+    setActiveTab(tabId);
+  }
+
+  const handleGoHome = () => {
+    // Allows returning to the main tile view
+    setActiveTab("home");
+    setQuery(""); // Clear search query when going home
+  }
+
 
   if (!user) return <Auth onLogin={handleLogin} />;
+  
+  // Define tools for the home page tiles
+  const toolTiles = [
+    { id: "search", label: "Disease Search", description: "Search clinical guidelines and differential diagnoses.", icon: Search },
+    { id: "drug-index", label: "Drug Index", description: "View drug monographs, pharmacology, and adverse events.", icon: Pill },
+    { id: "diagnosis", label: "AI Diagnosis", description: "Input symptoms for potential diagnoses.", icon: ClipboardList },
+    { id: "tools", label: "Calculators", description: "Access pediatric dosing, BMI, and GFR calculators.", icon: Calculator }
+  ];
+
 
   return (
     // Outer container: full screen height, flex column to stack header, content, and footer
@@ -246,8 +266,20 @@ export default function ClinicalTool() {
             <p className="text-xs text-slate-500 dark:text-slate-400 italic font-medium">"Empowering clinicians with precision and speed."</p>
           </div>
 
-          {/* Search Bar - Only show on Search Tab */}
-          {activeTab === "search" && (
+          {/* Back to Home Button (Appears when not on home screen) */}
+          {activeTab !== "home" && (
+            <div className="max-w-3xl mx-auto px-4 mb-4">
+              <button
+                onClick={handleGoHome}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-sm font-semibold hover:bg-blue-200 dark:hover:bg-blue-800/50 transition-colors"
+              >
+                <ArrowLeft size={16} /> Back to Menu
+              </button>
+            </div>
+          )}
+
+          {/* Search Bar - Only visible on Search Tab or Home (where search field acts as navigation trigger) */}
+          {(activeTab === "search" || activeTab === "home") && (
             <div className="max-w-xl mx-auto relative flex items-center bg-slate-100 dark:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 focus-within:border-blue-400 transition-all shadow-inner">
               <Search className="h-4 w-4 text-slate-400 ml-3.5" />
               <input 
@@ -264,19 +296,34 @@ export default function ClinicalTool() {
       {/* CONTENT AREA (Main Scrollable Body - Uses flex-1 to fill space) */}
       <div className="flex-grow max-w-3xl mx-auto px-4 mt-4 space-y-6 w-full flex flex-col">
         
-        {/* Navigation Tabs (Shrink-0) */}
-        <div className="flex p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm shrink-0">
-          {[{ id: "search", label: "Search", icon: Search }, { id: "diagnosis", label: "Diagnosis", icon: ClipboardList }, { id: "tools", label: "Calculators", icon: Calculator }, { id: "drug-index", label: "Drug Index", icon: Pill }].map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all capitalize flex justify-center items-center gap-2 ${activeTab === tab.id ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md" : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"}`}>
-              <tab.icon size={14} /> {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Results/Tool View (FIX 3: Wrap tab content in a flex-1 container for proper sizing of complex components) */}
+        {/* Results/Tool View (Uses entire remaining vertical space) */}
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 flex-1 w-full h-full">
           
-          {/* TAB 1: DISEASE SEARCH */}
+          {/* Default/Home View: Show Tiles */}
+          {activeTab === "home" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
+              {toolTiles.map(tile => (
+                <button
+                  key={tile.id}
+                  onClick={() => handleCardClick(tile.id)}
+                  className="bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl hover:shadow-2xl transition-all text-left group min-h-32"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <tile.icon size={28} className={`text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform`} />
+                    <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{tile.id.toUpperCase()}</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {tile.label}
+                  </h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    {tile.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* TAB 1: DISEASE SEARCH (Visible only after search starts or explicitly selected) */}
           {activeTab === "search" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {filteredResults.length > 0 ? filteredResults.map((result) => {
@@ -298,7 +345,7 @@ export default function ClinicalTool() {
               }) : (
                 <div className="col-span-full text-center py-20 opacity-60">
                   <BookOpen className="h-12 w-12 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
-                  <p className="text-slate-500 dark:text-slate-400 font-medium">Search for clinical guidelines</p>
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">Start typing to search diseases</p>
                 </div>
               )}
             </div>
