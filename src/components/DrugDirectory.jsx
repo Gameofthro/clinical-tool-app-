@@ -45,11 +45,9 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 dark:bg-slate-900/80 backdrop-blur-sm transition-opacity">
       
       {/* Main Card Container: Uses flex-col/md:flex-row to define the main split */}
-      {/* FIX 1: Set h-full on the inner container to ensure vertical space inheritance is definitive. */}
       <div className="bg-white dark:bg-slate-900 w-full max-w-6xl h-full sm:h-[85vh] rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden border border-slate-200 dark:border-slate-700 font-sans text-slate-900 dark:text-slate-100 transition-colors duration-200">
         
         {/* --- LEFT PANEL: Search & List (Must be flex-col for header + scrollable list) --- */}
-        {/* FIX 2: Added 'h-full' for vertical space utilization */}
         <div className="w-full md:w-1/3 bg-slate-50 dark:bg-slate-800/50 border-r border-slate-200 dark:border-slate-700 flex flex-col shrink-0 md:h-full h-full">
           
           {/* Header & Search (Fixed height: shrink-0) */}
@@ -79,7 +77,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
             </div>
           </div>
 
-          {/* Scrollable List (FIX: flex-1 ensures it takes remaining vertical space, overflow-y-auto enables scroll) */}
+          {/* Scrollable List (FIX: flex-1 ensures it takes remaining vertical space for scrolling) */}
           <div className="flex-1 overflow-y-auto">
             {filteredDrugs.map(drug => (
               <div
@@ -95,7 +93,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
                   {drug.drug_name}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-1 font-medium">
-                  {drug.pharmacologic_class.join(', ')}
+                  {drug.pharmacologic_class && drug.pharmacologic_class.join(', ')}
                 </p>
               </div>
             ))}
@@ -123,12 +121,13 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
               {/* Header Title Area */}
               <div className="border-b border-slate-100 dark:border-slate-800 pb-6">
                 <div className="flex items-center gap-3 mb-3">
+                  {/* CRITICAL FIX: Ensure correct dark mode text color class syntax */}
                   <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                     {selectedDrug.drug_name}
                   </h1>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {selectedDrug.pharmacologic_class.map((cls, index) => (
+                  {selectedDrug.pharmacologic_class && selectedDrug.pharmacologic_class.map((cls, index) => (
                     <span key={index} className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full uppercase tracking-wider border border-blue-100 dark:border-blue-800">
                       {cls}
                     </span>
@@ -143,7 +142,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
                   Clinical Pharmacology
                 </h3>
                 <div className="grid gap-4">
-                  {selectedDrug.indications_and_moa.map((item, idx) => (
+                  {selectedDrug.indications_and_moa && selectedDrug.indications_and_moa.map((item, idx) => (
                     <div key={idx} className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-slate-200 dark:border-slate-700 hover:shadow-sm transition-shadow">
                       <div className="mb-3">
                         <span className="text-[10px] font-extrabold uppercase text-blue-600 dark:text-blue-400 tracking-wider">Indication</span>
@@ -166,7 +165,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
                     <AlertTriangle size={16} /> Common Side Effects
                   </h3>
                   <ul className="space-y-3">
-                    {selectedDrug.common_side_effects.map((effect, idx) => (
+                    {selectedDrug.common_side_effects && selectedDrug.common_side_effects.map((effect, idx) => (
                       <li key={idx} className="flex items-start text-sm text-slate-700 dark:text-slate-300 font-medium">
                         <span className="mr-2 text-yellow-500 text-lg leading-none">•</span> {effect}
                       </li>
@@ -180,7 +179,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
                     <AlertTriangle size={16} /> Adverse Drug Events
                   </h3>
                   <ul className="space-y-3">
-                    {selectedDrug.adverse_drug_events.map((event, idx) => (
+                    {selectedDrug.adverse_drug_events && selectedDrug.adverse_drug_events.map((event, idx) => (
                       <li key={idx} className="flex items-start text-sm text-slate-700 dark:text-slate-300 font-medium">
                         <span className="mr-2 text-red-500 font-bold">!</span> {event}
                       </li>
