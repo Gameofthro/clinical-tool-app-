@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { 
   Search, Stethoscope, Baby, Activity, Mail, LogOut, 
-  Calculator, Scale, Moon, Sun, BookOpen, Check, ClipboardList, Heart, Droplet, Pill, ArrowLeft
+  Calculator, Scale, Moon, Sun, BookOpen, Check, ClipboardList, Heart, Droplet, Pill, ArrowLeft, Menu, Info, X
 } from "lucide-react";
 
 // --- IMPORTS ---
@@ -30,7 +30,9 @@ export default function ClinicalTool() {
   // Modals & Selection
   const [selectedDisease, setSelectedDisease] = useState(null);
   
-  // Drug Directory State (REMOVED: isDrugModalOpen, selectedDrugInitial)
+  // NEW DRAWER STATE & ABOUT STATE
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [showAboutModal, setShowAboutModal] = useState(false);
 
   // Search - Data Initialization
   const [prescriptions] = useState(diseaseDatabase || {}); 
@@ -70,11 +72,11 @@ export default function ClinicalTool() {
     }
   }, []);
 
-  // --- MODAL SCROLL LOCK EFFECT ---
+  // --- MODAL / DRAWER SCROLL LOCK EFFECT ---
   useEffect(() => {
-    // Only locks scroll for DiseaseModal and LegalModal
-    const isModalOpen = selectedDisease || showTerms;
-    if (isModalOpen) {
+    // Locks scrolling for DiseaseModal, LegalModal, Drawer, or AboutModal
+    const isOverlayOpen = selectedDisease || showTerms || isDrawerOpen || showAboutModal;
+    if (isOverlayOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
@@ -82,7 +84,7 @@ export default function ClinicalTool() {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [selectedDisease, showTerms]);
+  }, [selectedDisease, showTerms, isDrawerOpen, showAboutModal]); // Added showAboutModal dependency
 
   // --- CRITICAL: WATCH FOR LOGIN TO SHOW TERMS ---
   useEffect(() => {
@@ -107,6 +109,7 @@ export default function ClinicalTool() {
   const handleLogout = () => {
     localStorage.removeItem("clinical_current_user");
     setUser(null);
+    setIsDrawerOpen(false); // Close drawer after logout
   };
 
   const handleLogin = (userData) => {
@@ -115,10 +118,9 @@ export default function ClinicalTool() {
   };
 
   const handleSupportClick = () => {
-    navigator.clipboard.writeText(SUPPORT_EMAIL).then(() => {
-      setEmailCopied(true);
-      setTimeout(() => setEmailCopied(false), 2000);
-    });
+    // Use the reliable method of opening mailto link
+    window.location.href = `mailto:${SUPPORT_EMAIL}`;
+    setIsDrawerOpen(false);
   };
 
   // --- LEGAL HANDLERS ---
@@ -131,7 +133,18 @@ export default function ClinicalTool() {
   const handleOpenTermsReview = () => {
     setMandatoryTerms(false); 
     setShowTerms(true);
+    setIsDrawerOpen(false); // Close drawer when opening terms
   };
+  
+  // --- ABOUT HANDLERS ---
+  const handleOpenAbout = () => {
+      setShowAboutModal(true);
+      setIsDrawerOpen(false);
+  };
+  const handleCloseAbout = () => {
+      setShowAboutModal(false);
+  }
+
 
   // --- SEARCH LOGIC (Cleaned: Disease Search Only) ---
   const filteredResults = useMemo(() => {
@@ -211,6 +224,43 @@ export default function ClinicalTool() {
     { id: "tools", label: "Calculators", description: "Access pediatric dosing, BMI, and GFR calculators.", icon: Calculator }
   ];
 
+  // --- ABOUT US MODAL COMPONENT (Defined inline for single file) ---
+  const AboutModal = ({ isOpen, onClose }) => {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-slate-900/80 backdrop-blur-sm transition-opacity">
+            <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-xl shadow-2xl p-6 relative">
+                <div className="flex justify-between items-center mb-4 border-b pb-3 border-slate-200 dark:border-slate-700">
+                    <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+                        <Info size={20} className="text-blue-600" /> About ClinicalAssist
+                    </h2>
+                    <button onClick={onClose} className="p-1 text-slate-500 hover:text-red-500 rounded-full transition">
+                        <X size={24} />
+                    </button>
+                </div>
+                <div className="text-slate-700 dark:text-slate-300 space-y-4">
+                    <p className="font-semibold text-lg text-blue-700 dark:text-blue-400">Mission Driven by Clinical Experience</p>
+                    <p>
+                        This platform is the dedicated work of a team rooted in clinical pharmacy practice: <strong className="text-slate-900 dark:text-white">Dr. Vaidik Gautam (Senior Developer/Pharm.D)</strong> and <strong className="text-slate-900 dark:text-white">Dr. Raxit Varun (Pharm.D)</strong>. We created ClinicalAssist out of a necessity felt during our own demanding clinical rotations—the need for a single, reliable, and hyper-efficient educational tool to assist rapid synthesis of medical knowledge.
+                    </p>
+                    <p>
+                        <strong className="text-slate-900 dark:text-white">Our Objective:</strong> To empower fellow healthcare professionals and students by reducing the time spent searching complex sources, allowing more focus on patient care and advanced learning. We put immense hard work into translating scientific data into the concise, actionable formats you see here.
+                    </p>
+                    
+                    <h3 className="font-bold text-base text-slate-800 dark:text-white pt-4 border-t border-slate-100 dark:border-slate-700">Educational Use & Data Sourcing</h3>
+                    <p className="text-sm">
+                        This tool is strictly for educational and learning purposes. All scientific data (e.g., indications, MOAs, drug events) is synthesized from <strong className="text-slate-900 dark:text-white">scientifically approved platforms</strong> and definitive medical texts, including <strong className="text-slate-900 dark:text-white">FDA guidelines, Dipiro, and Harrison’s</strong>.
+                    </p>
+                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                        While the underlying scientific information remains the sole intellectual property of the original researchers and external source platforms, the proprietary application design, UI/UX, logic, and code are the <span className="font-bold text-blue-600 dark:text-blue-400">copyright of the ClinicalAssist team: Dr. Vaidik Gautam and Dr. Raxit Varun.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+  };
+  // --- END ABOUT US MODAL ---
+
 
   return (
     // Outer container: full screen height, flex column to stack header, content, and footer
@@ -219,15 +269,78 @@ export default function ClinicalTool() {
       {/* --- MODALS --- */}
       <LegalModal 
         isOpen={showTerms} 
-        onAccept={handleAcceptTerms} 
         onClose={() => setShowTerms(false)}
         isMandatory={mandatoryTerms}
       />
+      <AboutModal 
+        isOpen={showAboutModal}
+        onClose={handleCloseAbout}
+      />
+      
+      {/* --- SIDE DRAWER / NAVIGATION PANEL (z-index 50) --- */}
+      <div 
+        className={`fixed inset-0 z-50 transform transition-transform duration-300 ease-in-out ${isDrawerOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        // Backdrop overlay
+        onClick={() => setIsDrawerOpen(false)}
+      >
+        <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={e => e.stopPropagation()}></div>
+        
+        {/* Drawer Content */}
+        <div className={`absolute right-0 top-0 h-full w-64 bg-white dark:bg-slate-800 shadow-2xl flex flex-col p-6 transition-transform duration-300 ease-in-out`} onClick={e => e.stopPropagation()}>
+            
+            {/* Header / Close Button */}
+            <div className="flex justify-between items-center pb-4 border-b border-slate-200 dark:border-slate-700 mb-4">
+                <h3 className="text-xl font-bold text-slate-800 dark:text-white">Settings</h3>
+                <button onClick={() => setIsDrawerOpen(false)} className="p-1 text-slate-500 hover:text-red-500 rounded-full transition">
+                    <X size={24} />
+                </button>
+            </div>
+
+            {/* Navigation Links */}
+            <nav className="flex flex-col space-y-3 flex-1">
+                {/* 1. Theme Toggle */}
+                <button onClick={toggleTheme} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-300">
+                    {darkMode ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} />}
+                    <span>{darkMode ? "Light Mode" : "Dark Mode"}</span>
+                </button>
+
+                {/* 2. Contact Us / Support Email (Now opens mailto) */}
+                <a 
+                    href={`mailto:${SUPPORT_EMAIL}`}
+                    onClick={() => setIsDrawerOpen(false)}
+                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-300"
+                >
+                    <Mail size={20} />
+                    <span>Contact Support</span>
+                </a>
+
+                {/* 3. Terms and Conditions */}
+                <button onClick={handleOpenTermsReview} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-300">
+                    <BookOpen size={20} />
+                    <span>Terms & Compliance</span>
+                </button>
+                
+                {/* 4. About Us (Opens new Modal) */}
+                <button onClick={handleOpenAbout} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-300">
+                    <Info size={20} />
+                    <span>About ClinicalAssist</span>
+                </button>
+            </nav>
+
+            {/* Logout Button (Fixed to Bottom) */}
+            <button onClick={handleLogout} className="flex items-center gap-3 p-3 rounded-xl bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 hover:bg-rose-100 dark:hover:bg-rose-900 transition mt-6">
+                <LogOut size={20} />
+                <span>Logout</span>
+            </button>
+        </div>
+      </div>
       
       {/* HEADER (Sticky) */}
       <div className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 shadow-sm shrink-0">
         <div className="max-w-3xl mx-auto px-4 py-3">
           <div className="flex justify-between items-center mb-2">
+            
+            {/* Logo and Title */}
             <div className="flex items-center gap-2.5">
               <div className="bg-gradient-to-tr from-blue-600 to-blue-500 p-2.5 rounded-xl shadow-lg shadow-blue-600/20">
                 <Stethoscope className="h-5 w-5 text-white" />
@@ -239,27 +352,15 @@ export default function ClinicalTool() {
                 </div>
               </div>
             </div>
-            <div className="flex gap-2">
-              <button onClick={toggleTheme} className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full border border-slate-200 dark:border-slate-700 transition text-slate-600 dark:text-slate-300">
-                {darkMode ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} />}
-              </button>
-              
-              <button 
-                onClick={handleSupportClick}
-                className={`p-2 rounded-full border transition flex items-center justify-center ${
-                  emailCopied 
-                    ? "bg-green-100 border-green-200 text-green-600 dark:bg-green-900/30 dark:border-green-800 dark:text-green-400" 
-                    : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700"
-                }`}
-                title={emailCopied ? "Email Copied!" : "Copy Support Email"}
-              >
-                {emailCopied ? <Check className="h-5 w-5" /> : <Mail className="h-5 w-5" />}
-              </button>
 
-              <button onClick={handleLogout} className="p-2 bg-rose-50 dark:bg-rose-900/20 hover:bg-rose-100 dark:hover:bg-rose-900/40 rounded-full border border-rose-200 dark:border-rose-900 transition">
-                <LogOut className="h-5 w-5 text-rose-600 dark:text-rose-400" />
-              </button>
-            </div>
+            {/* Hamburger Menu Button */}
+            <button 
+                onClick={() => setIsDrawerOpen(true)}
+                className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full border border-slate-200 dark:border-slate-700 transition text-slate-600 dark:text-slate-300"
+            >
+                <Menu size={20} />
+            </button>
+
           </div>
           
           <div className="text-center mb-4">
@@ -294,7 +395,7 @@ export default function ClinicalTool() {
       </div>
 
       {/* CONTENT AREA (Main Scrollable Body - Uses flex-1 to fill space) */}
-      <div className="flex-grow max-w-3xl mx-auto px-4 mt-4 w-full flex flex-col"> {/* Removed space-y-6 */}
+      <div className="flex-grow max-w-3xl mx-auto px-4 mt-4 w-full flex flex-col">
         
         {/* Results/Tool View (Uses entire remaining vertical space) */}
         <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 flex-1 w-full h-full">
@@ -306,12 +407,11 @@ export default function ClinicalTool() {
                 <button
                   key={tile.id}
                   onClick={() => handleCardClick(tile.id)}
-                  // Adjusted padding and min-height for better fit
-                  className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl hover:shadow-2xl transition-all text-left group min-h-[120px]" 
+                  // Optimized Tile Design: smaller icon, reduced padding, constrained height
+                  className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl hover:shadow-2xl transition-all text-left group min-h-[100px]" 
                 >
                   <div className="flex items-center justify-between mb-2">
-                    {/* Reduced icon size for better fit */}
-                    <tile.icon size={24} className={`text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform`} />
+                    <tile.icon size={22} className={`text-blue-600 dark:text-blue-400 group-hover:scale-105 transition-transform`} />
                     <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">{tile.id.toUpperCase()}</span>
                   </div>
                   <h3 className="text-base font-bold text-slate-800 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
