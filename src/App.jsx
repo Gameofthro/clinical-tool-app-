@@ -6,7 +6,7 @@ import {
 
 // --- IMPORTS ---
 import { diseaseDatabase } from "./data/diseases";
-// REMOVED: Drug modal/search dependencies
+// Removed drug modal/search dependencies
 
 import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
@@ -193,7 +193,7 @@ export default function ClinicalTool() {
   if (!user) return <Auth onLogin={handleLogin} />;
 
   return (
-    // FIX 1: Ensure min-h-screen is set on the outermost container
+    // Outer container: full screen height, flex column to stack header, content, and footer
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans flex flex-col transition-colors duration-300">
       
       {/* --- MODALS --- */}
@@ -204,8 +204,8 @@ export default function ClinicalTool() {
         isMandatory={mandatoryTerms}
       />
       
-      {/* HEADER */}
-      <div className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 shadow-sm">
+      {/* HEADER (Sticky) */}
+      <div className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 shadow-sm shrink-0">
         <div className="max-w-3xl mx-auto px-4 py-3">
           <div className="flex justify-between items-center mb-2">
             <div className="flex items-center gap-2.5">
@@ -261,10 +261,10 @@ export default function ClinicalTool() {
         </div>
       </div>
 
-      {/* CONTENT (Flex-grow ensures footer pushes down and content fills remaining space) */}
+      {/* CONTENT AREA (Main Scrollable Body - Uses flex-1 to fill space) */}
       <div className="flex-grow max-w-3xl mx-auto px-4 mt-4 space-y-6 w-full flex flex-col">
         
-        {/* Navigation Tabs (UPDATED) */}
+        {/* Navigation Tabs (Shrink-0) */}
         <div className="flex p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm shrink-0">
           {[{ id: "search", label: "Search", icon: Search }, { id: "diagnosis", label: "Diagnosis", icon: ClipboardList }, { id: "tools", label: "Calculators", icon: Calculator }, { id: "drug-index", label: "Drug Index", icon: Pill }].map(tab => (
             <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all capitalize flex justify-center items-center gap-2 ${activeTab === tab.id ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md" : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"}`}>
@@ -273,8 +273,8 @@ export default function ClinicalTool() {
           ))}
         </div>
 
-        {/* Results Area (FIX 2: Added flex-1 to ensure content area uses all vertical space) */}
-        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 flex-1 overflow-y-auto">
+        {/* Results/Tool View (FIX 3: Wrap tab content in a flex-1 container for proper sizing of complex components) */}
+        <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 flex-1 w-full h-full">
           
           {/* TAB 1: DISEASE SEARCH */}
           {activeTab === "search" && (
@@ -460,14 +460,14 @@ export default function ClinicalTool() {
         </div>
       </div>
 
-      {selectedDisease && (
-        <DiseaseModal 
-          name={selectedDisease.name} 
-          data={selectedDisease} 
-          onClose={() => setSelectedDisease(null)} 
-        />
-      )}
-      <Footer onOpenTerms={handleOpenTermsReview} />
-    </div>
-  );
+      {selectedDisease && (
+        <DiseaseModal 
+          name={selectedDisease.name} 
+          data={selectedDisease} 
+          onClose={() => setSelectedDisease(null)} 
+        />
+      )}
+      <Footer onOpenTerms={handleOpenTermsReview} />
+    </div>
+  );
 }
