@@ -38,7 +38,7 @@ const DrugDictionaryTool = () => {
     const [isMonographOpen, setIsMonographOpen] = useState(false); // Modal state
     const [initialList, setInitialList] = useState([]);
 
-    // Step 1: Build the curated initial list and set the first drug
+    // Step 1: Build the curated initial list 
     useEffect(() => {
         // FIX: Ensure this effect only runs once for initialization
         const lowerCuratedNames = new Set(CURATED_DRUG_NAMES.map(n => n.toLowerCase()));
@@ -50,12 +50,12 @@ const DrugDictionaryTool = () => {
         setInitialList(matchedCuratedDrugs);
         
         // We do NOT set selectedDrugData here, wait for click to open modal
-        // This resolves the issue where the first drug was selected but not clickable.
         
     }, []); 
 
     // Filter Logic (Show initialList unless searching)
     const filteredDrugs = useMemo(() => {
+        // FIX: Always filter the full DRUG_DATA_SOURCE when a search term is present
         const databaseToFilter = searchTerm ? DRUG_DATA_SOURCE : initialList;
 
         const cleanedDatabase = databaseToFilter.filter(d => d && d.drug_name);
@@ -65,15 +65,18 @@ const DrugDictionaryTool = () => {
         const lowerSearchTerm = searchTerm.toLowerCase();
         
         return cleanedDatabase.filter(drug => 
+            // Better search matching on Name OR Class
             drug.drug_name.toLowerCase().includes(lowerSearchTerm) ||
             (Array.isArray(drug.pharmacologic_class) && drug.pharmacologic_class.some(cls => cls.toLowerCase().includes(lowerSearchTerm)))
         );
     }, [searchTerm, initialList]);
 
-    // FIX 2: Handler now opens the Monograph Modal
+    // Handler now opens the Monograph Modal
     const handleSelectDrug = (drug) => {
         setSelectedDrugData(drug);
         setIsMonographOpen(true);
+        // FIX: Ensure scroll lock is handled correctly by the App.jsx's global useEffect 
+        // (which watches isMonographOpen)
     };
 
     return (
@@ -81,7 +84,7 @@ const DrugDictionaryTool = () => {
         <div className="w-full h-full max-h-[85vh] flex flex-col md:flex-row overflow-hidden border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl bg-white dark:bg-slate-900">
             
             {/* 1. RENDER MODAL (This is now external to the main view) */}
-            {/* The Modal handles its own scrolling and display logic */}
+            {/* The Modal handles its own scrolling and display logic and must be functional now */}
             <MonographModal 
                 drug={selectedDrugData} 
                 isOpen={isMonographOpen} 
@@ -120,17 +123,17 @@ const DrugDictionaryTool = () => {
                                 key={drug.id}
                                 // FIX: Click handler sets modal data and opens modal
                                 onClick={() => handleSelectDrug(drug)} 
-                                className={`p-4 border-b border-slate-100 dark:border-slate-700 cursor-pointer transition-all hover:pl-5 
+                                className={`p-4 border-b border-slate-100 dark:border-slate-700 cursor-pointer transition-all 
                                     ${selectedDrugData?.id === drug.id 
                                         ? 'bg-blue-100/50 dark:bg-blue-900/30 border-l-4 border-l-blue-600 dark:border-l-blue-400 pl-5' 
-                                        : 'hover:bg-slate-100 dark:hover:bg-slate-700/50 border-l-4 border-l-transparent'
+                                        : 'hover:bg-slate-100 dark:hover:bg-slate-700/50 border-l-4 border-l-transparent pl-4' // Removed hover:pl-5
                                     }`}
                             >
-                                <h3 className={`font-bold text-sm ${selectedDrugData?.id === drug.id ? 'text-blue-700 dark:text-blue-300' : 'text-slate-800 dark:text-slate-200'}`}>
+                                <h3 className={`font-bold text-base mb-0.5 ${selectedDrugData?.id === drug.id ? 'text-blue-700 dark:text-blue-300' : 'text-slate-800 dark:text-slate-200'}`}>
                                     {drug.drug_name}
                                 </h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-1 font-medium">
-                                    {drug.pharmacologic_class && Array.isArray(drug.pharmacologic_class) ? drug.pharmacologic_class.join(', ') : ''}
+                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate font-medium">
+                                    {drug.pharmacologic_class && Array.isArray(drug.pharmacologic_class) ? drug.pharmacologic_class.join(', ') : 'N/A'}
                                 </p>
                             </div>
                         ))
