@@ -3,12 +3,24 @@ import { Search, Pill, AlertTriangle, Activity, ExternalLink } from 'lucide-reac
 // Attempt to import the external database (reverts to placeholder if broken)
 import { drugDatabase as importedDrugDatabase } from '../data/drug_database';
 
-// Consolidated Placeholder Data for guaranteed functionality if import fails
+// Consolidated Curated List (Used for initial display)
+const CURATED_DRUG_NAMES = [
+    "Methotrexate", 
+    "Metoprolol", 
+    "Hydroxyurea", 
+    "Adenosine", 
+    "Imatinib", 
+    "Paracetamol"
+];
+
+// Fallback Data Structure (Only includes the 6 curated drugs for guaranteed display if external import fails)
 const FALLBACK_DRUGS = [
-    { id: 9901, drug_name: "Budesonide", pharmacologic_class: ["Corticosteroid", "Inhaled"], indications_and_moa: [{indication: "Asthma Maintenance", mechanism_of_action: "Potent anti-inflammatory."}], common_side_effects: ["Oral Candidiasis", "Headache"], adverse_drug_events: ["Adrenal Suppression", "Glaucoma"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
-    { id: 9902, drug_name: "Metformin", pharmacologic_class: ["Biguanide", "Antidiabetic"], indications_and_moa: [{indication: "Type 2 Diabetes", mechanism_of_action: "Decreases hepatic glucose production."}], common_side_effects: ["Diarrhea", "Nausea", "Metallic taste"], adverse_drug_events: ["Lactic Acidosis (Boxed Warning)", "Vitamin B12 Deficiency"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
-    { id: 9903, drug_name: "Amlodipine", pharmacologic_class: ["Calcium Channel Blocker"], indications_and_moa: [{indication: "Hypertension", mechanism_of_action: "Inhibits calcium influx; causes vasodilation."}], common_side_effects: ["Peripheral Edema", "Headache", "Flushing"], adverse_drug_events: ["Severe Hypotension", "Gingival Hyperplasia"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
-    { id: 9904, drug_name: "Thalidomide", pharmacologic_class: ["Immunomodulator", "Antineoplastic"], indications_and_moa: [{indication: "Multiple Myeloma", mechanism_of_action: "Anti-angiogenic; TNF-alpha suppression."}], common_side_effects: ["Somnolence", "Peripheral Neuropathy"], adverse_drug_events: ["Teratogenicity (Boxed Warning)", "Thromboembolism"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
+    { id: 556, drug_name: "Methotrexate", pharmacologic_class: ["Antifolate", "DMARD"], indications_and_moa: [{indication: "Rheumatoid Arthritis", mechanism_of_action: "Inhibits DHFR."}], common_side_effects: ["Nausea", "Hepatotoxicity"], adverse_drug_events: ["Myelosuppression", "Pneumonitis"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
+    { id: 564, drug_name: "Metoprolol", pharmacologic_class: ["Beta-Blocker", "Cardioselective"], indications_and_moa: [{indication: "Hypertension", mechanism_of_action: "Blocks Beta-1 receptors."}], common_side_effects: ["Bradycardia", "Fatigue"], adverse_drug_events: ["Heart Block", "Bronchospasm"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
+    { id: 434, drug_name: "Hydroxyurea", pharmacologic_class: ["Antimetabolite"], indications_and_moa: [{indication: "Sickle Cell Anemia", mechanism_of_action: "Inhibits Ribonucleotide Reductase."}], common_side_effects: ["Nausea", "Myelosuppression"], adverse_drug_events: ["Cutaneous Ulcers", "Secondary Malignancy"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
+    { id: 15, drug_name: "Adenosine", pharmacologic_class: ["Antiarrhythmic", "Nucleoside"], indications_and_moa: [{indication: "PSVT", mechanism_of_action: "Slows AV nodal conduction."}], common_side_effects: ["Flushing", "Chest pressure"], adverse_drug_events: ["Asystole", "Bronchospasm"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
+    { id: 445, drug_name: "Imatinib", pharmacologic_class: ["TKI", "BCR-ABL Inhibitor"], indications_and_moa: [{indication: "CML", mechanism_of_action: "Inhibits BCR-ABL Kinase."}], common_side_effects: ["Edema", "Nausea", "Myalgia"], adverse_drug_events: ["Hepatotoxicity", "CHF"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
+    { id: 664, drug_name: "Paracetamol", pharmacologic_class: ["Analgesic", "Antipyretic"], indications_and_moa: [{indication: "Pain / Fever", mechanism_of_action: "Inhibits CNS prostaglandins."}], common_side_effects: ["Nausea (rare)", "Rash (rare)"], adverse_drug_events: ["Hepatotoxicity", "SJS/TEN"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" }
 ];
 
 // Determine the primary database source for the component
@@ -19,14 +31,34 @@ const DRUG_DATA_SOURCE = Array.isArray(importedDrugDatabase) && importedDrugData
 
 const DrugDictionaryTool = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    // Initialize selected drug to the first available entry
-    const [selectedDrug, setSelectedDrug] = useState(DRUG_DATA_SOURCE[0] || null);
-    
-    // Filter Logic
-    const filteredDrugs = useMemo(() => {
-        const cleanedDatabase = DRUG_DATA_SOURCE.filter(d => d && d.drug_name);
+    const [selectedDrug, setSelectedDrug] = useState(null);
+    const [initialList, setInitialList] = useState([]); // State to hold the curated initial list
 
-        if (!searchTerm) return cleanedDatabase;
+    // Step 1: Build the curated initial list and set the first drug
+    useEffect(() => {
+        const lowerCuratedNames = new Set(CURATED_DRUG_NAMES.map(n => n.toLowerCase()));
+        
+        // Match the full database against the curated names
+        const matchedCuratedDrugs = DRUG_DATA_SOURCE.filter(d => 
+            d && d.drug_name && lowerCuratedNames.has(d.drug_name.toLowerCase())
+        );
+
+        setInitialList(matchedCuratedDrugs);
+        
+        // Set the first curated drug as selected on load
+        if (matchedCuratedDrugs.length > 0) {
+            setSelectedDrug(matchedCuratedDrugs[0]);
+        }
+
+    }, []); 
+
+    // Filter Logic (Show initialList unless searching)
+    const filteredDrugs = useMemo(() => {
+        const databaseToFilter = searchTerm ? DRUG_DATA_SOURCE : initialList;
+
+        const cleanedDatabase = databaseToFilter.filter(d => d && d.drug_name);
+
+        if (!searchTerm) return cleanedDatabase; // Return curated list if search is empty
         
         const lowerSearchTerm = searchTerm.toLowerCase();
         
@@ -34,10 +66,15 @@ const DrugDictionaryTool = () => {
             drug.drug_name.toLowerCase().includes(lowerSearchTerm) ||
             (Array.isArray(drug.pharmacologic_class) && drug.pharmacologic_class.some(cls => cls.toLowerCase().includes(lowerSearchTerm)))
         );
-    }, [searchTerm]);
+    }, [searchTerm, initialList]);
 
     const handleSelectDrug = (drug) => {
         setSelectedDrug(drug);
+        // FIX 3: Scroll monograph content to the top when a new drug is selected
+        const monographElement = document.getElementById('monographContent');
+        if (monographElement) {
+            monographElement.scrollTop = 0;
+        }
     };
     
     const MonographContent = () => {
@@ -53,7 +90,7 @@ const DrugDictionaryTool = () => {
         );
 
         return (
-            // Monograph Content: Ensures internal scrolling via flex-1 and overflow-y-auto
+            // FIX 3: Ensures internal scrolling is handled by this flex item
             <div id="monographContent" className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
               
               <div className="border-b border-slate-100 dark:border-slate-800 pb-6">
@@ -63,6 +100,7 @@ const DrugDictionaryTool = () => {
                   </h1>
                 </div>
                 <div className="flex flex-wrap gap-2">
+                  {/* Safety checks for array mapping */}
                   {drug.pharmacologic_class && Array.isArray(drug.pharmacologic_class) && drug.pharmacologic_class.map((cls, index) => (
                     <span key={index} className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full uppercase tracking-wider border border-blue-100 dark:border-blue-800">
                       {cls}
@@ -142,10 +180,11 @@ const DrugDictionaryTool = () => {
 
     return (
         // Component rendered directly into the app tab
-        <div className="w-full h-[70vh] flex flex-col md:flex-row overflow-hidden border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl bg-white dark:bg-slate-900">
+        // Ensures the container takes up the max available space within the App's content area
+        <div className="w-full h-full max-h-[85vh] flex flex-col md:flex-row overflow-hidden border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl bg-white dark:bg-slate-900">
             
             {/* --- LEFT PANEL: Search & List (Scrollable) --- */}
-            <div className="w-full md:w-1/3 flex flex-col shrink-0 border-r border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            <div className="w-full md:w-1/3 flex flex-col shrink-0 border-r border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 h-full">
                 
                 {/* Header & Search */}
                 <div className="p-4 shrink-0 border-b border-slate-200 dark:border-slate-700">
@@ -154,7 +193,7 @@ const DrugDictionaryTool = () => {
                         <Search className="absolute left-3 top-2.5 text-slate-400" size={18} />
                         <input
                             type="text"
-                            placeholder="Search drug names or classes..."
+                            placeholder={"Search generics..."}
                             className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 dark:text-white outline-none transition-all"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -162,11 +201,11 @@ const DrugDictionaryTool = () => {
                     </div>
                 </div>
 
-                {/* Drug List (FIXED SCROLL) */}
+                {/* Drug List (FIX: List is now based on initialList/filteredDrugs, ensuring clickability) */}
                 <div className="flex-1 overflow-y-auto">
                     {DRUG_DATA_SOURCE.length === 0 && (
                          <div className="p-4 bg-red-100 text-red-800 text-sm font-bold border-l-4 border-red-500">
-                            CRITICAL ERROR: Database failed to load. Showing fallback data.
+                            CRITICAL ERROR: Database is empty.
                          </div>
                     )}
                     
