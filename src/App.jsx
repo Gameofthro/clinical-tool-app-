@@ -6,38 +6,49 @@ import {
 
 // --- IMPORTS ---
 import { diseaseDatabase } from "./data/diseases";
+import { drugDatabase as importedDrugDatabase } from "./data/drug_database"; 
+
 import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
 import DiseaseModal from "./components/DiseaseModal";
+import DrugDirectory from "./components/DrugDirectory"; 
 import DiagnosisTool from "./components/DiagnosisTool"; 
-// --- NEW IMPORTS (Corrected case sensitivity) ---
 import Footer from "./components/footer";
 import LegalModal from "./components/legalModal";
 
 import { calculatePediatricDose, calculateBMI, calculateGFR, calculateMAP, calculateMaintenanceFluid } from "./utils/calculators";
 
 const THEME_KEY = "clinical_theme";
-const TERMS_KEY = "clinical_terms_accepted_v1"; // Versioned key
+const TERMS_KEY = "clinical_terms_accepted_v1"; 
 
-// --- CONFIGURATION ---
 const SUPPORT_EMAIL = "clinicalassist.center@gmail.com"; 
 
 export default function ClinicalTool() {
   // --- STATE ---
   const [user, setUser] = useState(null);
+  
+  // Modals & Selection
   const [selectedDisease, setSelectedDisease] = useState(null);
-  const [prescriptions] = useState(diseaseDatabase || {}); // Safety init
+  
+  // Drug Directory State
+  const [isDrugModalOpen, setIsDrugModalOpen] = useState(false);
+  const [selectedDrugInitial, setSelectedDrugInitial] = useState('');
+
+  // Search - Data Initialization
+  const [prescriptions] = useState(diseaseDatabase || {}); 
+  const drugDatabase = Array.isArray(importedDrugDatabase) ? importedDrugDatabase : [];
+
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState("search");
   const [activeTool, setActiveTool] = useState("pediatric");
   const [darkMode, setDarkMode] = useState(false);
   const [emailCopied, setEmailCopied] = useState(false);
   
-  // --- LEGAL STATE ---
+  // Legal
   const [showTerms, setShowTerms] = useState(false);
   const [mandatoryTerms, setMandatoryTerms] = useState(false);
 
-  // Calculator Inputs
+  // Calculator Inputs (RESTORED)
   const [doseData, setDoseData] = useState({ weight: "", adultDose: "", unit: "kg" });
   const [bmiData, setBmiData] = useState({ height: "", weight: "", wUnit: "kg", hUnit: "cm" });
   const [gfrData, setGfrData] = useState({ creatinine: "", age: "", gender: "male", unit: "mg/dl" });
@@ -48,26 +59,40 @@ export default function ClinicalTool() {
 
   // --- INITIALIZATION ---
   useEffect(() => {
-    // 1. User Auth Check
-    const savedUser = localStorage.getItem("clinical_current_user");
-    if (savedUser) setUser(JSON.parse(savedUser));
-    
-    // 2. Theme Check
-    const savedTheme = localStorage.getItem(THEME_KEY);
-    const isDark = savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    setDarkMode(isDark);
-    if (isDark) document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
+    try {
+      const savedUser = localStorage.getItem("clinical_current_user");
+      if (savedUser) setUser(JSON.parse(savedUser));
+      
+      const savedTheme = localStorage.getItem(THEME_KEY);
+      const isDark = savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      setDarkMode(isDark);
+      if (isDark) document.documentElement.classList.add("dark");
+      else document.documentElement.classList.remove("dark");
+    } catch (error) {
+      console.error("Initialization error:", error);
+    }
   }, []);
+
+  // --- MODAL SCROLL LOCK EFFECT ---
+  useEffect(() => {
+    const isModalOpen = isDrugModalOpen || selectedDisease || showTerms;
+    if (isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isDrugModalOpen, selectedDisease, showTerms]);
 
   // --- CRITICAL: WATCH FOR LOGIN TO SHOW TERMS ---
   useEffect(() => {
-    // Only run this check if a user is actually logged in
     if (user) {
         const hasAccepted = localStorage.getItem(TERMS_KEY);
         if (!hasAccepted) {
             setShowTerms(true);
-            setMandatoryTerms(true); // Forces user to accept
+            setMandatoryTerms(true); 
         }
     }
   }, [user]);
@@ -106,28 +131,45 @@ export default function ClinicalTool() {
   };
 
   const handleOpenTermsReview = () => {
-    setMandatoryTerms(false); // Can be closed via X button
+    setMandatoryTerms(false); 
     setShowTerms(true);
   };
 
-  // --- SEARCH LOGIC ---
+  // HANDLER: Opens Drug Modal
+  const handleDrugClick = (drugName) => {
+    setSelectedDrugInitial(drugName);
+    setIsDrugModalOpen(true);
+  };
+
+  // --- SEARCH LOGIC (Unified Disease + Drug) ---
   const filteredResults = useMemo(() => {
     if (!query) return [];
-    if (!prescriptions) return []; // Safety check
     const lowerQ = query.toLowerCase().trim();
     
-    return Object.entries(prescriptions).filter(([key, data]) => {
-      const nameMatch = key.toLowerCase().includes(lowerQ);
-      const symptomMatch = data.clinicalFeatures?.symptoms?.some(s => 
-        s.toLowerCase().includes(lowerQ)
-      );
-      const categoryMatch = data.category?.toLowerCase().includes(lowerQ);
+    // 1. Filter Diseases
+    const diseaseResults = Object.entries(prescriptions || {})
+      .filter(([key, data]) => {
+        const nameMatch = key.toLowerCase().includes(lowerQ);
+        const symptomMatch = data.clinicalFeatures?.symptoms?.some(s => 
+          s.toLowerCase().includes(lowerQ)
+        ) || false; 
+        const categoryMatch = data.category?.toLowerCase().includes(lowerQ);
 
-      return nameMatch || symptomMatch || categoryMatch;
-    });
-  }, [query, prescriptions]);
+        return nameMatch || symptomMatch || categoryMatch;
+      })
+      .map(([key, data]) => ({ type: 'disease', name: key, data: data }));
+
+    // 2. Filter Drugs
+    const safeDrugDatabase = Array.isArray(drugDatabase) ? drugDatabase : [];
+    const drugResults = safeDrugDatabase
+      .filter(drug => drug && drug.drug_name && drug.drug_name.toLowerCase().includes(lowerQ))
+      .map(drug => ({ type: 'drug', name: drug.drug_name, data: drug }));
+
+    return [...diseaseResults, ...drugResults];
+  }, [query, prescriptions, drugDatabase]);
 
   const getCategoryColor = (category) => {
+    if (!category) return "blue";
     if (category.includes("Respiratory")) return "blue";
     if (category.includes("Cardiology")) return "red";
     if (category.includes("Gastro")) return "orange";
@@ -136,24 +178,29 @@ export default function ClinicalTool() {
     return "blue";
   };
 
-  // --- CALCULATORS ---
+  // --- CALCULATORS (RESTORED LOGIC) ---
   const handleDoseCalc = () => {
+    if (!doseData.weight || !doseData.adultDose) return;
     const res = calculatePediatricDose(doseData.weight, doseData.adultDose, doseData.unit);
     setResults(prev => ({...prev, dose: res}));
   };
   const handleBMICalc = () => {
+    if (!bmiData.weight || !bmiData.height) return;
     const res = calculateBMI(bmiData.weight, bmiData.height, bmiData.wUnit, bmiData.hUnit);
     if (res) setResults(prev => ({...prev, bmi: res}));
   };
   const handleGFRCalc = () => {
+    if (!gfrData.creatinine || !gfrData.age) return;
     const res = calculateGFR(gfrData.creatinine, gfrData.age, gfrData.gender, gfrData.unit);
     setResults(prev => ({...prev, gfr: res}));
   };
   const handleMAPCalc = () => {
+    if (!mapData.sbp || !mapData.dbp) return;
     const res = calculateMAP(mapData.sbp, mapData.dbp);
     setResults(prev => ({...prev, map: res}));
   };
   const handleMaintenanceCalc = () => {
+    if (!maintData.weight) return;
     const res = calculateMaintenanceFluid(maintData.weight, maintData.unit);
     setResults(prev => ({...prev, maintenance: res}));
   };
@@ -164,13 +211,24 @@ export default function ClinicalTool() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans flex flex-col transition-colors duration-300">
       
-      {/* --- NEW: Legal Modal --- */}
+      {/* --- LEGAL MODAL --- */}
       <LegalModal 
         isOpen={showTerms} 
         onAccept={handleAcceptTerms} 
         onClose={() => setShowTerms(false)}
         isMandatory={mandatoryTerms}
       />
+
+      {/* FIX 1: DrugDirectory Z-index is guaranteed to be highest. */}
+      {isDrugModalOpen && (
+        <div className="fixed inset-0 z-[200]">
+          <DrugDirectory 
+            isOpen={isDrugModalOpen}
+            onClose={() => setIsDrugModalOpen(false)}
+            initialDrugName={selectedDrugInitial}
+          />
+        </div>
+      )}
 
       {/* HEADER */}
       <div className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 shadow-sm">
@@ -183,9 +241,7 @@ export default function ClinicalTool() {
               <div>
                 <h1 className="text-xl font-bold text-slate-800 dark:text-white leading-none">Clinical<span className="text-blue-600 dark:text-blue-400">Assist</span></h1>
                 <div className="flex items-center gap-1 mt-0.5">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                    {user.name ? `Dr. ${user.name}` : "Clinician"}
-                  </p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{user.name ? `Dr. ${user.name}` : "Clinician"}</p>
                 </div>
               </div>
             </div>
@@ -213,9 +269,7 @@ export default function ClinicalTool() {
           </div>
           
           <div className="text-center mb-4">
-            <p className="text-xs text-slate-500 dark:text-slate-400 italic font-medium">
-              "Empowering clinicians with precision and speed."
-            </p>
+            <p className="text-xs text-slate-500 dark:text-slate-400 italic font-medium">"Empowering clinicians with precision and speed."</p>
           </div>
 
           {/* Search Bar - Only show on Search Tab */}
@@ -224,7 +278,7 @@ export default function ClinicalTool() {
               <Search className="h-4 w-4 text-slate-400 ml-3.5" />
               <input 
                 className="w-full h-11 pl-3 pr-4 bg-transparent outline-none text-base text-slate-700 dark:text-slate-200 placeholder:text-slate-400"
-                placeholder="Search disease (e.g. Asthma)..." 
+                placeholder="Search diseases (e.g. Asthma) or drugs (e.g. Metformin)..." 
                 value={query} 
                 onChange={e => {setQuery(e.target.value); setActiveTab("search");}} 
               />
@@ -233,20 +287,14 @@ export default function ClinicalTool() {
         </div>
       </div>
 
-      {/* CONTENT (Flex-grow ensures footer pushes down) */}
+      {/* CONTENT (Scrollable body content) */}
       <div className="flex-grow max-w-3xl mx-auto px-4 mt-4 space-y-6 w-full">
         
         {/* Navigation Tabs */}
         <div className="flex p-1.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm">
-          {[
-            { id: "search", label: "Search", icon: Search },
-            { id: "diagnosis", label: "Diagnosis", icon: ClipboardList }, // AI-Powered
-            { id: "tools", label: "Tools", icon: Calculator }
-          ].map(tab => (
-            <button key={tab.id} onClick={() => setActiveTab(tab.id)} 
-              className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all capitalize flex justify-center items-center gap-2 ${activeTab === tab.id ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md" : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"}`}>
-              <tab.icon size={14} />
-              {tab.label}
+          {[{ id: "search", label: "Search", icon: Search }, { id: "diagnosis", label: "Diagnosis", icon: ClipboardList }, { id: "tools", label: "Tools", icon: Calculator }].map(tab => (
+            <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all capitalize flex justify-center items-center gap-2 ${activeTab === tab.id ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-md" : "text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"}`}>
+              <tab.icon size={14} /> {tab.label}
             </button>
           ))}
         </div>
@@ -257,51 +305,70 @@ export default function ClinicalTool() {
           {/* TAB 1: SEARCH */}
           {activeTab === "search" && (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {query ? filteredResults.map(([key, data]) => (
-                <DiseaseCard 
-                  key={key} 
-                  name={key} 
-                  data={{
-                      ...data,
-                      color: getCategoryColor(data.category),
-                      firstLine: data.pathophysiology 
-                    }}
-                  onClick={() => setSelectedDisease({ name: key, ...data })} 
-                />
-              )) : (
+              {query ? filteredResults.map((result) => {
+                if (result.type === 'disease') {
+                  const data = result.data;
+                  return (
+                    <DiseaseCard 
+                      key={`disease-${result.name}`} 
+                      name={result.name} 
+                      data={{
+                        ...data,
+                        color: getCategoryColor(data.category),
+                        firstLine: data.pathophysiology 
+                      }}
+                      onClick={() => setSelectedDisease({ name: result.name, ...data })} 
+                    />
+                  );
+                } else {
+                  // RENDER DRUG CARD (Full tile clickable to open drug info)
+                  const drug = result.data;
+                  return (
+                    <div 
+                      key={`drug-${drug.id}`}
+                      onClick={() => handleDrugClick(drug.drug_name)}
+                      className="p-5 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-500 cursor-pointer shadow-sm hover:shadow-md transition-all group"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[10px] font-bold uppercase tracking-wider">
+                          DRUG
+                        </span>
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {drug.drug_name}
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">
+                        {drug.pharmacologic_class && drug.pharmacologic_class.join(", ")}
+                      </p>
+                    </div>
+                  );
+                }
+              }) : (
                 <div className="col-span-full text-center py-20 opacity-60">
                   <BookOpen className="h-12 w-12 text-slate-300 dark:text-slate-600 mx-auto mb-2" />
-                  <p className="text-slate-500 dark:text-slate-400 font-medium">Search for clinical guidelines</p>
+                  <p className="text-slate-500 dark:text-slate-400 font-medium">Search for clinical guidelines or drugs</p>
                 </div>
               )}
             </div>
           )}
 
           {/* TAB 2: DIAGNOSIS (AI INTEGRATED) */}
-          {activeTab === "diagnosis" && (
-            <DiagnosisTool />
-          )}
+          {activeTab === "diagnosis" && (<DiagnosisTool />)}
 
-          {/* TAB 3: TOOLS */}
+          {/* TAB 3: TOOLS (RESTORED CALCULATOR UI) */}
           {activeTab === "tools" && (
              <div className="space-y-4">
+               {/* Tool Navigation Buttons */}
                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                 {[
-                   {id: 'pediatric', label: 'Dose', icon: Baby},
-                   {id: 'bmi', label: 'BMI', icon: Scale},
-                   {id: 'gfr', label: 'eGFR', icon: Activity},
-                   {id: 'map', label: 'MAP', icon: Heart},
-                   {id: 'maintenance', label: 'Maintenance', icon: Droplet}
-                 ].map(tool => (
-                   <button key={tool.id} onClick={() => setActiveTool(tool.id)} 
-                     className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap border transition-all ${activeTool === tool.id ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'}`}>
+                 {[{id: 'pediatric', label: 'Dose', icon: Baby}, {id: 'bmi', label: 'BMI', icon: Scale}, {id: 'gfr', label: 'eGFR', icon: Activity}, {id: 'map', label: 'MAP', icon: Heart}, {id: 'maintenance', label: 'Maintenance', icon: Droplet}].map(tool => (
+                   <button key={tool.id} onClick={() => setActiveTool(tool.id)} className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold whitespace-nowrap border transition-all ${activeTool === tool.id ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'}`}>
                      <tool.icon size={14} /> {tool.label}
                    </button>
                  ))}
                </div>
 
                <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl">
-                  {/* PEDIATRIC DOSE */}
+                  {/* PEDIATRIC DOSE CALCULATOR UI */}
                   {activeTool === 'pediatric' && (
                     <div className="space-y-4">
                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Baby className="text-purple-500"/> Pediatric Calc</h2>
@@ -321,7 +388,7 @@ export default function ClinicalTool() {
                     </div>
                   )}
 
-                  {/* BMI CALCULATOR */}
+                  {/* BMI CALCULATOR UI */}
                   {activeTool === 'bmi' && (
                     <div className="space-y-4">
                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Scale className="text-orange-500"/> BMI Calculator</h2>
@@ -354,7 +421,7 @@ export default function ClinicalTool() {
                     </div>
                   )}
 
-                  {/* eGFR CALCULATOR */}
+                  {/* eGFR CALCULATOR UI */}
                   {activeTool === 'gfr' && (
                     <div className="space-y-4">
                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Activity className="text-red-500"/> eGFR (MDRD)</h2>
@@ -387,15 +454,15 @@ export default function ClinicalTool() {
                     </div>
                   )}
 
-                  {/* MAP CALCULATOR */}
+                  {/* MAP CALCULATOR UI */}
                   {activeTool === 'map' && (
                     <div className="space-y-4">
                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Heart className="text-red-500"/> Mean Arterial Pressure</h2>
                       <div className="flex gap-2">
                         <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-red-400 outline-none" 
-                          value={mapData.sbp} onChange={e => setMapData({...mapData, sbp: e.target.value})} placeholder="Systolic BP (mmHg)" />
+                          value={mapData.sbp} onChange={e => setMapData({...mapData, sbp: e.target.value})} placeholder="Systolic BP" />
                         <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-red-400 outline-none" 
-                          value={mapData.dbp} onChange={e => setMapData({...mapData, dbp: e.target.value})} placeholder="Diastolic BP (mmHg)" />
+                          value={mapData.dbp} onChange={e => setMapData({...mapData, dbp: e.target.value})} placeholder="Diastolic BP" />
                       </div>
                       <button onClick={handleMAPCalc} className="w-full py-4 bg-red-500 text-white font-bold rounded-2xl shadow-lg hover:bg-red-600 transition">Calculate MAP</button>
                       {results.map && (
@@ -407,7 +474,7 @@ export default function ClinicalTool() {
                     </div>
                   )}
 
-                  {/* MAINTENANCE FLUID CALCULATOR */}
+                  {/* MAINTENANCE FLUID CALCULATOR UI */}
                   {activeTool === 'maintenance' && (
                     <div className="space-y-4">
                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Droplet className="text-emerald-500"/> Maintenance Fluid (4-2-1)</h2>
@@ -435,18 +502,15 @@ export default function ClinicalTool() {
         </div>
       </div>
 
-      {/* MODAL */}
       {selectedDisease && (
         <DiseaseModal 
           name={selectedDisease.name} 
           data={selectedDisease} 
           onClose={() => setSelectedDisease(null)} 
+          onDrugClick={handleDrugClick} 
         />
       )}
-
-      {/* --- NEW: FOOTER --- */}
       <Footer onOpenTerms={handleOpenTermsReview} />
-
     </div>
   );
 }

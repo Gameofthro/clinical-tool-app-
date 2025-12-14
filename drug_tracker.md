@@ -506,7 +506,7 @@
 - **Rationale:** Normalizes follicular keratinization and reduces microcomedones.
 
 ### 101. Benzoyl Peroxide (undefined)
-- **Class:** Antimicrobial
+- **Class:** Antimicr   obial
 - **Dosing:** 2.5% Gel OD (Day/Night)
 - **Rationale:** Releases free radicals to kill C. acnes; prevents antibiotic resistance.
 

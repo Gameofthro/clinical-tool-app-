@@ -18,7 +18,7 @@ export default function LegalModal({ isOpen, onClose, onAccept, isMandatory }) {
               <h2 className="text-xl font-bold text-slate-800 dark:text-white leading-none">
                 Terms of Service & Privacy
               </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Last Updated: December 12, 2024</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Last Updated: December 12/12/2025</p>
             </div>
           </div>
           {/* Only show close button if NOT mandatory (View Only Mode) */}
