@@ -15,7 +15,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
         // Safety check for drug data structure consistency
         const safeDrugDatabase = Array.isArray(drugDatabase) ? drugDatabase : [];
         const found = safeDrugDatabase.find(d => 
-          d.drug_name && d.drug_name.toLowerCase() === lowerInitialName
+          d && d.drug_name && d.drug_name.toLowerCase() === lowerInitialName
         );
         if (found) {
           setSelectedDrug(found);
@@ -32,9 +32,16 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
   const filteredDrugs = useMemo(() => {
     // Safety check for drugDatabase being available/array
     const safeDrugDatabase = Array.isArray(drugDatabase) ? drugDatabase : [];
-    if (!searchTerm) return safeDrugDatabase;
-    return safeDrugDatabase.filter(drug => 
-      drug.drug_name && drug.drug_name.toLowerCase().includes(searchTerm.toLowerCase())
+    
+    // Filter out any null/undefined drugs before processing
+    const cleanedDatabase = safeDrugDatabase.filter(d => d && d.drug_name);
+
+    if (!searchTerm) return cleanedDatabase;
+    
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    
+    return cleanedDatabase.filter(drug => 
+      drug.drug_name.toLowerCase().includes(lowerSearchTerm)
     );
   }, [searchTerm]);
 
@@ -79,6 +86,13 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
 
           {/* Scrollable List (FIX: flex-1 ensures it takes remaining vertical space for scrolling) */}
           <div className="flex-1 overflow-y-auto">
+            {/* DEBUGGING CHECK: If database is loaded but empty */}
+            {Array.isArray(drugDatabase) && drugDatabase.length === 0 && (
+                 <div className="p-4 bg-red-100 text-red-800 text-sm font-bold border-l-4 border-red-500">
+                     ERROR: Drug Database failed to load. Please check `drug_database.js` syntax.
+                 </div>
+            )}
+
             {filteredDrugs.map(drug => (
               <div
                 key={drug.id}
@@ -128,7 +142,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {/* FIX: Check array existence before mapping */}
-                  {selectedDrug.pharmacologic_class && selectedDrug.pharmacologic_class.map((cls, index) => (
+                  {selectedDrug.pharmacologic_class && Array.isArray(selectedDrug.pharmacologic_class) && selectedDrug.pharmacologic_class.map((cls, index) => (
                     <span key={index} className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full uppercase tracking-wider border border-blue-100 dark:border-blue-800">
                       {cls}
                     </span>
@@ -144,7 +158,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
                 </h3>
                 <div className="grid gap-4">
                   {/* FIX: Check array existence before mapping */}
-                  {selectedDrug.indications_and_moa && selectedDrug.indications_and_moa.map((item, idx) => (
+                  {selectedDrug.indications_and_moa && Array.isArray(selectedDrug.indications_and_moa) && selectedDrug.indications_and_moa.map((item, idx) => (
                     <div key={idx} className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-slate-200 dark:border-slate-700 hover:shadow-sm transition-shadow">
                       <div className="mb-3">
                         <span className="text-[10px] font-extrabold uppercase text-blue-600 dark:text-blue-400 tracking-wider">Indication</span>
@@ -168,7 +182,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
                   </h3>
                   <ul className="space-y-3">
                     {/* FIX: Check array existence before mapping */}
-                    {selectedDrug.common_side_effects && selectedDrug.common_side_effects.map((effect, idx) => (
+                    {selectedDrug.common_side_effects && Array.isArray(selectedDrug.common_side_effects) && selectedDrug.common_side_effects.map((effect, idx) => (
                       <li key={idx} className="flex items-start text-sm text-slate-700 dark:text-slate-300 font-medium">
                         <span className="mr-2 text-yellow-500 text-lg leading-none">•</span> {effect}
                       </li>
@@ -183,7 +197,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
                   </h3>
                   <ul className="space-y-3">
                     {/* FIX: Check array existence before mapping */}
-                    {selectedDrug.adverse_drug_events && selectedDrug.adverse_drug_events.map((event, idx) => (
+                    {selectedDrug.adverse_drug_events && Array.isArray(selectedDrug.adverse_drug_events) && selectedDrug.adverse_drug_events.map((event, idx) => (
                       <li key={idx} className="flex items-start text-sm text-slate-700 dark:text-slate-300 font-medium">
                         <span className="mr-2 text-red-500 font-bold">!</span> {event}
                       </li>
