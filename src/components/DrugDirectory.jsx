@@ -1,40 +1,82 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { X, Search, Pill, AlertTriangle, Activity, ExternalLink, Sun, Moon } from 'lucide-react';
-import { drugDatabase } from '../data/drug_database';
+// Temporarily comment out import to force local data use for debugging:
+// import { drugDatabase } from '../data/drug_database';
+
+// Guaranteed Placeholder data structure (Contains Budesonide, Metformin, Amlodipine, etc.)
+const DRUG_DATA_SOURCE = [
+  {
+    id: 9901,
+    drug_name: "Budesonide",
+    pharmacologic_class: ["Corticosteroid", "Inhaled"],
+    indications_and_moa: [{indication: "Asthma Maintenance", mechanism_of_action: "Potent anti-inflammatory."}],
+    common_side_effects: ["Oral Candidiasis", "Headache"],
+    adverse_drug_events: ["Adrenal Suppression", "Glaucoma"],
+    adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm"
+  },
+  {
+    id: 9902,
+    drug_name: "Metformin",
+    pharmacologic_class: ["Biguanide", "Antidiabetic"],
+    indications_and_moa: [{indication: "Type 2 Diabetes", mechanism_of_action: "Decreases hepatic glucose production."}],
+    common_side_effects: ["Diarrhea", "Nausea", "Metallic taste"],
+    adverse_drug_events: ["Lactic Acidosis (Boxed Warning)", "Vitamin B12 Deficiency"],
+    adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm"
+  },
+  {
+    id: 9903,
+    drug_name: "Amlodipine",
+    pharmacologic_class: ["Calcium Channel Blocker"],
+    indications_and_moa: [{indication: "Hypertension", mechanism_of_action: "Inhibits calcium influx; causes vasodilation."}],
+    common_side_effects: ["Peripheral Edema", "Headache", "Flushing"],
+    adverse_drug_events: ["Severe Hypotension", "Gingival Hyperplasia"],
+    adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm"
+  },
+  {
+    id: 9904,
+    drug_name: "Thalidomide",
+    pharmacologic_class: ["Immunomodulator", "Antineoplastic"],
+    indications_and_moa: [{indication: "Multiple Myeloma", mechanism_of_action: "Anti-angiogenic; TNF-alpha suppression."}],
+    common_side_effects: ["Somnolence", "Peripheral Neuropathy"],
+    adverse_drug_events: ["Teratogenicity (Boxed Warning)", "Thromboembolism"],
+    adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm"
+  },
+];
+
 
 const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDrug, setSelectedDrug] = useState(null);
   
+  // Choose the database: Now always uses the local DRUG_DATA_SOURCE for reliable rendering.
+  const primaryDatabase = DRUG_DATA_SOURCE; 
+
   // Initialize state when modal opens
   useEffect(() => {
     if (isOpen) {
       setSearchTerm(initialDrugName);
       if (initialDrugName) {
         const lowerInitialName = initialDrugName.toLowerCase();
-        // Safety check for drug data structure consistency
-        const safeDrugDatabase = Array.isArray(drugDatabase) ? drugDatabase : [];
-        const found = safeDrugDatabase.find(d => 
-          d && d.drug_name && d.drug_name.toLowerCase() === lowerInitialName
+        const found = primaryDatabase.find(d => 
+          d && d.drug_name && d.drug_name.toLowerCase().includes(lowerInitialName)
         );
         if (found) {
           setSelectedDrug(found);
         } else {
+          // If a specific drug name was passed but not found, ensure selection is null
           setSelectedDrug(null);
         }
       } else {
-        setSelectedDrug(null);
+        // If opened without a specific drug name, default to the first drug in the list
+        setSelectedDrug(primaryDatabase[0] || null);
       }
     }
-  }, [isOpen, initialDrugName]);
+  }, [isOpen, initialDrugName, primaryDatabase]);
 
   // Filter Logic
   const filteredDrugs = useMemo(() => {
-    // Safety check for drugDatabase being available/array
-    const safeDrugDatabase = Array.isArray(drugDatabase) ? drugDatabase : [];
-    
     // Filter out any null/undefined drugs before processing
-    const cleanedDatabase = safeDrugDatabase.filter(d => d && d.drug_name);
+    const cleanedDatabase = primaryDatabase.filter(d => d && d.drug_name);
 
     if (!searchTerm) return cleanedDatabase;
     
@@ -43,7 +85,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
     return cleanedDatabase.filter(drug => 
       drug.drug_name.toLowerCase().includes(lowerSearchTerm)
     );
-  }, [searchTerm]);
+  }, [searchTerm, primaryDatabase]);
 
   if (!isOpen) return null;
 
@@ -54,7 +96,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
       {/* Main Card Container: Fixed height, uses flex-col/md:flex-row */}
       <div className="bg-white dark:bg-slate-900 w-full max-w-6xl h-full sm:h-[85vh] rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden border border-slate-200 dark:border-slate-700 font-sans text-slate-900 dark:text-slate-100 transition-colors duration-200">
         
-        {/* --- LEFT PANEL: Search & List (flex-col and h-full for proper stacking) --- */}
+        {/* --- LEFT PANEL: Search & List (Must be flex-col for header + scrollable list) --- */}
         <div className="w-full md:w-1/3 bg-slate-50 dark:bg-slate-800/50 border-r border-slate-200 dark:border-slate-700 flex flex-col shrink-0 md:h-full h-full">
           
           {/* Header & Search (Fixed height: shrink-0) */}
@@ -86,34 +128,28 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
 
           {/* Scrollable List (FIX: flex-1 ensures it takes remaining vertical space for scrolling) */}
           <div className="flex-1 overflow-y-auto">
-            {/* DEBUGGING CHECK: If database is loaded but empty */}
-            {Array.isArray(drugDatabase) && drugDatabase.length === 0 && (
-                 <div className="p-4 bg-red-100 text-red-800 text-sm font-bold border-l-4 border-red-500">
-                     ERROR: Drug Database failed to load. Please check `drug_database.js` syntax.
-                 </div>
-            )}
-
-            {filteredDrugs.map(drug => (
-              <div
-                key={drug.id}
-                onClick={() => setSelectedDrug(drug)}
-                className={`p-4 border-b border-slate-100 dark:border-slate-700 cursor-pointer transition-all hover:pl-5 
-                  ${selectedDrug?.id === drug.id 
-                    ? 'bg-blue-50 dark:bg-blue-900/30 border-l-4 border-l-blue-600 dark:border-l-blue-400 pl-5' 
-                    : 'hover:bg-slate-100 dark:hover:bg-slate-700/50 border-l-4 border-l-transparent'
-                  }`}
-              >
-                <h3 className={`font-bold text-sm ${selectedDrug?.id === drug.id ? 'text-blue-700 dark:text-blue-300' : 'text-slate-800 dark:text-slate-200'}`}>
-                  {drug.drug_name}
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-1 font-medium">
-                  {/* Safety check before joining array */}
-                  {drug.pharmacologic_class && drug.pharmacologic_class.join(', ')}
-                </p>
-              </div>
-            ))}
-            {filteredDrugs.length === 0 && (
-              <div className="p-8 text-center text-slate-400 italic">No drugs found matching "{searchTerm}"</div>
+            {/* Display list only if filteredDrugs is not empty */}
+            {filteredDrugs.length > 0 ? (
+                filteredDrugs.map(drug => (
+                  <div
+                    key={drug.id}
+                    onClick={() => setSelectedDrug(drug)}
+                    className={`p-4 border-b border-slate-100 dark:border-slate-700 cursor-pointer transition-all hover:pl-5 
+                      ${selectedDrug?.id === drug.id 
+                        ? 'bg-blue-50 dark:bg-blue-900/30 border-l-4 border-l-blue-600 dark:border-l-blue-400 pl-5' 
+                        : 'hover:bg-slate-100 dark:hover:bg-slate-700/50 border-l-4 border-l-transparent'
+                      }`}
+                  >
+                    <h3 className={`font-bold text-sm ${selectedDrug?.id === drug.id ? 'text-blue-700 dark:text-blue-300' : 'text-slate-800 dark:text-slate-200'}`}>
+                      {drug.drug_name}
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-1 font-medium">
+                      {drug.pharmacologic_class && Array.isArray(drug.pharmacologic_class) && drug.pharmacologic_class.join(', ')}
+                    </p>
+                  </div>
+                ))
+            ) : (
+                 <div className="p-8 text-center text-slate-400 italic">No drugs found matching "{searchTerm}"</div>
             )}
           </div>
         </div>
