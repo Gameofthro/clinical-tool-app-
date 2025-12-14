@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Pill, AlertTriangle, Activity, ExternalLink, ChevronDown, ChevronUp, Droplet } from 'lucide-react';
+// Import the new Monograph Modal
+import MonographModal from './MonographModal'; 
 // Attempt to import the external database (reverts to placeholder if broken)
 import { drugDatabase as importedDrugDatabase } from '../data/drug_database';
 
@@ -13,7 +15,7 @@ const CURATED_DRUG_NAMES = [
     "Paracetamol"
 ];
 
-// Fallback Data Structure (Only includes the 6 curated drugs for guaranteed display if external import fails)
+// Fallback Data Structure (Ensures display if external import fails)
 const FALLBACK_DRUGS = [
     { id: 556, drug_name: "Methotrexate", pharmacologic_class: ["Antifolate", "DMARD"], indications_and_moa: [{indication: "Rheumatoid Arthritis", mechanism_of_action: "Inhibits DHFR (Dihydrofolate Reductase), increasing adenosine release for anti-inflammatory effect."}], common_side_effects: ["Nausea", "Stomatitis", "Fatigue"], adverse_drug_events: ["Bone Marrow Suppression", "Hepatotoxicity (Fibrosis)", "Pneumonitis"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
     { id: 564, drug_name: "Metoprolol", pharmacologic_class: ["Beta-1 Selective Blocker", "Antihypertensive"], indications_and_moa: [{indication: "Heart Failure / Hypertension", mechanism_of_action: "Cardioselective beta-1 blockade; decreases heart rate, contractility, and oxygen demand."}], common_side_effects: ["Fatigue", "Bradycardia", "Dizziness"], adverse_drug_events: ["Heart Block", "Bronchospasm (at high doses)", "Masking of Hypoglycemia"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
@@ -31,7 +33,9 @@ const DRUG_DATA_SOURCE = Array.isArray(importedDrugDatabase) && importedDrugData
 
 const DrugDictionaryTool = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedDrug, setSelectedDrug] = useState(null);
+    // State now holds the selected drug's data ONLY for passing to the modal
+    const [selectedDrugData, setSelectedDrugData] = useState(null); 
+    const [isMonographOpen, setIsMonographOpen] = useState(false); // Modal state
     const [initialList, setInitialList] = useState([]);
 
     // Step 1: Build the curated initial list and set the first drug
@@ -39,17 +43,15 @@ const DrugDictionaryTool = () => {
         // FIX: Ensure this effect only runs once for initialization
         const lowerCuratedNames = new Set(CURATED_DRUG_NAMES.map(n => n.toLowerCase()));
         
-        // Match the full database against the curated names
         const matchedCuratedDrugs = DRUG_DATA_SOURCE.filter(d => 
             d && d.drug_name && lowerCuratedNames.has(d.drug_name.toLowerCase())
         );
 
         setInitialList(matchedCuratedDrugs);
         
-        // Set the first curated drug as selected on load
-        if (matchedCuratedDrugs.length > 0) {
-            setSelectedDrug(matchedCuratedDrugs[0]);
-        }
+        // We do NOT set selectedDrugData here, wait for click to open modal
+        // This resolves the issue where the first drug was selected but not clickable.
+        
     }, []); 
 
     // Filter Logic (Show initialList unless searching)
@@ -68,133 +70,28 @@ const DrugDictionaryTool = () => {
         );
     }, [searchTerm, initialList]);
 
+    // FIX 2: Handler now opens the Monograph Modal
     const handleSelectDrug = (drug) => {
-        setSelectedDrug(drug);
-        
-        // FIX 3 (Scrolling): Programmatically scroll the monograph content to the top
-        const monographElement = document.getElementById('monographContent');
-        if (monographElement) {
-            // Use a short timeout to ensure the DOM has updated before scrolling
-            setTimeout(() => {
-                monographElement.scrollTop = 0;
-            }, 0);
-        }
+        setSelectedDrugData(drug);
+        setIsMonographOpen(true);
     };
-    
-    // Monograph rendering component
-    const MonographContent = () => {
-        const drug = selectedDrug;
-        
-        if (!drug) return (
-             <div className="flex flex-col items-center justify-center h-full text-slate-400 dark:text-slate-600 p-8 text-center">
-                <Pill size={80} className="mb-6 opacity-30 text-blue-500" />
-                <p className="text-xl font-bold text-slate-500 dark:text-slate-400">Select a drug to view details</p>
-                <p className="text-sm mt-2 max-w-xs font-medium opacity-70">
-                    Browse the list on the left to view detailed pharmacology, mechanism of action, and safety data.
-                </p>
-            </div>
-        );
-
-        return (
-            // FIX: Main Monograph container is flex-col h-full to manage vertical space
-            <div className="flex flex-col h-full"> 
-                {/* Header/Title/Class (Shrink-0 to keep it fixed at the top) */}
-                <div className="p-6 md:p-8 border-b border-slate-200 dark:border-slate-800 shrink-0">
-                    <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-2">
-                        {drug.drug_name}
-                    </h1>
-                    <div className="flex flex-wrap gap-2">
-                      {drug.pharmacologic_class && Array.isArray(drug.pharmacologic_class) && drug.pharmacologic_class.map((cls, index) => (
-                        <span key={index} className="px-3 py-1 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 text-xs font-bold rounded-full uppercase tracking-wider border border-blue-100 dark:border-blue-800">
-                          {cls}
-                        </span>
-                      ))}
-                    </div>
-                </div>
-
-                {/* SCROLLABLE BODY CONTENT (Monograph Details) */}
-                {/* FIX: This inner div is the scrollable element that expands to fill remaining space */}
-                <div id="monographContent" className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
-                  
-                  {/* Indications & Mechanism Section */}
-                  <section className="space-y-4">
-                    <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
-                      <Activity size={20} className="text-emerald-500" />
-                      Clinical Pharmacology
-                    </h3>
-                    <div className="grid gap-4">
-                      {drug.indications_and_moa && Array.isArray(drug.indications_and_moa) && drug.indications_and_moa.map((item, idx) => (
-                        <div key={idx} className="bg-slate-50 dark:bg-slate-800/50 rounded-xl p-5 border border-slate-200 dark:border-slate-700 hover:shadow-sm transition-shadow">
-                          <div className="mb-3">
-                            <span className="text-[10px] font-extrabold uppercase text-blue-600 dark:text-blue-400 tracking-wider">Indication</span>
-                            <p className="font-bold text-slate-800 dark:text-slate-200 text-base mt-1">{item.indication}</p>
-                          </div>
-                          <div>
-                            <span className="text-[10px] font-extrabold uppercase text-purple-600 dark:text-purple-400 tracking-wider">Mechanism of Action</span>
-                            <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mt-1">{item.mechanism_of_action}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </section>
-
-                  {/* Safety Profile Grid */}
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {/* Side Effects */}
-                    <div className="bg-yellow-50/50 dark:bg-yellow-900/10 rounded-xl p-6 border border-yellow-200 dark:border-yellow-700/30">
-                      <h3 className="text-sm font-bold text-yellow-800 dark:text-yellow-200 mb-4 uppercase tracking-wide flex items-center gap-2">
-                        <AlertTriangle size={16} /> Common Side Effects
-                      </h3>
-                      <ul className="space-y-3">
-                        {drug.common_side_effects && Array.isArray(drug.common_side_effects) && drug.common_side_effects.map((effect, idx) => (
-                          <li key={idx} className="flex items-start text-sm text-slate-700 dark:text-slate-300 font-medium">
-                            <span className="mr-2 text-yellow-500 text-lg leading-none">•</span> {effect}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Adverse Events */}
-                    <div className="bg-red-50/50 dark:bg-red-900/10 rounded-xl p-6 border border-red-200 dark:border-red-700/30">
-                      <h3 className="text-sm font-bold text-red-800 dark:text-red-200 mb-4 uppercase tracking-wide flex items-center gap-2">
-                        <AlertTriangle size={16} /> Adverse Drug Events
-                      </h3>
-                      <ul className="space-y-3">
-                        {drug.adverse_drug_events && Array.isArray(drug.adverse_drug_events) && drug.adverse_drug_events.map((event, idx) => (
-                          <li key={idx} className="flex items-start text-sm text-slate-700 dark:text-slate-300 font-medium">
-                            <span className="mr-2 text-red-500 font-bold">!</span> {event}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-
-                  {/* Footer / FDA Link */}
-                  <div className="pt-6 border-t border-slate-200 dark:border-slate-700 flex justify-end">
-                    <a 
-                      href={drug.adr_reporting_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 bg-slate-900 dark:bg-white text-white dark:text-slate-900 px-5 py-2.5 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity shadow-md"
-                    >
-                      <ExternalLink size={16} /> FDA Reporting Site
-                    </a>
-                  </div>
-
-                </div>
-            </div>
-        );
-    }
 
     return (
         // Component rendered directly into the app tab
-        // Ensures the container takes up the max available space within the App's content area
         <div className="w-full h-full max-h-[85vh] flex flex-col md:flex-row overflow-hidden border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl bg-white dark:bg-slate-900">
             
+            {/* 1. RENDER MODAL (This is now external to the main view) */}
+            {/* The Modal handles its own scrolling and display logic */}
+            <MonographModal 
+                drug={selectedDrugData} 
+                isOpen={isMonographOpen} 
+                onClose={() => setIsMonographOpen(false)} 
+            />
+
             {/* --- LEFT PANEL: Search & List (Scrollable) --- */}
             <div className="w-full md:w-1/3 flex flex-col shrink-0 border-r border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 h-full">
                 
-                {/* Header & Search */}
+                {/* Header & Search (Shrink-0) */}
                 <div className="p-4 shrink-0 border-b border-slate-200 dark:border-slate-700">
                     <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2"><Pill size={20} className="text-blue-600"/> Drug Index</h2>
                     <div className="relative">
@@ -209,7 +106,7 @@ const DrugDictionaryTool = () => {
                     </div>
                 </div>
 
-                {/* Drug List (FIX: List is now based on initialList/filteredDrugs, ensuring clickability) */}
+                {/* Drug List (Scrollable List Area) */}
                 <div className="flex-1 overflow-y-auto">
                     {DRUG_DATA_SOURCE.length === 0 && (
                          <div className="p-4 bg-red-100 text-red-800 text-sm font-bold border-l-4 border-red-500">
@@ -221,14 +118,15 @@ const DrugDictionaryTool = () => {
                         filteredDrugs.map(drug => (
                             <div
                                 key={drug.id}
-                                onClick={() => handleSelectDrug(drug)}
+                                // FIX: Click handler sets modal data and opens modal
+                                onClick={() => handleSelectDrug(drug)} 
                                 className={`p-4 border-b border-slate-100 dark:border-slate-700 cursor-pointer transition-all hover:pl-5 
-                                    ${selectedDrug?.id === drug.id 
+                                    ${selectedDrugData?.id === drug.id 
                                         ? 'bg-blue-100/50 dark:bg-blue-900/30 border-l-4 border-l-blue-600 dark:border-l-blue-400 pl-5' 
                                         : 'hover:bg-slate-100 dark:hover:bg-slate-700/50 border-l-4 border-l-transparent'
                                     }`}
                             >
-                                <h3 className={`font-bold text-sm ${selectedDrug?.id === drug.id ? 'text-blue-700 dark:text-blue-300' : 'text-slate-800 dark:text-slate-200'}`}>
+                                <h3 className={`font-bold text-sm ${selectedDrugData?.id === drug.id ? 'text-blue-700 dark:text-blue-300' : 'text-slate-800 dark:text-slate-200'}`}>
                                     {drug.drug_name}
                                 </h3>
                                 <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-1 font-medium">
@@ -242,9 +140,16 @@ const DrugDictionaryTool = () => {
                 </div>
             </div>
 
-            {/* --- RIGHT PANEL: Detailed Monograph --- */}
+            {/* --- RIGHT PANEL: PREVIEW/INSTRUCTIONS --- */}
+            {/* This pane is now only used for instructions since the monograph is in the modal. */}
             <div className="w-full md:w-2/3 bg-white dark:bg-slate-900 flex flex-col relative flex-1">
-                <MonographContent />
+                <div className="flex flex-col items-center justify-center h-full text-slate-400 dark:text-slate-600 p-8 text-center">
+                    <Pill size={80} className="mb-6 opacity-10" />
+                    <p className="text-xl font-bold text-slate-500 dark:text-slate-400">Drug Monographs</p>
+                    <p className="text-sm mt-2 max-w-xs font-medium opacity-70">
+                        Click any drug on the left to open the detailed, scrollable monograph and clinical safety profile in a new window.
+                    </p>
+                </div>
             </div>
         </div>
     );
