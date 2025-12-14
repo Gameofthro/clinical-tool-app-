@@ -33,13 +33,13 @@ const DrugDictionaryTool = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDrug, setSelectedDrug] = useState(null);
     const [initialList, setInitialList] = useState([]);
-    const [monographContentKey, setMonographContentKey] = useState(0); // Key to force re-render/scroll reset
+    // Removed monographContentKey as programmatic scrolling is more reliable than key change
 
     // Step 1: Build the curated initial list and set the first drug
     useEffect(() => {
+        // FIX: Ensure this effect only runs once for initialization
         const lowerCuratedNames = new Set(CURATED_DRUG_NAMES.map(n => n.toLowerCase()));
         
-        // Match the full database against the curated names
         const matchedCuratedDrugs = DRUG_DATA_SOURCE.filter(d => 
             d && d.drug_name && lowerCuratedNames.has(d.drug_name.toLowerCase())
         );
@@ -70,8 +70,15 @@ const DrugDictionaryTool = () => {
 
     const handleSelectDrug = (drug) => {
         setSelectedDrug(drug);
-        // Force re-render and scroll reset
-        setMonographContentKey(prev => prev + 1);
+        
+        // FIX 3 (Scrolling): Programmatically scroll the monograph content to the top
+        const monographElement = document.getElementById('monographContent');
+        if (monographElement) {
+            // Use a short timeout to ensure the DOM has updated before scrolling
+            setTimeout(() => {
+                monographElement.scrollTop = 0;
+            }, 0);
+        }
     };
     
     // Monograph rendering component
@@ -106,7 +113,8 @@ const DrugDictionaryTool = () => {
                 </div>
 
                 {/* SCROLLABLE BODY CONTENT (Monograph Details) */}
-                <div key={monographContentKey} className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
+                {/* FIX 3: ID added for programmatic scrolling */}
+                <div id="monographContent" className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
                   
                   {/* Indications & Mechanism Section */}
                   <section className="space-y-4">
