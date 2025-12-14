@@ -47,7 +47,7 @@ export default function ClinicalTool() {
   const [showTerms, setShowTerms] = useState(false);
   const [mandatoryTerms, setMandatoryTerms] = useState(false);
 
-  // Calculator States
+  // Calculator States (FIXED: Added useState)
   const [doseData, setDoseData] = useState({ weight: "", adultDose: "", unit: "kg" });
   const [bmiData, setBmiData] = useState({ height: "", weight: "", wUnit: "kg", hUnit: "cm" });
   const [gfrData, setGfrData] = useState({ creatinine: "", age: "", gender: "male", unit: "mg/dl" });
@@ -86,13 +86,18 @@ export default function ClinicalTool() {
     };
   }, [selectedDisease, showTerms, isDrawerOpen, showAboutModal]); // Added showAboutModal dependency
 
-  // --- CRITICAL: WATCH FOR LOGIN TO SHOW TERMS ---
+  // --- CRITICAL: WATCH FOR LOGIN TO SHOW TERMS (FIXED LOGIC) ---
   useEffect(() => {
     if (user) {
         const hasAccepted = localStorage.getItem(TERMS_KEY);
+        // FIX: Ensure terms are shown if no acceptance key exists
         if (!hasAccepted) {
             setShowTerms(true);
             setMandatoryTerms(true); 
+        } else {
+            // Ensure if key exists, terms are hidden
+            setShowTerms(false);
+            setMandatoryTerms(false);
         }
     }
   }, [user]);
@@ -108,23 +113,26 @@ export default function ClinicalTool() {
 
   const handleLogout = () => {
     localStorage.removeItem("clinical_current_user");
+    // FIX: Clear acceptance key on logout so new login forces terms review
+    localStorage.removeItem(TERMS_KEY); 
     setUser(null);
-    setIsDrawerOpen(false); // Close drawer after logout
+    setIsDrawerOpen(false); 
   };
 
   const handleLogin = (userData) => {
     localStorage.setItem("clinical_current_user", JSON.stringify(userData));
     setUser(userData);
+    // Terms check runs automatically via useEffect [user] dependency
   };
 
   const handleSupportClick = () => {
-    // Use the reliable method of opening mailto link
     window.location.href = `mailto:${SUPPORT_EMAIL}`;
     setIsDrawerOpen(false);
   };
 
   // --- LEGAL HANDLERS ---
   const handleAcceptTerms = () => {
+    // FIX: This handler must set the local storage and close the modal
     localStorage.setItem(TERMS_KEY, "true");
     setShowTerms(false);
     setMandatoryTerms(false);
@@ -133,7 +141,7 @@ export default function ClinicalTool() {
   const handleOpenTermsReview = () => {
     setMandatoryTerms(false); 
     setShowTerms(true);
-    setIsDrawerOpen(false); // Close drawer when opening terms
+    setIsDrawerOpen(false); 
   };
   
   // --- ABOUT HANDLERS ---
@@ -203,19 +211,32 @@ export default function ClinicalTool() {
   };
 
   const handleCardClick = (tabId) => {
-    // If clicking a card, set the active tab
     setActiveTab(tabId);
   }
 
   const handleGoHome = () => {
-    // Allows returning to the main tile view
     setActiveTab("home");
-    setQuery(""); // Clear search query when going home
+    setQuery(""); 
   }
 
 
   if (!user) return <Auth onLogin={handleLogin} />;
   
+  // FIX: BLOCK APP CONTENT IF TERMS ARE MANDATORY AND NOT ACCEPTED
+  if (showTerms && mandatoryTerms) {
+      return (
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+            <LegalModal 
+                isOpen={true} 
+                onAccept={handleAcceptTerms}
+                onClose={() => { /* intentionally disabled when mandatory */ }}
+                isMandatory={true}
+            />
+        </div>
+      );
+  }
+
+
   // Define tools for the home page tiles
   const toolTiles = [
     { id: "search", label: "Disease Search", description: "Search clinical guidelines and differential diagnoses.", icon: Search },
@@ -238,7 +259,7 @@ export default function ClinicalTool() {
                         <X size={24} />
                     </button>
                 </div>
-                <div className="text-slate-700 dark:text-slate-300 space-y-4 overflow-y-auto">
+                <div className="text-slate-700 dark:text-slate-300 space-y-4 overflow-y-auto pb-4">
                     <p className="font-bold text-lg text-blue-700 dark:text-blue-400">Mission Driven by Clinical Experience</p>
                     <p>
                         This platform is the dedicated work of a team rooted in clinical pharmacy practice: <span className="font-semibold text-slate-900 dark:text-white">Dr. Vaidik Gautam (Senior Developer/Pharm.D Candidate)</span> and <span className="font-semibold text-slate-900 dark:text-white">Dr. Raxit Varun (Support/Pharm.D)</span>. We created ClinicalAssist out of a necessity felt during our own demanding clinical rotations—the need for a single, reliable, and hyper-efficient educational tool to assist rapid synthesis of medical knowledge.
@@ -267,10 +288,12 @@ export default function ClinicalTool() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans flex flex-col transition-colors duration-300">
       
       {/* --- MODALS --- */}
+      {/* Renders LegalModal if showTerms is true */}
       <LegalModal 
-        isOpen={showTerms} 
-        onClose={() => setShowTerms(false)}
-        isMandatory={mandatoryTerms}
+          isOpen={showTerms} 
+          onClose={() => setShowTerms(false)}
+          onAccept={handleAcceptTerms}
+          isMandatory={mandatoryTerms}
       />
       <AboutModal 
         isOpen={showAboutModal}

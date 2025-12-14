@@ -30,7 +30,7 @@ export default function LegalModal({ isOpen, onClose, onAccept, isMandatory }) {
         </div>
 
         {/* Scrollable Content */}
-        <div className="p-6 overflow-y-auto text-slate-600 dark:text-slate-300 space-y-6 text-sm leading-relaxed custom-scrollbar">
+        <div className="p-6 overflow-y-auto text-slate-600 dark:text-slate-300 space-y-6 text-sm leading-relaxed">
           
           {/* Emergency Warning */}
           <div className="p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-slate-800 rounded-xl flex gap-3">
@@ -89,10 +89,11 @@ export default function LegalModal({ isOpen, onClose, onAccept, isMandatory }) {
             <p>
                 <span className="font-bold">The core application (code, UI/UX, logic, and design) is the sole intellectual property of the ClinicalAssist development team.</span> This is covered by copyright.
             </p>
-            <p className="mt-2 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700">
+            {/* CLEANED UP AESTHETIC FOR THE DISCLAIMER */}
+            <div className="mt-2 p-3 bg-slate-100 dark:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-600">
                 However, all synthesized scientific reference data (e.g., drug mechanisms, indications, adverse events) is compiled from recognized external sources (FDA, Dipiro, Harrison's, etc.). 
-                <span className="font-bold text-red-600 dark:text-red-400 block mt-1">This fundamental medical knowledge is the intellectual property of the original researchers and source platforms, not ClinicalAssist.</span> We provide a platform for educational synthesis and retrieval.
-            </p>
+                <span className="font-bold text-slate-800 dark:text-slate-200 block mt-1">This fundamental medical knowledge is the intellectual property of the original researchers and source platforms, not ClinicalAssist.</span> We provide a platform for educational synthesis and retrieval.
+            </div>
           </section>
 
 
@@ -117,7 +118,7 @@ export default function LegalModal({ isOpen, onClose, onAccept, isMandatory }) {
         <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 rounded-b-2xl flex justify-end gap-3 flex-shrink-0">
           {isMandatory ? (
             <button 
-              onClick={onAccept}
+              onClick={onAccept} // FIX: Now correctly calls the onAccept handler
               className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition flex items-center gap-2"
             >
               <CheckCircle className="w-5 h-5" />
