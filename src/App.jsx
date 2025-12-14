@@ -229,8 +229,8 @@ export default function ClinicalTool() {
     if (!isOpen) return null;
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-slate-900/80 backdrop-blur-sm transition-opacity">
-            <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-xl shadow-2xl p-6 relative">
-                <div className="flex justify-between items-center mb-4 border-b pb-3 border-slate-200 dark:border-slate-700">
+            <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl shadow-2xl p-6 relative max-h-[90vh] flex flex-col">
+                <div className="flex justify-between items-center mb-4 border-b pb-3 border-slate-200 dark:border-slate-700 shrink-0">
                     <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
                         <Info size={20} className="text-blue-600" /> About ClinicalAssist
                     </h2>
@@ -238,20 +238,20 @@ export default function ClinicalTool() {
                         <X size={24} />
                     </button>
                 </div>
-                <div className="text-slate-700 dark:text-slate-300 space-y-4">
-                    <p className="font-semibold text-lg text-blue-700 dark:text-blue-400">Mission Driven by Clinical Experience</p>
+                <div className="text-slate-700 dark:text-slate-300 space-y-4 overflow-y-auto">
+                    <p className="font-bold text-lg text-blue-700 dark:text-blue-400">Mission Driven by Clinical Experience</p>
                     <p>
-                        This platform is the dedicated work of a team rooted in clinical pharmacy practice: <strong className="text-slate-900 dark:text-white">Dr. Vaidik Gautam (Senior Developer/Pharm.D)</strong> and <strong className="text-slate-900 dark:text-white">Dr. Raxit Varun (Pharm.D)</strong>. We created ClinicalAssist out of a necessity felt during our own demanding clinical rotations—the need for a single, reliable, and hyper-efficient educational tool to assist rapid synthesis of medical knowledge.
+                        This platform is the dedicated work of a team rooted in clinical pharmacy practice: <span className="font-semibold text-slate-900 dark:text-white">Dr. Vaidik Gautam (Senior Developer/Pharm.D Candidate)</span> and <span className="font-semibold text-slate-900 dark:text-white">Dr. Raxit Varun (Support/Pharm.D)</span>. We created ClinicalAssist out of a necessity felt during our own demanding clinical rotations—the need for a single, reliable, and hyper-efficient educational tool to assist rapid synthesis of medical knowledge.
                     </p>
                     <p>
-                        <strong className="text-slate-900 dark:text-white">Our Objective:</strong> To empower fellow healthcare professionals and students by reducing the time spent searching complex sources, allowing more focus on patient care and advanced learning. We put immense hard work into translating scientific data into the concise, actionable formats you see here.
+                        <span className="font-bold text-slate-900 dark:text-white">Our Objective:</span> To empower fellow healthcare professionals and students by reducing the time spent searching complex sources, allowing more focus on patient care and advanced learning. We put immense hard work into translating scientific data into the concise, actionable formats you see here.
                     </p>
                     
                     <h3 className="font-bold text-base text-slate-800 dark:text-white pt-4 border-t border-slate-100 dark:border-slate-700">Educational Use & Data Sourcing</h3>
                     <p className="text-sm">
-                        This tool is strictly for educational and learning purposes. All scientific data (e.g., indications, MOAs, drug events) is synthesized from <strong className="text-slate-900 dark:text-white">scientifically approved platforms</strong> and definitive medical texts, including <strong className="text-slate-900 dark:text-white">FDA guidelines, Dipiro, and Harrison’s</strong>.
+                        This tool is strictly for educational and learning purposes. All scientific data (e.g., indications, MOAs, drug events) is synthesized from <span className="font-semibold text-slate-900 dark:text-white">scientifically approved platforms</span> and definitive medical texts, including <span className="font-semibold text-slate-900 dark:text-white">FDA guidelines, Dipiro, and Harrison’s</span>.
                     </p>
-                     <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900/50">
                         While the underlying scientific information remains the sole intellectual property of the original researchers and external source platforms, the proprietary application design, UI/UX, logic, and code are the <span className="font-bold text-blue-600 dark:text-blue-400">copyright of the ClinicalAssist team: Dr. Vaidik Gautam and Dr. Raxit Varun.</span>
                     </p>
                 </div>
@@ -581,7 +581,7 @@ export default function ClinicalTool() {
                       <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Droplet className="text-emerald-500"/> Maintenance Fluid (4-2-1)</h2>
                       <div className="flex gap-2">
                         <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-emerald-400 outline-none" 
-                          value={maintData.weight} onChange={e => setMaintData({...maintData, weight: e.target.value})} placeholder="Weight" />
+                          value={maintData.weight} onChange={e => setMaintData({...maintData, weight: e.target.value})} placeholder="Child Weight" />
                         <select className="bg-slate-100 dark:bg-slate-700 rounded-xl px-3 font-bold text-sm outline-none dark:text-white"
                           value={maintData.unit} onChange={e => setMaintData({...maintData, unit: e.target.value})}>
                           <option value="kg">kg</option>
