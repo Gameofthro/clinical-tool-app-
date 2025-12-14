@@ -33,13 +33,13 @@ const DrugDictionaryTool = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDrug, setSelectedDrug] = useState(null);
     const [initialList, setInitialList] = useState([]);
-    // Removed monographContentKey as programmatic scrolling is more reliable than key change
 
     // Step 1: Build the curated initial list and set the first drug
     useEffect(() => {
         // FIX: Ensure this effect only runs once for initialization
         const lowerCuratedNames = new Set(CURATED_DRUG_NAMES.map(n => n.toLowerCase()));
         
+        // Match the full database against the curated names
         const matchedCuratedDrugs = DRUG_DATA_SOURCE.filter(d => 
             d && d.drug_name && lowerCuratedNames.has(d.drug_name.toLowerCase())
         );
@@ -95,8 +95,8 @@ const DrugDictionaryTool = () => {
             </div>
         );
 
-        // FIX: The outer MonographContent div is now flex-col, and the content below the header scrolls.
         return (
+            // FIX: Main Monograph container is flex-col h-full to manage vertical space
             <div className="flex flex-col h-full"> 
                 {/* Header/Title/Class (Shrink-0 to keep it fixed at the top) */}
                 <div className="p-6 md:p-8 border-b border-slate-200 dark:border-slate-800 shrink-0">
@@ -113,7 +113,7 @@ const DrugDictionaryTool = () => {
                 </div>
 
                 {/* SCROLLABLE BODY CONTENT (Monograph Details) */}
-                {/* FIX 3: ID added for programmatic scrolling */}
+                {/* FIX: This inner div is the scrollable element that expands to fill remaining space */}
                 <div id="monographContent" className="flex-1 overflow-y-auto p-6 md:p-8 space-y-8">
                   
                   {/* Indications & Mechanism Section */}
