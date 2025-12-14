@@ -44,10 +44,10 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
     // Outer fixed container: z-[200] ensures it is always on top.
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 dark:bg-slate-900/80 backdrop-blur-sm transition-opacity">
       
-      {/* Main Card Container: Fixed height, using flex-col/md:flex-row to manage space */}
+      {/* Main Card Container: Uses flex-col/md:flex-row to define the main split */}
       <div className="bg-white dark:bg-slate-900 w-full max-w-6xl h-[95vh] sm:h-[85vh] rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden border border-slate-200 dark:border-slate-700 font-sans text-slate-900 dark:text-slate-100 transition-colors duration-200">
         
-        {/* --- LEFT PANEL: Search & List (flex-col container for header + scrollable list) --- */}
+        {/* --- LEFT PANEL: Search & List (FIX: Must explicitly be flex-col and h-full for vertical flex children) --- */}
         <div className="w-full md:w-1/3 bg-slate-50 dark:bg-slate-800/50 border-r border-slate-200 dark:border-slate-700 flex flex-col shrink-0 md:h-full">
           
           {/* Header & Search (Fixed height: shrink-0) */}
@@ -77,7 +77,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
             </div>
           </div>
 
-          {/* Scrollable List (FIX: flex-1 ensures it takes remaining vertical space for scrolling) */}
+          {/* Scrollable List (FIX: flex-1 takes remaining vertical space, overflow-y-auto enables scroll) */}
           <div className="flex-1 overflow-y-auto">
             {filteredDrugs.map(drug => (
               <div
@@ -103,7 +103,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
           </div>
         </div>
 
-        {/* --- RIGHT PANEL: Detailed Monograph --- */}
+        {/* --- RIGHT PANEL: Detailed Monograph (FIX: flex-col ensures inner content stacks) --- */}
         <div className="w-full md:w-2/3 bg-white dark:bg-slate-900 flex flex-col relative flex-1">
           
           {/* Desktop Close Button (Positioned absolutely over the content) */}
