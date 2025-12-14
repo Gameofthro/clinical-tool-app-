@@ -1,8 +1,7 @@
 import React from 'react';
 import { X, Pill, Thermometer, AlertTriangle, Scale, Lightbulb, Microscope, Utensils, Ban, CheckCircle2, HeartPulse, Stethoscope, BookOpen } from "lucide-react";
-import DrugLink from './DrugLink';
 
-export default function DiseaseModal({ name, data, onClose, onDrugClick }) {
+export default function DiseaseModal({ name, data, onClose }) {
   // CRASH FIX: Ensure data is present before rendering
   if (!data || !name) return null;
 
@@ -11,26 +10,25 @@ export default function DiseaseModal({ name, data, onClose, onDrugClick }) {
     if (onClose) onClose();
   };
 
-  // Safe wrapper for drug click (passed down to DrugLink)
-  const handleLinkClick = (drugName) => {
-    if (onDrugClick) onDrugClick(drugName);
+  // Helper to extract drug name for static display in the management section
+  const getDrugNameForDisplay = (item) => {
+    if (item.drug) return item.drug;
+    if (Array.isArray(item.meds) && item.meds.length > 0) {
+        // Attempt to extract the primary drug name from the complex string (e.g., "Budesonide 2 puffs")
+        const drugString = item.meds[0];
+        // Simple regex to pull the first capitalized word (usually the drug name)
+        const match = drugString.match(/([A-Z][a-z]+)/); 
+        return match ? match[0] : drugString;
+    }
+    return 'Drug Name Missing';
   };
 
-  // Helper to extract clean drug name from complex string (e.g., "Salbutamol 2 puffs")
-  const getCleanDrugName = (drugString) => {
-    if (!drugString || typeof drugString !== 'string') return null;
-    // Tries to find the first word that resembles a drug name (starts with a capital, excludes punctuation)
-    const match = drugString.match(/([A-Z][a-z]+)/);
-    return match ? match[0] : null;
-  };
-
-  // --- DATA ADAPTERS (Robust access with fallbacks) ---
+  // --- DATA ADAPTERS (Using robust fallback checks) ---
   const symptoms = data.clinicalFeatures?.symptoms || data.symptoms || [];
   const signs = data.clinicalFeatures?.signs || data.signs || [];
   const diagnostics = data.diagnosticWorkup || data.specialTests || [];
   const management = data.managementRationale || data.treatment || []; 
   
-  // Determine structure based on contents
   const isManagementRationale = management.length > 0 && management.every(item => item.rationale);
   const isTreatmentProtocol = management.length > 0 && management.every(item => item.meds);
 
@@ -193,7 +191,7 @@ export default function DiseaseModal({ name, data, onClose, onDrugClick }) {
             </div>
           </div>
 
-          {/* --- MANAGEMENT SECTION --- */}
+          {/* --- MANAGEMENT SECTION (Static Text Only) --- */}
           {(management.length > 0) && (
             <div className="bg-blue-50 dark:bg-blue-900/10 p-5 rounded-2xl border border-blue-100 dark:border-blue-900/30">
               <h3 className="flex items-center gap-2 font-bold text-blue-900 dark:text-blue-100 mb-4">
@@ -203,26 +201,23 @@ export default function DiseaseModal({ name, data, onClose, onDrugClick }) {
               {(isManagementRationale || isTreatmentProtocol) && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {management.map((item, i) => {
-                    // Determine the drug name based on structure
-                    const primaryDrugName = item.drug || getCleanDrugName(item.meds?.[0]);
+                    const drugDisplay = getDrugNameForDisplay(item);
+                    const dosage = item.dose ? `${item.dose} ${item.freq || ''}` : '';
                     
                     return (
-                      // FIX: Make the entire tile clickable
+                      // Display as static card
                       <div 
                         key={i} 
-                        className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-blue-100 dark:border-blue-900/50 shadow-sm flex flex-col h-full cursor-pointer transition-shadow hover:shadow-lg hover:border-blue-500 dark:hover:border-blue-400"
-                        onClick={() => {
-                          if (primaryDrugName) handleLinkClick(primaryDrugName);
-                        }}
+                        className="bg-white dark:bg-slate-900 p-3 rounded-xl border border-blue-100 dark:border-blue-900/50 shadow-sm flex flex-col h-full"
                       >
                         {isManagementRationale && (
                           <>
                             <div className="font-bold text-slate-800 dark:text-slate-200 text-sm mb-1 flex justify-between items-start">
-                              {/* Display drug name simply, rely on tile click */}
+                              {/* Drug name as static text */}
                               <span className="text-blue-600 dark:text-blue-400 font-bold">
-                                  {item.drug} 
+                                  {drugDisplay} 
                               </span>
-                              <div className="text-xs font-semibold text-slate-700 dark:text-slate-300">{item.dose} {item.freq}</div>
+                              <div className="text-xs font-semibold text-slate-700 dark:text-slate-300">{dosage}</div>
                             </div>
                             <div className="text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400 mt-1">{item.class || 'N/A'}</div>
                             <div className="mt-auto pt-2 border-t border-slate-100 dark:border-slate-800">
@@ -239,7 +234,6 @@ export default function DiseaseModal({ name, data, onClose, onDrugClick }) {
                             <div className="flex flex-wrap gap-2">
                               {Array.isArray(item.meds) ? item.meds.map((med, idx) => (
                                 <span key={idx} className="inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-700 dark:text-slate-200">
-                                   {/* Display text, rely on tile click */}
                                    {med}
                                 </span>
                               )) : (
@@ -260,7 +254,7 @@ export default function DiseaseModal({ name, data, onClose, onDrugClick }) {
           {(dietEat.length > 0 || dietAvoid.length > 0 || lifestyle.length > 0) && (
              <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm">
                 <div className="p-4 bg-slate-50 dark:bg-slate-700/50 border-b border-slate-100 dark:border-slate-600 flex items-center gap-2">
-                  <Utensils className="h-5 w-5 text-indigo-500" />
+                  <Utensils size={20} className="h-5 w-5 text-indigo-500" />
                   <h4 className="font-bold text-slate-800 dark:text-slate-200 text-sm uppercase">Lifestyle & Diet</h4>
                 </div>
                 <div className="p-5 grid gap-4">
