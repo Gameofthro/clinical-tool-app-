@@ -44,10 +44,10 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
     // Outer fixed container: z-[200] ensures it is always on top.
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 dark:bg-slate-900/80 backdrop-blur-sm transition-opacity">
       
-      {/* Main Card Container: Uses flex-col/md:flex-row to define the main split */}
+      {/* Main Card Container: Fixed height, uses flex-col/md:flex-row */}
       <div className="bg-white dark:bg-slate-900 w-full max-w-6xl h-full sm:h-[85vh] rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden border border-slate-200 dark:border-slate-700 font-sans text-slate-900 dark:text-slate-100 transition-colors duration-200">
         
-        {/* --- LEFT PANEL: Search & List (Must be flex-col for header + scrollable list) --- */}
+        {/* --- LEFT PANEL: Search & List (flex-col and h-full for proper stacking) --- */}
         <div className="w-full md:w-1/3 bg-slate-50 dark:bg-slate-800/50 border-r border-slate-200 dark:border-slate-700 flex flex-col shrink-0 md:h-full h-full">
           
           {/* Header & Search (Fixed height: shrink-0) */}
@@ -93,7 +93,8 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
                   {drug.drug_name}
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-1 font-medium">
-                  {drug.pharmacologic_class && drug.pharmacologic_class.join(', ')}
+                  {/* Safety check before joining array */}
+                  {selectedDrug.pharmacologic_class && selectedDrug.pharmacologic_class.join(', ')}
                 </p>
               </div>
             ))}
@@ -121,7 +122,7 @@ const DrugDirectory = ({ isOpen, onClose, initialDrugName = '' }) => {
               {/* Header Title Area */}
               <div className="border-b border-slate-100 dark:border-slate-800 pb-6">
                 <div className="flex items-center gap-3 mb-3">
-                  {/* CRITICAL FIX: Ensure correct dark mode text color class syntax */}
+                  {/* CRITICAL FIX: Corrected class syntax */}
                   <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                     {selectedDrug.drug_name}
                   </h1>
