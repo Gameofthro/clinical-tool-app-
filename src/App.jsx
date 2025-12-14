@@ -15,8 +15,17 @@ import DiagnosisTool from "./components/DiagnosisTool";
 import Footer from "./components/footer";
 import LegalModal from "./components/legalModal";
 import DrugDictionaryTool from "./components/DrugDictionaryTool"; // NEW TOOL IMPORT
+import ReferencesModal from "./components/ReferencesModal"; // NEW REFERENCE MODAL (Assumed existence)
 
-import { calculatePediatricDose, calculateBMI, calculateGFR, calculateMAP, calculateMaintenanceFluid } from "./utils/calculators";
+import { 
+    calculatePediatricDose, 
+    calculateBMI, 
+    calculateGFR, 
+    calculateMAP, 
+    calculateMaintenanceFluid,
+    calculateIVFluidRate, // NEW IMPORT
+    NARROW_THERAPEUTIC_INDEX_WARNINGS // NEW IMPORT
+} from "./utils/calculators";
 
 const THEME_KEY = "clinical_theme";
 const TERMS_KEY = "clinical_terms_accepted_v1"; 
@@ -33,6 +42,7 @@ export default function ClinicalTool() {
   // NEW DRAWER STATE & ABOUT STATE
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [showAboutModal, setShowAboutModal] = useState(false);
+  const [showReferencesModal, setShowReferencesModal] = useState(false); 
 
   // Search - Data Initialization
   const [prescriptions] = useState(diseaseDatabase || {}); 
@@ -47,14 +57,14 @@ export default function ClinicalTool() {
   const [showTerms, setShowTerms] = useState(false);
   const [mandatoryTerms, setMandatoryTerms] = useState(false);
 
-  // Calculator States (FIXED: Added useState)
-  const [doseData, setDoseData] = useState({ weight: "", adultDose: "", unit: "kg" });
+  // Calculator States 
+  const [doseData, setDoseData] = useState({ weight: "", unit: "kg" }); // Removed adultDose field for compliance
   const [bmiData, setBmiData] = useState({ height: "", weight: "", wUnit: "kg", hUnit: "cm" });
   const [gfrData, setGfrData] = useState({ creatinine: "", age: "", gender: "male", unit: "mg/dl" });
   const [mapData, setMapData] = useState({ sbp: "", dbp: "" });
-  const [maintData, setMaintData] = useState({ weight: "", unit: "kg" });
+  const [maintData, setMaintData] = useState({ weight: "", unit: "kg", fluidType: '421', glucoseMgDl: '', sbp: '' }); // ADDED FLUID/CLINICAL STATES (Default to 421)
   
-  const [results, setResults] = useState({ dose: null, bmi: null, gfr: null, map: null, maintenance: null });
+  const [results, setResults] = useState({ dose: null, bmi: null, gfr: null, map: null, maintenance: null, ivFluid: null }); // ADDED ivFluid
 
   // --- INITIALIZATION ---
   useEffect(() => {
@@ -74,8 +84,8 @@ export default function ClinicalTool() {
 
   // --- MODAL / DRAWER SCROLL LOCK EFFECT ---
   useEffect(() => {
-    // Locks scrolling for DiseaseModal, LegalModal, Drawer, or AboutModal
-    const isOverlayOpen = selectedDisease || showTerms || isDrawerOpen || showAboutModal;
+    // Locks scrolling for any major overlay
+    const isOverlayOpen = selectedDisease || showTerms || isDrawerOpen || showAboutModal || showReferencesModal;
     if (isOverlayOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -84,7 +94,7 @@ export default function ClinicalTool() {
     return () => {
       document.body.style.overflow = 'unset';
     };
-  }, [selectedDisease, showTerms, isDrawerOpen, showAboutModal]); // Added showAboutModal dependency
+  }, [selectedDisease, showTerms, isDrawerOpen, showAboutModal, showReferencesModal]); 
 
   // --- CRITICAL: WATCH FOR LOGIN TO SHOW TERMS (FIXED LOGIC) ---
   useEffect(() => {
@@ -122,7 +132,6 @@ export default function ClinicalTool() {
   const handleLogin = (userData) => {
     localStorage.setItem("clinical_current_user", JSON.stringify(userData));
     setUser(userData);
-    // Terms check runs automatically via useEffect [user] dependency
   };
 
   const handleSupportClick = () => {
@@ -151,6 +160,15 @@ export default function ClinicalTool() {
   };
   const handleCloseAbout = () => {
       setShowAboutModal(false);
+  }
+
+  // --- REFERENCES HANDLERS ---
+  const handleOpenReferences = () => {
+      setShowReferencesModal(true);
+      setIsDrawerOpen(false);
+  };
+  const handleCloseReferences = () => {
+      setShowReferencesModal(false);
   }
 
 
@@ -185,8 +203,9 @@ export default function ClinicalTool() {
 
   // --- CALCULATORS (RESTORED LOGIC) ---
   const handleDoseCalc = () => {
-    if (!doseData.weight || !doseData.adultDose) return;
-    const res = calculatePediatricDose(doseData.weight, doseData.adultDose, doseData.unit);
+    if (!doseData.weight) return;
+    // FIX: Only passing weight, target dose is hardcoded in utility for safety
+    const res = calculatePediatricDose(doseData.weight, null, doseData.unit); 
     setResults(prev => ({...prev, dose: res}));
   };
   const handleBMICalc = () => {
@@ -204,11 +223,40 @@ export default function ClinicalTool() {
     const res = calculateMAP(mapData.sbp, mapData.dbp);
     setResults(prev => ({...prev, map: res}));
   };
-  const handleMaintenanceCalc = () => {
-    if (!maintData.weight) return;
-    const res = calculateMaintenanceFluid(maintData.weight, maintData.unit);
-    setResults(prev => ({...prev, maintenance: res}));
+
+  // NEW: Calculate dynamic IV Fluid rate
+  const handleIVFluidCalc = () => {
+      // 1. Calculate base maintenance rate first (4-2-1 Rule)
+      if (!maintData.weight) {
+          setResults(prev => ({...prev, ivFluid: { error: "Please enter patient weight." }}));
+          return;
+      }
+
+      const baseMaint = calculateMaintenanceFluid(maintData.weight, maintData.unit);
+      const baseRate = parseFloat(baseMaint.rate);
+      
+      let res;
+      
+      if (maintData.fluidType === '421') {
+          // If only 4-2-1 is selected, just show the maintenance output
+          res = { 
+              rate: baseMaint.rate, 
+              rationale: "Standard maintenance rate calculated by Holliday-Segar (4-2-1) formula.", 
+              risk: "" 
+          };
+      } else {
+          // 2. Pass base rate and clinical parameters to the dynamic calculator
+          res = calculateIVFluidRate({
+              baseRate: baseRate,
+              fluidType: maintData.fluidType,
+              glucoseMgDl: parseFloat(maintData.glucoseMgDl) || null,
+              sbp: parseFloat(maintData.sbp) || null
+          });
+      }
+      
+      setResults(prev => ({...prev, ivFluid: res, maintenance: baseMaint}));
   };
+
 
   const handleCardClick = (tabId) => {
     setActiveTab(tabId);
@@ -241,9 +289,13 @@ export default function ClinicalTool() {
   const toolTiles = [
     { id: "search", label: "Disease Search", description: "Search clinical guidelines and differential diagnoses.", icon: Search },
     { id: "drug-index", label: "Drug Index", description: "View drug monographs, pharmacology, and adverse events.", icon: Pill },
-    { id: "diagnosis", label: "AI Diagnosis", description: "Input symptoms for potential diagnoses.", icon: ClipboardList },
+    { id: "diagnosis", label: "Symptom Checker", description: "Input patient symptoms for potential diagnoses.", icon: ClipboardList }, // FIX: Renamed
     { id: "tools", label: "Calculators", description: "Access pediatric dosing, BMI, and GFR calculators.", icon: Calculator }
   ];
+  
+  // Helper to determine conditional inputs for Fluid Management
+  const requiresGlucose = ['D5NS', 'D10W'].includes(maintData.fluidType);
+  const requiresBP = ['NS', 'RL', 'D5W', 'D10W'].includes(maintData.fluidType); // Added D5W/D10W for safety checks
 
   // --- ABOUT US MODAL COMPONENT (Defined inline for single file) ---
   const AboutModal = ({ isOpen, onClose }) => {
@@ -288,7 +340,7 @@ export default function ClinicalTool() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans flex flex-col transition-colors duration-300">
       
       {/* --- MODALS --- */}
-      {/* Renders LegalModal if showTerms is true */}
+      {/* Renders LegalModal for both mandatory block and optional review */}
       <LegalModal 
           isOpen={showTerms} 
           onClose={() => setShowTerms(false)}
@@ -298,6 +350,10 @@ export default function ClinicalTool() {
       <AboutModal 
         isOpen={showAboutModal}
         onClose={handleCloseAbout}
+      />
+      <ReferencesModal // NEW MODAL RENDER
+        isOpen={showReferencesModal}
+        onClose={handleCloseReferences}
       />
       
       {/* --- SIDE DRAWER / NAVIGATION PANEL (z-index 50) --- */}
@@ -343,7 +399,13 @@ export default function ClinicalTool() {
                     <span>Terms & Compliance</span>
                 </button>
                 
-                {/* 4. About Us (Opens new Modal) */}
+                {/* 4. References */}
+                <button onClick={handleOpenReferences} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-300">
+                    <BookOpen size={20} />
+                    <span>References & Sources</span>
+                </button>
+
+                {/* 5. About Us (Opens new Modal) */}
                 <button onClick={handleOpenAbout} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition text-slate-700 dark:text-slate-300">
                     <Info size={20} />
                     <span>About ClinicalAssist</span>
@@ -369,9 +431,13 @@ export default function ClinicalTool() {
                 <Stethoscope className="h-5 w-5 text-white" />
               </div>
               <div>
+                {/* FIX 1: Removed 'Dr.' from header */}
                 <h1 className="text-xl font-bold text-slate-800 dark:text-white leading-none">Clinical<span className="text-blue-600 dark:text-blue-400">Assist</span></h1>
                 <div className="flex items-center gap-1 mt-0.5">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{user.name ? `Dr. ${user.name}` : "Clinician"}</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                    {/* FIX 1: Displaying user role/status without unauthorized title */}
+                    {user.name ? `${user.name} (Clinician)` : "Clinician"}
+                  </p>
                 </div>
               </div>
             </div>
@@ -484,7 +550,13 @@ export default function ClinicalTool() {
              <div className="space-y-4">
                {/* Tool Navigation Buttons */}
                <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-                 {[{id: 'pediatric', label: 'Dose', icon: Baby}, {id: 'bmi', label: 'BMI', icon: Scale}, {id: 'gfr', label: 'eGFR', icon: Activity}, {id: 'map', label: 'MAP', icon: Heart}, {id: 'maintenance', label: 'Maintenance', icon: Droplet}].map(tool => (
+                 {[
+                    {id: 'pediatric', label: 'Pediatric Dose', icon: Baby}, 
+                    {id: 'fluid', label: 'IV Fluids', icon: Droplet}, // NEW FLUID MANAGEMENT
+                    {id: 'bmi', label: 'BMI', icon: Scale}, 
+                    {id: 'gfr', label: 'eGFR', icon: Activity}, 
+                    {id: 'map', label: 'MAP', icon: Heart}, 
+                  ].map(tool => (
                    <button key={tool.id} onClick={() => setActiveTool(tool.id)} className={`flex-1 py-2.5 text-sm font-bold rounded-xl transition-all capitalize flex justify-center items-center gap-2 ${activeTool === tool.id ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'}`}>
                      <tool.icon size={14} /> {tool.label}
                    </button>
@@ -492,10 +564,16 @@ export default function ClinicalTool() {
                </div>
 
                <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl">
-                  {/* PEDIATRIC DOSE CALCULATOR UI */}
+                  
+                  {/* PEDIATRIC DOSE CALCULATOR UI (FIXED INPUTS & SAFETY) */}
                   {activeTool === 'pediatric' && (
                     <div className="space-y-4">
-                      <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Baby className="text-purple-500"/> Pediatric Calc</h2>
+                      <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Baby className="text-purple-500"/> Pediatric Dosing</h2>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                          NOTE: This calculator uses the <strong className="font-bold text-red-500">mg/kg method</strong> with a standard factor (<span className="font-semibold italic">10 mg/kg for demonstration</span>) for educational compliance. **Do not use the result for actual patient care.**
+                      </p>
+                      
+                      {/* Weight Input */}
                       <div className="flex gap-2">
                         <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-blue-500 outline-none" 
                           value={doseData.weight} onChange={e => setDoseData({...doseData, weight: e.target.value})} placeholder="Child Weight" />
@@ -505,10 +583,104 @@ export default function ClinicalTool() {
                           <option value="lbs">lbs</option>
                         </select>
                       </div>
-                      <input type="number" className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-blue-500 outline-none" 
-                        value={doseData.adultDose} onChange={e => setDoseData({...doseData, adultDose: e.target.value})} placeholder="Adult Dose (mg)" />
-                      <button onClick={handleDoseCalc} className="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition">Calculate Safe Dose</button>
-                      {results.dose && <div className="p-5 bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl text-center text-emerald-700 dark:text-emerald-400 font-black text-3xl animate-in zoom-in-95">{results.dose} <span className="text-lg">mg</span></div>}
+                      
+                      {/* REMOVED: Adult Dose input field for safety and compliance */}
+                      <button onClick={handleDoseCalc} className="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition">Calculate Estimated Dose</button>
+                      
+                      {results.dose && (
+                        <div className="p-5 bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl text-emerald-700 dark:text-emerald-400">
+                            <p className="font-black text-3xl animate-in zoom-in-95">{results.dose}</p>
+                            <p className="text-xs mt-1">Total Dose (mg)</p>
+                            <div className="mt-4 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-xs text-yellow-800 dark:text-yellow-300 font-semibold text-left">
+                                <p className="font-bold">CLINICAL ALERT (Narrow Therapeutic Index):</p>
+                                {NARROW_THERAPEUTIC_INDEX_WARNINGS.map(item => (
+                                    <p key={item.drug} className="mt-1">
+                                        <span className="font-extrabold">{item.drug}:</span> {item.caution}
+                                    </p>
+                                ))}
+                            </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  {/* IV FLUID MANAGEMENT UI (NEW) */}
+                  {activeTool === 'fluid' && (
+                    <div className="space-y-4">
+                      <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Droplet className="text-blue-500"/> IV Fluid Management</h2>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                          Calculates the base Maintenance Rate (using 4-2-1 rule) and provides clinical context for fluid selection.
+                      </p>
+                      
+                      {/* Weight Input */}
+                      <div className="flex gap-2">
+                        <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-blue-500 outline-none" 
+                          value={maintData.weight} onChange={e => setMaintData({...maintData, weight: e.target.value})} placeholder="Patient Weight (kg/lbs)" />
+                        <select className="bg-slate-100 dark:bg-slate-700 rounded-xl px-3 font-bold text-sm outline-none dark:text-white"
+                          value={maintData.unit} onChange={e => setMaintData({...maintData, unit: e.target.value})}>
+                          <option value="kg">kg</option>
+                          <option value="lbs">lbs</option>
+                        </select>
+                      </div>
+
+                      {/* Fluid Type Selection */}
+                      <select className="w-full p-4 bg-slate-100 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-blue-500 outline-none"
+                          value={maintData.fluidType} onChange={e => setMaintData({...maintData, fluidType: e.target.value, glucoseMgDl: '', sbp: ''})}>
+                          <option value="421">1. Base Rate (4-2-1 Rule only)</option>
+                          <option value="NS">2. 0.9% Normal Saline (NS)</option>
+                          <option value="RL">3. Lactated Ringer's (RL)</option>
+                          <option value="D5NS">4. D5/NS (Dextrose 5% + NS)</option>
+                          <option value="D5W">5. Dextrose 5% in Water (D5W)</option>
+                          <option value="D10W">6. Dextrose 10% (D10W)</option>
+                      </select>
+                      
+                      {/* Conditional Inputs: Glucose and BP */}
+                      {(requiresGlucose || requiresBP) && maintData.fluidType !== '421' && (
+                        <div className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-700">
+                           {requiresGlucose && (
+                               <input type="number" 
+                                    className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-red-500 outline-none" 
+                                    value={maintData.glucoseMgDl} 
+                                    onChange={e => setMaintData({...maintData, glucoseMgDl: e.target.value})} 
+                                    placeholder="Recent Blood Glucose (mg/dL)" 
+                                />
+                           )}
+                           {requiresBP && (
+                               <input type="number" 
+                                    className="w-full p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-red-500 outline-none" 
+                                    value={maintData.sbp} 
+                                    onChange={e => setMaintData({...maintData, sbp: e.target.value})} 
+                                    placeholder="Systolic BP (mmHg)" 
+                                />
+                           )}
+                        </div>
+                      )}
+
+                      <button onClick={handleIVFluidCalc} className="w-full py-4 bg-blue-600 text-white font-bold rounded-2xl shadow-lg hover:bg-blue-700 transition">Calculate Fluid Strategy</button>
+                      
+                      {results.ivFluid && (
+                        <div className="p-5 bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl text-emerald-700 dark:text-emerald-400 font-medium space-y-2">
+                            {results.ivFluid.error ? (
+                                <p className="font-black text-lg text-red-500">{results.ivFluid.error}</p>
+                            ) : (
+                                <>
+                                    <p className="text-sm font-bold uppercase tracking-wider">Maintenance Rate (4-2-1): {results.maintenance.rate} mL/hr</p>
+                                    <p className="font-black text-3xl">Strategy Rate: {results.ivFluid.rate} mL/hr</p>
+                                    
+                                    {results.ivFluid.rationale && (
+                                        <p className="text-xs pt-2 border-t border-emerald-200 dark:border-emerald-700/50">
+                                            <span className="font-bold">Rationale ({maintData.fluidType}):</span> {results.ivFluid.rationale}
+                                        </p>
+                                    )}
+                                    {results.ivFluid.risk && (
+                                        <div className="text-xs p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-lg font-semibold text-left">
+                                            <span className="font-bold">RISK WARNING:</span> {results.ivFluid.risk}
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -548,7 +720,10 @@ export default function ClinicalTool() {
                   {/* eGFR CALCULATOR UI */}
                   {activeTool === 'gfr' && (
                     <div className="space-y-4">
-                      <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Activity className="text-red-500"/> eGFR (MDRD)</h2>
+                      <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Activity className="text-red-500"/> eGFR (CKD-EPI)</h2>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">
+                          NOTE: Calculations are based on the race-free CKD-EPI (2021) approximation.
+                      </p>
                       <div className="flex gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl">
                         {['male', 'female'].map(g => (
                           <button key={g} onClick={() => setGfrData({...gfrData, gender: g})} 
@@ -593,29 +768,6 @@ export default function ClinicalTool() {
                         <div className="p-5 bg-red-50 dark:bg-red-900/30 rounded-2xl text-center animate-in zoom-in-95">
                           <p className="text-red-700 dark:text-red-400 font-black text-3xl">{results.map.value}</p>
                           <p className="text-red-600 dark:text-red-300 font-bold uppercase text-xs mt-1">{results.map.status}</p>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* MAINTENANCE FLUID CALCULATOR UI */}
-                  {activeTool === 'maintenance' && (
-                    <div className="space-y-4">
-                      <h2 className="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800 dark:text-white"><Droplet className="text-emerald-500"/> Maintenance Fluid (4-2-1)</h2>
-                      <div className="flex gap-2">
-                        <input type="number" className="flex-1 p-4 bg-slate-50 dark:bg-slate-800 rounded-2xl font-bold dark:text-white border-0 focus:ring-2 focus:ring-emerald-400 outline-none" 
-                          value={maintData.weight} onChange={e => setMaintData({...maintData, weight: e.target.value})} placeholder="Child Weight" />
-                        <select className="bg-slate-100 dark:bg-slate-700 rounded-xl px-3 font-bold text-sm outline-none dark:text-white"
-                          value={maintData.unit} onChange={e => setMaintData({...maintData, unit: e.target.value})}>
-                          <option value="kg">kg</option>
-                          <option value="lbs">lbs</option>
-                        </select>
-                      </div>
-                      <button onClick={handleMaintenanceCalc} className="w-full py-4 bg-emerald-600 text-white font-bold rounded-2xl shadow-lg hover:bg-emerald-700 transition">Calculate Maintenance</button>
-                      {results.maintenance && (
-                        <div className="p-5 bg-emerald-50 dark:bg-emerald-900/30 rounded-2xl text-center animate-in zoom-in-95">
-                          <p className="text-emerald-700 dark:text-emerald-400 font-black text-2xl">{results.maintenance.rate} <span className="text-sm">mL/hr</span></p>
-                          <p className="text-emerald-600 dark:text-emerald-300 font-bold uppercase text-xs mt-1">{results.maintenance.daily} mL/day</p>
                         </div>
                       )}
                     </div>
