@@ -436,7 +436,7 @@ export default function ClinicalTool() {
                 <div className="flex items-center gap-1 mt-0.5">
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                     {/* FIX 1: Displaying user role/status without unauthorized title */}
-                    {user.name ? `${user.name} (Clinician)` : "Clinician"}
+                    {user.name || "Clinician"} 
                   </p>
                 </div>
               </div>
