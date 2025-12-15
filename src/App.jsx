@@ -11,7 +11,7 @@ import { diseaseDatabase } from "./data/diseases";
 import DiseaseCard from "./components/DiseaseCard";
 import Auth from "./components/Auth";
 import DiseaseModal from "./components/DiseaseModal";
-import DiagnosisTool from "./components/DiagnosisTool"; 
+import DiagnosisTool from "./components/SymptomReviewTool.jsx"; 
 import Footer from "./components/footer";
 import LegalModal from "./components/legalModal";
 import DrugDictionaryTool from "./components/DrugDictionaryTool"; // NEW TOOL IMPORT

@@ -1,8 +1,52 @@
 import React from 'react';
-import { ShieldAlert, CheckCircle, X, Scale, FileText, Lock, AlertTriangle, Server, BookOpen, UserCheck, Info } from 'lucide-react';
+import { ShieldAlert, CheckCircle, X, Scale, FileText, Lock, AlertTriangle, Server, BookOpen, UserCheck, Pill, Stethoscope, Activity } from 'lucide-react';
 
 export default function LegalModal({ isOpen, onClose, onAccept, isMandatory }) {
   if (!isOpen) return null;
+
+    // Data sources consolidated for display in Section 4
+    const dataSources = [
+        { 
+            title: "Official Regulatory Data & Reporting", 
+            icon: Pill, 
+            items: [
+                "U.S. Food and Drug Administration (FDA) Official Drug Labels.",
+                "FDA MedWatch Safety Reporting Database (referenced in every drug entry)."
+            ]
+        },
+        { 
+            title: "Pharmacology & Internal Medicine", 
+            icon: Stethoscope, 
+            items: [
+                "Goodman & Gilman's The Pharmacological Basis of Therapeutics.",
+                "Dipiro's Pharmacotherapy: A Pathophysiologic Approach.",
+                "Harrison’s Principles of Internal Medicine.",
+                "Cecil Medicine."
+            ]
+        },
+        { 
+            title: "Clinical Guidelines & Diagnostic Criteria", 
+            icon: Scale, 
+            items: [
+                "ACC/AHA (American College of Cardiology/American Heart Association) Guidelines.",
+                "KDIGO (Kidney Disease: Improving Global Outcomes) Guidelines.",
+                "GINA (Global Initiative for Asthma) Guidelines.",
+                "WHO/RNTCP (Tuberculosis Treatment Guidelines).",
+                "Rome IV Criteria (Functional GI Disorders).",
+                "ICHD-3 (International Classification of Headache Disorders).",
+                "CDC/WHO Infectious Disease Protocols."
+            ]
+        },
+        { 
+            title: "Calculation Standards & Utility", 
+            icon: Activity, 
+            items: [
+                "CKD-EPI (eGFR) Formula.",
+                "Holliday-Segar Formula (IV Fluid Maintenance).",
+                "Mean Arterial Pressure (MAP) Formula."
+            ]
+        },
+    ];
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
@@ -69,7 +113,7 @@ export default function LegalModal({ isOpen, onClose, onAccept, isMandatory }) {
 
           <section>
             <h3 className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-base mb-2">
-              <Lock className="w-4 h-4 text-emerald-500"/> 3. Data Privacy & Compliance
+              <Lock className="w-4 h-4 text-emerald-500"/> 3. Data Privacy & PHI Prohibition
             </h3>
             <p>
               To ensure compliance with privacy regulations (including HIPAA and GDPR), <strong>users are strictly prohibited from entering Protected Health Information (PHI)</strong> into this application.
@@ -86,14 +130,27 @@ export default function LegalModal({ isOpen, onClose, onAccept, isMandatory }) {
             <h3 className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-base mb-2">
               <FileText className="w-4 h-4 text-orange-500"/> 4. Intellectual Property & Data Sourcing
             </h3>
-            <p>
-                <span className="font-bold">The core application (code, UI/UX, logic, and design) is the sole intellectual property of the ClinicalAssist development team.</span> This is covered by copyright.
+            <p className="mb-2">
+                <span className="font-bold">The core application (code, UI/UX, logic, and design) is the sole intellectual property of the ClinicalAssist development team.</span> All fundamental medical knowledge is synthesized and compiled from the following authorized sources:
             </p>
-            {/* CLEANED UP AESTHETIC FOR THE DISCLAIMER */}
-            <div className="mt-2 p-3 bg-slate-100 dark:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-600">
-                However, all synthesized scientific reference data (e.g., drug mechanisms, indications, adverse events) is compiled from recognized external sources (FDA, Dipiro, Harrison's, etc.). 
-                <span className="font-bold text-slate-800 dark:text-slate-200 block mt-1">This fundamental medical knowledge is the intellectual property of the original researchers and source platforms, not ClinicalAssist.</span> We provide a platform for educational synthesis and retrieval.
+            
+            {/* Start Source List Integration */}
+            <div className="grid grid-cols-1 gap-4">
+                {dataSources.map((section, index) => (
+                    <div key={index} className="space-y-2 p-4 bg-slate-100 dark:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-600">
+                        <h4 className="font-bold text-sm text-slate-800 dark:text-white flex items-center gap-2">
+                            <section.icon size={16} className="text-blue-500"/> {section.title}
+                        </h4>
+                        <ul className="list-disc pl-5 text-xs space-y-0.5 text-slate-600 dark:text-slate-300">
+                            {section.items.map((item, i) => (
+                                <li key={i}>{item}</li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
             </div>
+            {/* End Source List Integration */}
+
           </section>
 
 

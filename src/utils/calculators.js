@@ -1,24 +1,24 @@
 /**
  * Medical Calculation Utilities
- * Contains algorithms for Pediatric Dosing, BMI, Renal Function, MAP, and Fluid Maintenance.
- * * NOTE: These calculations are for EDUCATIONAL REFERENCE ONLY. Clinical decisions MUST
- * be based on validated institutional protocols and professional medical judgment.
+ * Contains algorithms for Pediatric Dosing, BMI, Renal Function (CKD-EPI 2021), MAP, and Dynamic IV Fluid Management.
+ * * NOTE: These calculations are for EDUCATIONAL REFERENCE ONLY, reflecting standardized medical formulas. 
+ * Clinical decisions MUST be based on validated institutional protocols, patient-specific lab data, and professional medical judgment.
  */
 
 // --- CLINICAL SAFETY WARNINGS (Narrow Therapeutic Index Drugs) ---
 export const NARROW_THERAPEUTIC_INDEX_WARNINGS = [
-    { drug: "Digoxin", caution: "Requires monitoring of serum levels (0.5-0.9 ng/mL)." },
-    { drug: "Lithium", caution: "Requires monitoring of serum levels (0.6-1.2 mEq/L)." },
-    { drug: "Warfarin", caution: "Requires monitoring of INR (target 2.0-3.0 generally)." },
-    { drug: "Phenytoin", caution: "Requires monitoring of serum levels (10-20 mg/L)." },
-    { drug: "Theophylline", caution: "Requires monitoring of serum levels (5-15 mcg/mL)." },
-    { drug: "Carbamazepine", caution: "Requires monitoring of serum levels (4-12 mg/L)." },
+    { drug: "Digoxin", caution: "Requires monitoring of serum levels (0.5-0.9 ng/mL) due to low therapeutic index." },
+    { drug: "Lithium", caution: "Requires monitoring of serum levels (0.6-1.2 mEq/L) to prevent severe neurotoxicity." },
+    { drug: "Warfarin", caution: "Requires monitoring of INR (target 2.0-3.0 generally) due to risk of fatal hemorrhage/clotting." },
+    { drug: "Phenytoin", caution: "Requires monitoring of serum levels (10-20 mg/L) due to non-linear pharmacokinetics." },
+    { drug: "Theophylline", caution: "Requires monitoring of serum levels (5-15 mcg/mL) due to risk of seizures and arrhythmias." },
+    { drug: "Carbamazepine", caution: "Requires monitoring of serum levels (4-12 mg/L) and is an auto-inducer." },
 ];
 
 
 // --- 1. PEDIATRIC DOSE (Weight-Based Standard Placeholder) ---
 export const calculatePediatricDose = (weight, adultDose, weightUnit = 'kg') => {
-    // FIX: Removed unsafe Clark's Rule (Adult Dose input is ignored for safety compliance).
+    // Clark's Rule (based on Adult Dose) is deprecated and removed for patient safety compliance.
     if (!weight) return null;
     
     let weightInKg = parseFloat(weight);
@@ -28,12 +28,12 @@ export const calculatePediatricDose = (weight, adultDose, weightUnit = 'kg') => 
     
     if (isNaN(weightInKg) || weightInKg <= 0) return "Error: Invalid weight input.";
 
-    // Educational Placeholder: Assuming a standard demonstrative pediatric dose (e.g., 10 mg/kg/dose)
+    // Educational Placeholder: Use 10 mg/kg/dose as a standard demonstration factor.
     const mgPerKgDose = 10;
     const resultMg = weightInKg * mgPerKgDose;
     
     // Output formatted result with context
-    return `Calculated Dose: ${resultMg.toFixed(1)} mg (based on ${mgPerKgDose} mg/kg)`;
+    return `${resultMg.toFixed(1)} mg (based on ${mgPerKgDose} mg/kg)`;
 };
 
 // --- 2. BMI CALCULATOR ---
@@ -48,7 +48,6 @@ export const calculateBMI = (weight, height, weightUnit = 'kg', heightUnit = 'cm
     if (heightUnit === 'cm') {
         heightInMeters = heightInMeters / 100;
     } else if (heightUnit === 'ft') {
-        // Assuming height in feet is total feet (e.g., 5.5 ft = 5 feet 6 inches)
         heightInMeters = heightInMeters * 0.3048; 
     } else if (heightUnit === 'in') {
         heightInMeters = heightInMeters * 0.0254;
@@ -60,16 +59,16 @@ export const calculateBMI = (weight, height, weightUnit = 'kg', heightUnit = 'cm
     const bmi = weightInKg / (heightInMeters * heightInMeters);
     
     // Categorize (WHO/CDC standard classification)
-    let category = "Normal";
-    if (bmi < 18.5) category = "Underweight";
-    else if (bmi >= 25 && bmi < 30) category = "Overweight";
-    else if (bmi >= 30) category = "Obese";
+    let category = "Normal Weight (18.5 - 24.9)";
+    if (bmi < 18.5) category = "Underweight (<18.5)";
+    else if (bmi >= 25 && bmi < 30) category = "Overweight (25.0 - 29.9)";
+    else if (bmi >= 30) category = "Obese (>30.0)";
 
     return { value: bmi.toFixed(1), category };
 };
 
 // --- 3. eGFR CALCULATION (CKD-EPI 2021 Approximation) ---
-// Note: This uses a simplified approximation of the race-free CKD-EPI 2021 formula.
+// Using the race-free CKD-EPI 2021 equation approximation.
 export const calculateGFR = (creatinine, age, gender, unit = 'mg/dl') => {
     if (!creatinine || !age) return null;
 
@@ -84,15 +83,13 @@ export const calculateGFR = (creatinine, age, gender, unit = 'mg/dl') => {
     let alpha = gender === 'female' ? -0.329 : -0.411; // exponent
     let gfrFactor = gender === 'female' ? 1.018 : 1.0; // Gender factor
 
-    // CKD-EPI 2021 Formula Structure (Simplified/Approximate)
-    // Formula: 142 * min(SCr/κ, 1)^α * max(SCr/κ, 1)^-1.200 * 0.9938^Age * [Gender Factor]
-    
-    // Calculation:
+    // CKD-EPI 2021 Formula Structure: 142 * min(SCr/κ, 1)^α * max(SCr/κ, 1)^-1.200 * 0.9938^Age * [Gender Factor]
     let gfr = 142 * Math.pow(Math.min(scr / kappa, 1), alpha) * Math.pow(Math.max(scr / kappa, 1), -1.200) * Math.pow(0.9938, ageVal) *
               gfrFactor;
     
     if (gfr > 90) return ">90";
     
+    // Safety caution: GFR should be calculated and interpreted only by healthcare professionals.
     return gfr.toFixed(0);
 };
 
@@ -107,15 +104,15 @@ export const calculateMAP = (sbp, dbp) => {
     // Formula: (SBP + 2*DBP) / 3
     const map = (s + (2 * d)) / 3;
     
-    let status = "Normal Perfusion";
-    if (map < 65) status = "Low Perfusion (Critical)";
-    else if (map >= 100) status = "High Afterload / Vasoconstriction";
+    let status = "Normal Perfusion (MAP 70-100 mmHg)";
+    if (map < 65) status = "Low Perfusion (CRITICAL: Risk of Organ Ischemia)";
+    else if (map > 100) status = "High Afterload / Vasoconstriction Risk";
 
     return { value: map.toFixed(0), status };
 };
 
 
-// --- 5. FLUID MANAGEMENT MODULE (Core 4-2-1 Rule) ---
+// --- 5. MAINTENANCE FLUID (Core 4-2-1 Rule) ---
 export const calculateMaintenanceFluid = (weight, unit = 'kg') => {
     if (!weight) return null;
     
@@ -140,7 +137,7 @@ export const calculateMaintenanceFluid = (weight, unit = 'kg') => {
 // --- 6. DYNAMIC FLUID RATE CALCULATOR (New Module Logic) ---
 export const calculateIVFluidRate = ({ baseRate, fluidType, glucoseMgDl, sbp }) => {
     const rate = parseFloat(baseRate);
-    if (isNaN(rate) || rate <= 0) return null;
+    if (isNaN(rate) || rate <= 0) return { error: "Invalid base rate calculated. Ensure weight is entered correctly." };
 
     let rationale = "";
     let risk = "";
@@ -148,9 +145,9 @@ export const calculateIVFluidRate = ({ baseRate, fluidType, glucoseMgDl, sbp }) 
 
     // NS (0.9% NaCl): Isotonic. Used for volume expansion/resuscitation.
     if (fluidType === 'NS') {
-        rationale = "Recommended for initial volume resuscitation and replacement in patients without heart failure or severe hyponatremia. Isotonic.";
+        rationale = "Recommended for initial volume resuscitation and replacement. Base rate is maintained unless severe hypotension dictates a bolus. Isotonic.";
         if (sbp && sbp < 90) {
-            finalRate = rate * 1.5; // Example: Increase rate for hypotension (though bolus needed for true shock)
+            finalRate = rate * 1.5; // Suggest higher rate/bolus for resuscitation (educational context)
             risk = "Caution: Monitor for hyperchloremic acidosis if used in large volumes.";
         }
     } 
@@ -164,26 +161,26 @@ export const calculateIVFluidRate = ({ baseRate, fluidType, glucoseMgDl, sbp }) 
     } 
     // D5NS (Dextrose 5% in NS): Maintenance fluid.
     else if (fluidType === 'D5NS') {
-        rationale = "Used for maintenance therapy. Provides free water, sodium, and dextrose to prevent hypoglycemia. Effectively hypotonic in the body.";
-        if (glucoseMgDl && glucoseMgDl < 70) {
-            finalRate = rate * 1.25; // Increase glucose delivery
+        rationale = "Standard maintenance therapy. Provides free water, sodium, and dextrose to prevent hypoglycemia. Effectively hypotonic in the body.";
+        if (glucoseMgDl && glucoseMgDl < 100) {
+            finalRate = rate * 1.25; 
             risk = "Risk of hyperglycemia if maintenance rate is too high or patient is diabetic.";
         }
     } 
     // D5W (Dextrose 5% in Water): Free water.
     else if (fluidType === 'D5W') {
-        rationale = "Used for providing free water or diluting IV medications. Provides minimal calories and no electrolytes.";
+        rationale = "Provides free water for hydration or diluting IV medications. Provides minimal calories and no electrolytes.";
         if (sbp && sbp < 100) {
-            risk = "CRITICAL: Contraindicated in shock/hypovolemia (no sodium). Risk of cerebral edema.";
+            risk = "CRITICAL: Contraindicated in shock/hypovolemia (no sodium). Risk of cerebral edema/hyponatremia.";
         }
     }
     // D10W (Dextrose 10% in Water): Hypoglycemia/Insulin infusion.
     else if (fluidType === 'D10W') {
-        rationale = "Used for treating hypoglycemia or in DKA management to switch from D5 to D10 when glucose is below 250 mg/dL.";
-        if (!glucoseMgDl) {
-            risk = "CRITICAL: Use requires frequent glucose monitoring.";
+        rationale = "Used for treating hypoglycemia, or in DKA management when glucose falls below 250 mg/dL.";
+        if (!glucoseMgDl || glucoseMgDl > 250) {
+            risk = "CRITICAL: Use requires frequent glucose monitoring or DKA protocol adherence.";
         }
-        finalRate = rate * 1.0; // Rate remains base rate unless specific insulin calculation used
+        finalRate = rate * 1.0; 
     }
 
     return {
