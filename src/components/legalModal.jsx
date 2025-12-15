@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldAlert, CheckCircle, X, Scale, FileText, Lock, AlertTriangle, Server, BookOpen, UserCheck, Pill, Stethoscope, Activity } from 'lucide-react';
+import { ShieldAlert, CheckCircle, X, Scale, FileText, Lock, AlertTriangle, Server, BookOpen, UserCheck, Pill, Stethoscope, Activity, Link } from 'lucide-react';
 
 export default function LegalModal({ isOpen, onClose, onAccept, isMandatory }) {
   if (!isOpen) return null;
@@ -150,6 +150,23 @@ export default function LegalModal({ isOpen, onClose, onAccept, isMandatory }) {
                 ))}
             </div>
             {/* End Source List Integration */}
+
+            {/* NEW: External Privacy Policy Link Note for App Submission */}
+            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800 flex items-start gap-2">
+                <Link className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
+                <p className="text-xs text-blue-800 dark:text-blue-300">
+                    The external, public-facing Privacy Policy required for app store submission is hosted here: 
+                    <a 
+                        href="https://docs.google.com/document/d/1LVEWXGiv3Nr9LT5APjZ9aU0BDxaAyexHOOn2cTJ_Kwo/edit?usp=sharing" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="font-bold underline ml-1"
+                    >
+                        [View External Policy Link]
+                    </a>
+                </p>
+            </div>
+            {/* END NEW NOTE */}
 
           </section>
 
