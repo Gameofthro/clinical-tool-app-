@@ -65,29 +65,38 @@ export default function App() {
   
   const [results, setResults] = useState({ dose: null, bmi: null, gfr: null, map: null, maintenance: null, ivFluid: null });
 
-  // --- HARDWARE BACK BUTTON LOGIC ---
+  // --- HARDWARE BACK BUTTON LOGIC (FIXED FOR EFFICIENCY) ---
   useEffect(() => {
-    const backListener = CapacitorApp.addListener('backButton', () => {
-      if (selectedDisease) {
-        setSelectedDisease(null);
-      } else if (isDrawerOpen) {
-        setIsDrawerOpen(false);
-      } else if (showAboutModal) {
-        setShowAboutModal(false);
-      } else if (showReferencesModal) {
-        setShowReferencesModal(false);
-      } else if (showTerms && !mandatoryTerms) {
-        setShowTerms(false);
-      } else if (activeTab !== "home") {
-        setActiveTab("home");
-        setQuery("");
-      } else {
-        CapacitorApp.exitApp();
-      }
-    });
+    let handler;
+    
+    const setupListener = async () => {
+      handler = await CapacitorApp.addListener('backButton', () => {
+        // Priority based on visual stack depth
+        if (selectedDisease) {
+          setSelectedDisease(null);
+        } else if (isDrawerOpen) {
+          setIsDrawerOpen(false);
+        } else if (showAboutModal) {
+          setShowAboutModal(false);
+        } else if (showReferencesModal) {
+          setShowReferencesModal(false);
+        } else if (showTerms && !mandatoryTerms) {
+          setShowTerms(false);
+        } else if (activeTab !== "home") {
+          setActiveTab("home");
+          setQuery("");
+        } else {
+          CapacitorApp.exitApp();
+        }
+      });
+    };
+
+    setupListener();
 
     return () => {
-      backListener.then(l => l.remove());
+      if (handler) {
+        handler.remove();
+      }
     };
   }, [selectedDisease, isDrawerOpen, showAboutModal, showReferencesModal, showTerms, activeTab, mandatoryTerms]);
 
@@ -203,7 +212,7 @@ export default function App() {
     return "blue";
   };
 
-  // --- CALCULATORS ---
+  // --- CALCULATORS (RETAINED EXACTLY FROM YOUR CODE) ---
   const handleDoseCalc = () => {
     if (!doseData.weight) return;
     const res = calculatePediatricDose(doseData.weight, null, doseData.unit); 
@@ -298,13 +307,11 @@ export default function App() {
     );
   };
 
-  // Reusable input class for theme consistency
   const inputClass = "w-full p-4 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white rounded-2xl font-bold border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-400";
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center transition-colors duration-300 select-none touch-manipulation overflow-x-hidden">
       
-      {/* MOBILE CONTAINER WRAPPER: Centers app and stops width spillover */}
       <div className="w-full max-w-md flex flex-col min-h-screen bg-white dark:bg-slate-900 relative shadow-2xl overflow-hidden">
         
         <LegalModal isOpen={showTerms} onClose={() => setShowTerms(false)} onAccept={handleAcceptTerms} isMandatory={mandatoryTerms} />
