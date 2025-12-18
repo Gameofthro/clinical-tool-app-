@@ -50,7 +50,6 @@ export default function App() {
   const [activeTab, setActiveTab] = useState("home"); 
   const [activeTool, setActiveTool] = useState("pediatric");
   const [darkMode, setDarkMode] = useState(false);
-  const [emailCopied, setEmailCopied] = useState(false);
   
   // Legal
   const [showTerms, setShowTerms] = useState(false);
@@ -65,38 +64,31 @@ export default function App() {
   
   const [results, setResults] = useState({ dose: null, bmi: null, gfr: null, map: null, maintenance: null, ivFluid: null });
 
-  // --- HARDWARE BACK BUTTON LOGIC (FIXED FOR EFFICIENCY) ---
+  // --- 1. CAPACITOR HARDWARE BACK BUTTON LOGIC ---
   useEffect(() => {
-    let handler;
-    
-    const setupListener = async () => {
-      handler = await CapacitorApp.addListener('backButton', () => {
-        // Priority based on visual stack depth
-        if (selectedDisease) {
-          setSelectedDisease(null);
-        } else if (isDrawerOpen) {
-          setIsDrawerOpen(false);
-        } else if (showAboutModal) {
-          setShowAboutModal(false);
-        } else if (showReferencesModal) {
-          setShowReferencesModal(false);
-        } else if (showTerms && !mandatoryTerms) {
-          setShowTerms(false);
-        } else if (activeTab !== "home") {
-          setActiveTab("home");
-          setQuery("");
-        } else {
-          CapacitorApp.exitApp();
-        }
-      });
+    const handleBackButton = async () => {
+      if (selectedDisease) {
+        setSelectedDisease(null);
+      } else if (isDrawerOpen) {
+        setIsDrawerOpen(false);
+      } else if (showAboutModal) {
+        setShowAboutModal(false);
+      } else if (showReferencesModal) {
+        setShowReferencesModal(false);
+      } else if (showTerms && !mandatoryTerms) {
+        setShowTerms(false);
+      } else if (activeTab !== "home") {
+        setActiveTab("home");
+        setQuery("");
+      } else {
+        await CapacitorApp.exitApp();
+      }
     };
 
-    setupListener();
+    const listener = CapacitorApp.addListener('backButton', handleBackButton);
 
     return () => {
-      if (handler) {
-        handler.remove();
-      }
+      listener.then(l => l.remove());
     };
   }, [selectedDisease, isDrawerOpen, showAboutModal, showReferencesModal, showTerms, activeTab, mandatoryTerms]);
 
@@ -212,7 +204,7 @@ export default function App() {
     return "blue";
   };
 
-  // --- CALCULATORS (RETAINED EXACTLY FROM YOUR CODE) ---
+  // --- CALCULATORS ---
   const handleDoseCalc = () => {
     if (!doseData.weight) return;
     const res = calculatePediatricDose(doseData.weight, null, doseData.unit); 
@@ -258,6 +250,52 @@ export default function App() {
   const handleCardClick = (tabId) => { setActiveTab(tabId); }
   const handleGoHome = () => { setActiveTab("home"); setQuery(""); }
 
+  const toolTiles = [
+    { id: "search", label: "Disease Search", description: "Search clinical guidelines and differential diagnoses.", icon: Search },
+    { id: "drug-index", label: "Drug Index", description: "View drug monographs, pharmacology, and adverse events.", icon: Pill },
+    { id: "diagnosis", label: "Symptom Checker", description: "Input patient symptoms for potential diagnoses.", icon: ClipboardList }, 
+    { id: "tools", label: "Calculators", description: "Access pediatric dosing, BMI, and GFR calculators.", icon: Calculator }
+  ];
+
+  // --- ABOUT US MODAL COMPONENT (RESTORED ORIGINAL CODE) ---
+  const AboutModal = ({ isOpen, onClose }) => {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-slate-900/80 backdrop-blur-sm transition-opacity">
+            <div className="bg-white dark:bg-slate-900 w-full max-w-lg rounded-2xl shadow-2xl p-6 relative max-h-[90vh] flex flex-col">
+                <div className="flex justify-between items-center mb-4 border-b pb-3 border-slate-200 dark:border-slate-700 shrink-0">
+                    <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
+                        <Info size={20} className="text-blue-600" /> About ClinicalAssist
+                    </h2>
+                    <button onClick={onClose} className="p-1 text-slate-500 hover:text-red-500 rounded-full transition">
+                        <X size={24} />
+                    </button>
+                </div>
+                <div className="text-slate-700 dark:text-slate-300 space-y-4 overflow-y-auto pb-4 scrollbar-hide">
+                    <p className="font-bold text-lg text-blue-700 dark:text-blue-400">Mission Driven by Clinical Experience</p>
+                    <p>
+                        This platform is the dedicated work of a team rooted in clinical pharmacy practice: <span className="font-semibold text-slate-900 dark:text-white">Dr. Vaidik Gautam (Senior Developer/Pharm.D Candidate)</span> and <span className="font-semibold text-slate-900 dark:text-white">Dr. Raxit Varun (Support/Pharm.D)</span>. We created ClinicalAssist out of a necessity felt during our own demanding clinical rotations—the need for a single, reliable, and hyper-efficient educational tool to assist rapid synthesis of medical knowledge.
+                    </p>
+                    <p>
+                        <span className="font-bold text-slate-900 dark:text-white">Our Objective:</span> To empower fellow healthcare professionals and students by reducing the time spent searching complex sources, allowing more focus on patient care and advanced learning. We put immense hard work into translating scientific data into the concise, actionable formats you see here.
+                    </p>
+                    
+                    <h3 className="font-bold text-base text-slate-800 dark:text-white pt-4 border-t border-slate-100 dark:border-slate-700">Educational Use & Data Sourcing</h3>
+                    <p className="text-sm">
+                        This tool is strictly for educational and learning purposes. All scientific data (e.g., indications, MOAs, drug events) is synthesized from <span className="font-semibold text-slate-900 dark:text-white">scientifically approved platforms</span> and definitive medical texts, including <span className="font-semibold text-slate-900 dark:text-white">FDA guidelines, Dipiro, and Harrison’s</span>.
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-2 p-3 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900/50">
+                        While the underlying scientific information remains the sole intellectual property of the original researchers and external source platforms, the proprietary application design, UI/UX, logic, and code are the <span className="font-bold text-blue-600 dark:text-blue-400">copyright of the ClinicalAssist team: Dr. Vaidik Gautam and Dr. Raxit Varun.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    );
+  };
+  // --- END ABOUT US MODAL ---
+
+  const inputClass = "w-full p-4 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white rounded-2xl font-bold border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-400";
+
   if (!user) return <Auth onLogin={handleLogin} />;
   
   if (showTerms && mandatoryTerms) {
@@ -268,56 +306,14 @@ export default function App() {
       );
   }
 
-  const toolTiles = [
-    { id: "search", label: "Disease Search", description: "Search clinical guidelines and differential diagnoses.", icon: Search },
-    { id: "drug-index", label: "Drug Index", description: "View drug monographs, pharmacology, and adverse events.", icon: Pill },
-    { id: "diagnosis", label: "Symptom Checker", description: "Input patient symptoms for potential diagnoses.", icon: ClipboardList }, 
-    { id: "tools", label: "Calculators", description: "Access pediatric dosing, BMI, and GFR calculators.", icon: Calculator }
-  ];
-  
-  const requiresGlucose = ['D5NS', 'D10W'].includes(maintData.fluidType);
-  const requiresBP = ['NS', 'RL', 'D5W', 'D10W'].includes(maintData.fluidType);
-
-  const AboutModal = ({ isOpen, onClose }) => {
-    if (!isOpen) return null;
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-slate-900/80 backdrop-blur-sm transition-opacity">
-            <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-2xl shadow-2xl p-6 relative max-h-[90vh] flex flex-col">
-                <div className="flex justify-between items-center mb-4 border-b pb-3 border-slate-200 dark:border-slate-700 shrink-0">
-                    <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800 dark:text-white">
-                        <Info size={20} className="text-blue-600" /> About ClinicalAssist
-                    </h2>
-                    <button onClick={onClose} className="p-1 text-slate-500 hover:text-red-500 rounded-full transition"><X size={24} /></button>
-                </div>
-                <div className="text-slate-700 dark:text-slate-300 space-y-4 overflow-y-auto pb-4 scrollbar-hide">
-                    <p className="font-bold text-lg text-blue-700 dark:text-blue-400">Mission Driven by Clinical Experience</p>
-                    <p>
-                        This platform is the dedicated work of a team rooted in clinical pharmacy practice: <span className="font-semibold text-slate-900 dark:text-white">Dr. Vaidik Gautam (Senior Developer/Pharm.D Candidate)</span> and <span className="font-semibold text-slate-900 dark:text-white">Dr. Raxit Varun (Support/Pharm.D)</span>. We created ClinicalAssist out of a necessity felt during our own demanding clinical rotations.
-                    </p>
-                    <p>
-                        <span className="font-bold text-slate-900 dark:text-white">Our Objective:</span> To empower fellow healthcare professionals and students by reducing the time spent searching complex sources, allowing more focus on patient care.
-                    </p>
-                    <h3 className="font-bold text-base text-slate-800 dark:text-white pt-4 border-t border-slate-100 dark:border-slate-700">Educational Use & Data Sourcing</h3>
-                    <p className="text-sm">
-                        This tool is strictly for educational and learning purposes. All scientific data is synthesized from FDA guidelines, Dipiro, and Harrison’s.
-                    </p>
-                </div>
-            </div>
-        </div>
-    );
-  };
-
-  const inputClass = "w-full p-4 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white rounded-2xl font-bold border border-slate-200 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-all placeholder:text-slate-400";
-
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col items-center transition-colors duration-300 select-none touch-manipulation overflow-x-hidden">
-      
-      <div className="w-full max-w-md flex flex-col min-h-screen bg-white dark:bg-slate-900 relative shadow-2xl overflow-hidden">
-        
+      <div className="w-full max-w-md flex flex-col min-h-screen bg-white dark:bg-slate-900 relative shadow-2xl overflow-hidden pb-safe">
         <LegalModal isOpen={showTerms} onClose={() => setShowTerms(false)} onAccept={handleAcceptTerms} isMandatory={mandatoryTerms} />
         <AboutModal isOpen={showAboutModal} onClose={() => setShowAboutModal(false)} />
         <ReferencesModal isOpen={showReferencesModal} onClose={() => setShowReferencesModal(false)} />
         
+        {/* SETTINGS DRAWER */}
         <div className={`fixed inset-0 z-50 transform transition-transform duration-300 ease-in-out ${isDrawerOpen ? 'translate-x-0' : 'translate-x-full'}`} onClick={() => setIsDrawerOpen(false)}>
           <div className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onClick={e => e.stopPropagation()}></div>
           <div className={`absolute right-0 top-0 h-full w-4/5 max-w-xs bg-white dark:bg-slate-900 shadow-2xl flex flex-col p-6 transition-transform duration-300 ease-in-out`} onClick={e => e.stopPropagation()}>
@@ -330,15 +326,16 @@ export default function App() {
                       {darkMode ? <Sun size={20} className="text-yellow-400" /> : <Moon size={20} />}
                       <span className="font-semibold">Mode</span>
                   </button>
-                  <a href={`mailto:${SUPPORT_EMAIL}`} onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-700 dark:text-slate-300"><Mail size={20} /><span className="font-semibold">Support</span></a>
-                  <button onClick={handleOpenTermsReview} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-700 dark:text-slate-300"><BookOpen size={20} /><span className="font-semibold">Compliance</span></button>
-                  <button onClick={handleOpenAbout} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-700 dark:text-slate-300"><Info size={20} /><span className="font-semibold">About</span></button>
+                  <a href={`mailto:${SUPPORT_EMAIL}`} onClick={() => setIsDrawerOpen(false)} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95 text-slate-700 dark:text-slate-300"><Mail size={20} /><span className="font-semibold">Support</span></a>
+                  <button onClick={handleOpenTermsReview} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95 text-slate-700 dark:text-slate-300"><BookOpen size={20} /><span className="font-semibold">Compliance</span></button>
+                  <button onClick={handleOpenAbout} className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition active:scale-95 text-slate-700 dark:text-slate-300"><Info size={20} /><span className="font-semibold">About</span></button>
               </nav>
               <button onClick={handleLogout} className="flex items-center gap-3 p-3 rounded-xl bg-rose-50 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 active:scale-95 transition mt-6"><LogOut size={20} /><span className="font-bold">Logout</span></button>
           </div>
         </div>
         
-        <div className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm shrink-0">
+        {/* STICKY HEADER */}
+        <div className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 shadow-sm shrink-0 pt-safe">
           <div className="w-full px-4 py-3">
             <div className="flex justify-between items-center mb-2">
               <div className="flex items-center gap-2.5">
@@ -364,6 +361,7 @@ export default function App() {
           </div>
         </div>
 
+        {/* MAIN CONTENT AREA */}
         <div className="flex-grow w-full flex flex-col h-full overflow-y-auto scrollbar-hide">
           <div className="animate-in fade-in slide-in-from-bottom-2 duration-500 flex-1 w-full pb-24 px-4 mt-2">
             
@@ -426,8 +424,8 @@ export default function App() {
                         <h2 className="text-lg font-bold flex items-center gap-2 dark:text-white"><Scale className="text-orange-500"/> BMI</h2>
                         <input type="number" className={inputClass} value={bmiData.weight} onChange={e => setBmiData({...bmiData, weight: e.target.value})} placeholder="Weight (kg)" />
                         <input type="number" className={inputClass} value={bmiData.height} onChange={e => setBmiData({...bmiData, height: e.target.value})} placeholder="Height (cm)" />
-                        <button onClick={handleBMICalc} className="w-full py-4 bg-orange-50 text-white font-bold rounded-xl active:scale-95 transition">Calculate</button>
-                        {results.bmi && <div className="p-4 bg-orange-50 rounded-xl text-center font-black text-xl text-orange-600">{results.bmi.value} ({results.bmi.category})</div>}
+                        <button onClick={handleBMICalc} className="w-full py-4 bg-orange-600 text-white font-bold rounded-xl active:scale-95 transition">Calculate</button>
+                        {results.bmi && <div className="p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl text-center font-black text-xl text-orange-600">{results.bmi.value} ({results.bmi.category})</div>}
                       </div>
                     )}
                     {activeTool === 'gfr' && (
@@ -435,19 +433,30 @@ export default function App() {
                         <h2 className="text-lg font-bold flex items-center gap-2 dark:text-white"><Activity className="text-red-500"/> eGFR</h2>
                         <input type="number" className={inputClass} value={gfrData.creatinine} onChange={e => setGfrData({...gfrData, creatinine: e.target.value})} placeholder="Creatinine (mg/dL)" />
                         <input type="number" className={inputClass} value={gfrData.age} onChange={e => setGfrData({...gfrData, age: e.target.value})} placeholder="Age" />
-                        <button onClick={handleGFRCalc} className="w-full py-4 bg-red-600 text-white font-bold rounded-xl">Calculate</button>
-                        {results.gfr && <div className="p-4 bg-red-50 rounded-xl text-center font-black text-xl text-red-600">{results.gfr} mL/min</div>}
+                        <button onClick={handleGFRCalc} className="w-full py-4 bg-red-600 text-white font-bold rounded-xl active:scale-95 transition">Calculate</button>
+                        {results.gfr && <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-xl text-center font-black text-xl text-red-600">{results.gfr} mL/min</div>}
                       </div>
                     )}
                     {activeTool === 'map' && (
                       <div className="space-y-4">
                         <h2 className="text-lg font-bold flex items-center gap-2 dark:text-white"><Heart className="text-rose-500"/> MAP</h2>
-                        <div className="flex gap-2">
-                          <input type="number" className={inputClass} value={mapData.sbp} onChange={e => setMapData({...mapData, sbp: e.target.value})} placeholder="SBP" />
-                          <input type="number" className={inputClass} value={mapData.dbp} onChange={e => setMapData({...mapData, dbp: e.target.value})} placeholder="DBP" />
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-400 uppercase ml-2">Systolic</label>
+                            <input type="number" className={inputClass} value={mapData.sbp} onChange={e => setMapData({...mapData, sbp: e.target.value})} placeholder="SBP" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-bold text-slate-400 uppercase ml-2">Diastolic</label>
+                            <input type="number" className={inputClass} value={mapData.dbp} onChange={e => setMapData({...mapData, dbp: e.target.value})} placeholder="DBP" />
+                          </div>
                         </div>
-                        <button onClick={handleMAPCalc} className="w-full py-4 bg-rose-600 text-white font-bold rounded-xl">Calculate</button>
-                        {results.map && <div className="p-4 bg-rose-50 rounded-xl text-center font-black text-xl text-rose-700">{results.map.value} mmHg</div>}
+                        <button onClick={handleMAPCalc} className="w-full py-4 bg-rose-600 text-white font-bold rounded-xl active:scale-95 shadow-lg shadow-rose-600/20 transition">Calculate</button>
+                        {results.map && (
+                          <div className="p-5 bg-rose-50 dark:bg-rose-900/20 rounded-2xl border border-rose-100 dark:border-rose-800/50 text-center animate-in zoom-in-95 duration-200">
+                             <div className="text-rose-700 dark:text-rose-300 font-black text-3xl">{results.map.value} <span className="text-sm font-bold">mmHg</span></div>
+                             <p className="text-[10px] font-bold text-rose-400 uppercase mt-1">Mean Arterial Pressure</p>
+                          </div>
+                        )}
                       </div>
                     )}
                  </div>
