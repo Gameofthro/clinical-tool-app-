@@ -1,161 +1,134 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Pill, AlertTriangle, Activity, ExternalLink, ChevronDown, ChevronUp, Droplet } from 'lucide-react';
-// Import the new Monograph Modal
+/**
+ * COMPONENT: Drug Dictionary Tool (Final Compact Version)
+ * DESCRIPTION: optimized for a 1000+ drug database using a curated initial view.
+ * UI: 2-column grid, color-coded pharmacy badges, and blue input text.
+ */
+
+import React, { useState, useMemo } from 'react';
+import { Search, Pill, AlertTriangle, ChevronRight } from 'lucide-react';
 import MonographModal from './MonographModal'; 
-// Attempt to import the external database (reverts to placeholder if broken)
-import { drugDatabase as importedDrugDatabase } from '../data/drug_database';
+// Ensure your database is exported correctly from this path
+import { drugDatabase } from '../data/drug_database';
 
-// Consolidated Curated List (Used for initial display)
-const CURATED_DRUG_NAMES = [
-    "Methotrexate", 
-    "Metoprolol", 
-    "Hydroxyurea", 
-    "Adenosine", 
-    "Imatinib", 
-    "Paracetamol"
+// 1. High-utility curated list for the initial landing screen
+const CURATED_LIST_NAMES = [
+    "Paracetamol", 
+    "Metoprolol",  
+    "Hydrocodone", 
+    "Methotrexate",
+    "Amoxicillin", 
+    "Atorvastatin"
 ];
 
-// Fallback Data Structure (Ensures display if external import fails)
-const FALLBACK_DRUGS = [
-    { id: 556, drug_name: "Methotrexate", pharmacologic_class: ["Antifolate", "DMARD"], indications_and_moa: [{indication: "Rheumatoid Arthritis", mechanism_of_action: "Inhibits DHFR (Dihydrofolate Reductase), increasing adenosine release for anti-inflammatory effect."}], common_side_effects: ["Nausea", "Stomatitis", "Fatigue"], adverse_drug_events: ["Bone Marrow Suppression", "Hepatotoxicity (Fibrosis)", "Pneumonitis"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
-    { id: 564, drug_name: "Metoprolol", pharmacologic_class: ["Beta-1 Selective Blocker", "Antihypertensive"], indications_and_moa: [{indication: "Heart Failure / Hypertension", mechanism_of_action: "Cardioselective beta-1 blockade; decreases heart rate, contractility, and oxygen demand."}], common_side_effects: ["Fatigue", "Bradycardia", "Dizziness"], adverse_drug_events: ["Heart Block", "Bronchospasm (at high doses)", "Masking of Hypoglycemia"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
-    { id: 434, drug_name: "Hydroxyurea", pharmacologic_class: ["Antimetabolite", "DNA Synthesis Inhibitor"], indications_and_moa: [{indication: "Sickle Cell Anemia", mechanism_of_action: "Inhibits ribonucleotide reductase; halts DNA synthesis. Increases fetal hemoglobin (HbF) production."}], common_side_effects: ["Nausea", "Myelosuppression", "Skin darkening"], adverse_drug_events: ["Severe Myelosuppression", "Cutaneous Vasculitic Ulcers", "Secondary Malignancy"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
-    { id: 15, drug_name: "Adenosine", pharmacologic_class: ["Antiarrhythmic", "Nucleoside"], indications_and_moa: [{indication: "Paroxysmal Supraventricular Tachycardia (PSVT)", mechanism_of_action: "Slows conduction time through the AV node; interrupts AV nodal re-entry pathways."}], common_side_effects: ["Flushing", "Chest pressure", "Dyspnea"], adverse_drug_events: ["Prolonged Asystole (Transient)", "Bronchoconstriction"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
-    { id: 445, drug_name: "Imatinib", pharmacologic_class: ["Tyrosine Kinase Inhibitor (TKI)", "BCR-ABL Inhibitor"], indications_and_moa: [{indication: "Chronic Myeloid Leukemia (CML)", mechanism_of_action: "Inhibits BCR-ABL tyrosine kinase (constitutive in Ph+ CML), c-KIT, and PDGFR."}], common_side_effects: ["Edema (Periorbital)", "Nausea", "Muscle cramps"], adverse_drug_events: ["Hepatotoxicity", "Severe Fluid Retention / Pleural Effusion", "Cardiac Dysfunction (CHF)"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" },
-    { id: 664, drug_name: "Paracetamol", pharmacologic_class: ["Analgesic", "Antipyretic"], indications_and_moa: [{indication: "Pain / Fever", mechanism_of_action: "Inhibits CNS prostaglandin synthesis (COX inhibition); acts on hypothalamic heat-regulating center."}], common_side_effects: ["Nausea (rare)", "Rash (rare)"], adverse_drug_events: ["Hepatotoxicity (Acute liver failure in overdose)", "Severe Skin Reactions (SJS/TEN)"], adr_reporting_link: "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm" }
-];
+// 2. Pharmacy-specific color coding for rapid recognition
+const getClassColor = (classes) => {
+    const cls = classes?.[0]?.toLowerCase() || "";
+    if (cls.includes("opioid")) return "bg-rose-100 text-rose-600 border-rose-200";
+    if (cls.includes("beta") || cls.includes("blocker")) return "bg-blue-100 text-blue-600 border-blue-200";
+    if (cls.includes("analgesic")) return "bg-emerald-100 text-emerald-600 border-emerald-200";
+    if (cls.includes("antifolate") || cls.includes("metabolite")) return "bg-purple-100 text-purple-600 border-purple-200";
+    return "bg-slate-100 text-slate-600 border-slate-200";
+};
 
-// Determine the primary database source for the component
-const DRUG_DATA_SOURCE = Array.isArray(importedDrugDatabase) && importedDrugDatabase.length > 0
-    ? importedDrugDatabase
-    : FALLBACK_DRUGS;
-
-
-const DrugDictionaryTool = () => {
+export default function DrugDictionaryTool() {
     const [searchTerm, setSearchTerm] = useState('');
-    // State now holds the selected drug's data ONLY for passing to the modal
-    const [selectedDrugData, setSelectedDrugData] = useState(null); 
-    const [isMonographOpen, setIsMonographOpen] = useState(false); // Modal state
-    const [initialList, setInitialList] = useState([]);
+    const [selectedDrug, setSelectedDrug] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    // Step 1: Build the curated initial list 
-    useEffect(() => {
-        // FIX: Ensure this effect only runs once for initialization
-        const lowerCuratedNames = new Set(CURATED_DRUG_NAMES.map(n => n.toLowerCase()));
-        
-        const matchedCuratedDrugs = DRUG_DATA_SOURCE.filter(d => 
-            d && d.drug_name && lowerCuratedNames.has(d.drug_name.toLowerCase())
+    // 3. Filter Logic: Show curated list when empty, full DB when searching
+    const displayDrugs = useMemo(() => {
+        if (!searchTerm) {
+            return drugDatabase.filter(d => CURATED_LIST_NAMES.includes(d.drug_name));
+        }
+        const lowerSearch = searchTerm.toLowerCase();
+        return drugDatabase.filter(d => 
+            d.drug_name.toLowerCase().includes(lowerSearch) ||
+            (Array.isArray(d.pharmacologic_class) && d.pharmacologic_class.some(c => c.toLowerCase().includes(lowerSearch)))
         );
+    }, [searchTerm]);
 
-        setInitialList(matchedCuratedDrugs);
-        
-        // We do NOT set selectedDrugData here, wait for click to open modal
-        
-    }, []); 
-
-    // Filter Logic (Show initialList unless searching)
-    const filteredDrugs = useMemo(() => {
-        // FIX: Always filter the full DRUG_DATA_SOURCE when a search term is present
-        const databaseToFilter = searchTerm ? DRUG_DATA_SOURCE : initialList;
-
-        const cleanedDatabase = databaseToFilter.filter(d => d && d.drug_name);
-
-        if (!searchTerm) return cleanedDatabase; // Return curated list if search is empty
-        
-        const lowerSearchTerm = searchTerm.toLowerCase();
-        
-        return cleanedDatabase.filter(drug => 
-            // Better search matching on Name OR Class
-            drug.drug_name.toLowerCase().includes(lowerSearchTerm) ||
-            (Array.isArray(drug.pharmacologic_class) && drug.pharmacologic_class.some(cls => cls.toLowerCase().includes(lowerSearchTerm)))
-        );
-    }, [searchTerm, initialList]);
-
-    // Handler now opens the Monograph Modal
-    const handleSelectDrug = (drug) => {
-        setSelectedDrugData(drug);
-        setIsMonographOpen(true);
-        // FIX: Ensure scroll lock is handled correctly by the App.jsx's global useEffect 
-        // (which watches isMonographOpen)
+    const handleSelect = (drug) => {
+        setSelectedDrug(drug);
+        setIsModalOpen(true);
     };
 
     return (
-        // Component rendered directly into the app tab
-        <div className="w-full h-full max-h-[85vh] flex flex-col md:flex-row overflow-hidden border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl bg-white dark:bg-slate-900">
+        <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-500">
             
-            {/* 1. RENDER MODAL (This is now external to the main view) */}
-            {/* The Modal handles its own scrolling and display logic and must be functional now */}
-            <MonographModal 
-                drug={selectedDrugData} 
-                isOpen={isMonographOpen} 
-                onClose={() => setIsMonographOpen(false)} 
-            />
-
-            {/* --- LEFT PANEL: Search & List (Scrollable) --- */}
-            <div className="w-full md:w-1/3 flex flex-col shrink-0 border-r border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 h-full">
-                
-                {/* Header & Search (Shrink-0) */}
-                <div className="p-4 shrink-0 border-b border-slate-200 dark:border-slate-700">
-                    <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2"><Pill size={20} className="text-blue-600"/> Drug Index</h2>
-                    <div className="relative">
-                        <Search className="absolute left-3 top-2.5 text-slate-400" size={18} />
-                        <input
-                            type="text"
-                            placeholder={"Search generics..."}
-                            className="w-full pl-10 pr-4 py-2 rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 focus:ring-2 focus:ring-blue-500 dark:text-white outline-none transition-all"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
+            {/* SEARCH SECTION */}
+            <div className="sticky top-0 z-10 bg-slate-50/90 dark:bg-slate-950/90 backdrop-blur-md pb-1">
+                <div className="relative group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={20} />
+                    <input
+                        type="text"
+                        placeholder="Search 1,000+ Generics..."
+                        className="w-full pl-12 pr-4 py-4 rounded-[2rem] bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 focus:border-blue-500 outline-none transition-all shadow-sm text-blue-600 font-bold"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                 </div>
+                {!searchTerm && (
+                    <p className="text-[10px] font-black text-slate-400 uppercase mt-3 ml-4 tracking-[0.2em]">
+                        Most Common Classes
+                    </p>
+                )}
+            </div>
 
-                {/* Drug List (Scrollable List Area) */}
-                <div className="flex-1 overflow-y-auto">
-                    {DRUG_DATA_SOURCE.length === 0 && (
-                         <div className="p-4 bg-red-100 text-red-800 text-sm font-bold border-l-4 border-red-500">
-                            CRITICAL ERROR: Database is empty.
-                         </div>
-                    )}
-                    
-                    {filteredDrugs.length > 0 ? (
-                        filteredDrugs.map(drug => (
-                            <div
-                                key={drug.id}
-                                // FIX: Click handler sets modal data and opens modal
-                                onClick={() => handleSelectDrug(drug)} 
-                                className={`p-4 border-b border-slate-100 dark:border-slate-700 cursor-pointer transition-all 
-                                    ${selectedDrugData?.id === drug.id 
-                                        ? 'bg-blue-100/50 dark:bg-blue-900/30 border-l-4 border-l-blue-600 dark:border-l-blue-400 pl-5' 
-                                        : 'hover:bg-slate-100 dark:hover:bg-slate-700/50 border-l-4 border-l-transparent pl-4' // Removed hover:pl-5
-                                    }`}
-                            >
-                                <h3 className={`font-bold text-base mb-0.5 ${selectedDrugData?.id === drug.id ? 'text-blue-700 dark:text-blue-300' : 'text-slate-800 dark:text-slate-200'}`}>
+            {/* COMPACT DRUG GRID */}
+            <div className="grid grid-cols-2 gap-3 pb-2">
+                {displayDrugs.length > 0 ? (
+                    displayDrugs.map(drug => (
+                        <button
+                            key={drug.id}
+                            onClick={() => handleSelect(drug)}
+                            className="group flex flex-col items-start p-4 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md active:scale-95 transition-all text-left relative overflow-hidden h-36"
+                        >
+                            <div className={`px-2 py-0.5 rounded-lg text-[8px] font-black uppercase border mb-2 ${getClassColor(drug.pharmacologic_class)}`}>
+                                {drug.pharmacologic_class?.[0] || "General"}
+                            </div>
+
+                            <div className="flex justify-between items-start w-full mb-1">
+                                <h3 className="text-sm font-black text-slate-800 dark:text-white leading-tight line-clamp-1 uppercase">
                                     {drug.drug_name}
                                 </h3>
-                                <p className="text-xs text-slate-500 dark:text-slate-400 truncate font-medium">
-                                    {drug.pharmacologic_class && Array.isArray(drug.pharmacologic_class) ? drug.pharmacologic_class.join(', ') : 'N/A'}
-                                </p>
+                                <ChevronRight size={14} className="text-slate-300 shrink-0" />
                             </div>
-                        ))
-                    ) : (
-                        <div className="p-8 text-center text-slate-400 italic">No drugs found matching "{searchTerm}"</div>
-                    )}
-                </div>
+
+                            <p className="text-[9px] text-slate-500 dark:text-slate-400 font-medium line-clamp-2 italic leading-tight mb-2">
+                                {drug.indications_and_moa?.[0]?.mechanism_of_action}
+                            </p>
+
+                            {/* High Alert / Boxed Warning Detection */}
+                            {drug.adverse_drug_events?.some(e => e.includes("Boxed Warning")) && (
+                                <div className="mt-auto flex items-center gap-1 text-[8px] font-black text-rose-500 uppercase tracking-tighter">
+                                    <AlertTriangle size={10} /> High Alert Item
+                                </div>
+                            )}
+                        </button>
+                    ))
+                ) : (
+                    <div className="col-span-2 py-10 text-center">
+                        <Pill size={40} className="mx-auto text-slate-200 mb-2" />
+                        <p className="text-slate-400 font-bold italic uppercase tracking-widest text-[10px]">Generic Not Found</p>
+                    </div>
+                )}
             </div>
 
-            {/* --- RIGHT PANEL: PREVIEW/INSTRUCTIONS --- */}
-            {/* This pane is now only used for instructions since the monograph is in the modal. */}
-            <div className="w-full md:w-2/3 bg-white dark:bg-slate-900 flex flex-col relative flex-1">
-                <div className="flex flex-col items-center justify-center h-full text-slate-400 dark:text-slate-600 p-8 text-center">
-                    <Pill size={80} className="mb-6 opacity-10" />
-                    <p className="text-xl font-bold text-slate-500 dark:text-slate-400">Drug Monographs</p>
-                    <p className="text-sm mt-2 max-w-xs font-medium opacity-70">
-                        Click any drug on the left to open the detailed, scrollable monograph and clinical safety profile in a new window.
-                    </p>
-                </div>
+            {/* CLEAN AD SPACE - No text included */}
+            <div className="mt-auto w-full h-24 bg-slate-100/50 dark:bg-slate-800/40 rounded-[2.5rem] border-2 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+                {/* Your Static Banner Ad Image goes here */}
             </div>
+
+            {/* Educational Footer */}
+            <p className="text-[9px] text-slate-400 text-center uppercase tracking-tighter pb-4">
+                Clinical Index • Updated Quarterly
+            </p>
+
+            <MonographModal 
+                drug={selectedDrug} 
+                isOpen={isModalOpen} 
+                onClose={() => setIsModalOpen(false)} 
+            />
         </div>
     );
-};
-
-export default DrugDictionaryTool;
+}

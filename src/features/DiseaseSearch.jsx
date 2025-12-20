@@ -1,122 +1,67 @@
-/**
- * FEATURE: Disease Search & Clinical Index
- * * DESCRIPTION:
- * This component serves as the central engine for filtering and displaying 
- * clinical guidelines from the disease database. It is optimized for speed 
- * using React's useMemo hook to prevent UI lag during real-time typing.
- * * FUNCTIONS:
- * 1. filteredResults: Computes matches based on Name, Symptoms, and Category.
- * 2. getCategoryColor: Maps clinical categories to specific UI themes.
- * 3. Empty State Rendering: Provides feedback when no matches are found.
- */
-
-import React, { useMemo } from "react";
-import { BookOpen, Search, AlertCircle } from "lucide-react";
-import DiseaseCard from "../components/DiseaseCard";
+import React, { useMemo, useState } from "react";
+import { Search, AlertCircle, ChevronRight, LayoutGrid } from "lucide-react";
 import { diseaseDatabase } from "../data/diseases";
 
+const CATEGORIES = ["All", "Respiratory", "Cardiology", "Gastroenterology", "Neurology", "Infectious"];
+
 export default function DiseaseSearch({ query, onSelectDisease }) {
-  
-  /**
-   * FILTERING LOGIC
-   * Executed every time the 'query' prop changes.
-   * Searches across three data points: disease name, symptom array, and category.
-   */
+  const [selectedCategory, setSelectedCategory] = useState("All");
+
   const filteredResults = useMemo(() => {
-    if (!query) return [];
     const lowerQ = query.toLowerCase().trim();
-    
-    // Convert object database to array and filter
     return Object.entries(diseaseDatabase || {})
       .filter(([key, data]) => {
-        const nameMatch = key.toLowerCase().includes(lowerQ);
-        const symptomMatch = data.clinicalFeatures?.symptoms?.some(s => 
-          s.toLowerCase().includes(lowerQ)
-        ) || false; 
-        const categoryMatch = data.category?.toLowerCase().includes(lowerQ);
-
-        return nameMatch || symptomMatch || categoryMatch;
+        const matchesQuery = !query || key.toLowerCase().includes(lowerQ) || data.category?.toLowerCase().includes(lowerQ);
+        const matchesCategory = selectedCategory === "All" || data.category === selectedCategory;
+        return matchesQuery && matchesCategory;
       })
-      .map(([key, data]) => ({ name: key, ...data }));
-  }, [query]);
-
-  /**
-   * UI THEMING
-   * Returns a Tailwind color string based on the medical specialty.
-   */
-  const getCategoryColor = (category) => {
-    const map = {
-      "Respiratory": "blue",
-      "Cardiology": "red",
-      "Gastroenterology": "orange",
-      "Neurology": "purple",
-      "Endocrinology": "emerald",
-      "Infectious": "amber",
-      "Hematology": "rose"
-    };
-    return map[category] || "blue"; // Fallback to blue
-  };
+      .map(([key, data]) => ({ name: key, ...data }))
+      .slice(0, 15);
+  }, [query, selectedCategory]);
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full pb-10">
-      
-      {/* 1. RESULTS GRID */}
-      {filteredResults.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {filteredResults.map((disease) => (
-            <DiseaseCard 
-              key={`disease-${disease.name}`} 
-              name={disease.name} 
-              data={{
-                ...disease,
-                color: getCategoryColor(disease.category),
-                // Pathophysiology serves as the 'firstLine' summary on the card
-                firstLine: disease.pathophysiology 
-              }}
-              onClick={() => onSelectDisease(disease)} 
-            />
-          ))}
-        </div>
-      ) : (
-        
-        /* 2. EMPTY STATE / EDUCATIONAL ONBOARDING */
-        <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-          <div className="w-24 h-24 bg-slate-100 dark:bg-slate-800/50 rounded-full flex items-center justify-center mb-6 border-4 border-white dark:border-slate-900 shadow-inner">
-            <Search className="h-10 w-10 text-slate-300 dark:text-slate-600" />
-          </div>
-          
-          <h3 className="text-xl font-black text-slate-800 dark:text-white mb-2">
-            {query ? "No Clinical Matches" : "Clinical Database Ready"}
-          </h3>
-          
-          <p className="text-sm text-slate-500 dark:text-slate-400 max-w-xs leading-relaxed font-medium">
-            {query 
-              ? `We couldn't find protocols for "${query}". Try searching for specific symptoms like "Dyspnea" or categories like "Cardiology".` 
-              : "Search the validated clinical index for pathophysiology, symptoms, and evidence-based treatment protocols."}
-          </p>
+    <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-500">
+      {/* Specialty Filter Pill Bar */}
+      <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar shrink-0">
+        {CATEGORIES.map(cat => (
+          <button key={cat} onClick={() => setSelectedCategory(cat)}
+            className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border shrink-0
+            ${selectedCategory === cat ? 'bg-blue-600 text-white' : 'bg-white dark:bg-slate-900 text-slate-400'}`}>
+            {cat}
+          </button>
+        ))}
+      </div>
 
-          {/* QUICK SEARCH SUGGESTIONS (Psychological Prompting) */}
-          {!query && (
-            <div className="mt-10 w-full max-w-sm">
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Commonly Referenced</p>
-              <div className="grid grid-cols-2 gap-3">
-                {['Asthma', 'Hypertension', 'Diabetes', 'Pneumonia'].map(item => (
-                  <div key={item} className="p-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                    <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{item}</span>
+      {/* Protocol Results List */}
+      <div className="flex-1 overflow-y-auto no-scrollbar pr-1 max-h-[50vh]">
+        {filteredResults.length > 0 ? (
+          <div className="grid grid-cols-1 gap-3">
+            {filteredResults.map((disease) => (
+              <button key={disease.name} onClick={() => onSelectDisease(disease)}
+                className="w-full text-left bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all group flex items-center justify-between relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600/10 group-hover:bg-blue-600 transition-colors"></div>
+                <div className="pl-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-black text-sm text-slate-800 dark:text-white uppercase tracking-tight">{disease.name}</h3>
+                    <span className="text-[8px] font-black px-2 py-0.5 rounded-lg uppercase bg-blue-50 text-blue-600 border border-blue-100">
+                      {disease.category}
+                    </span>
                   </div>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* LEGAL DISCLAIMER REMINDER */}
-          <div className="mt-12 flex items-center gap-2 text-slate-400 dark:text-slate-600">
-            <AlertCircle size={14} />
-            <span className="text-[10px] font-bold uppercase tracking-tight">Educational Reference Only</span>
+                </div>
+                <ChevronRight className="text-slate-300 group-hover:text-blue-500 transition-colors" size={18} />
+              </button>
+            ))}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="flex flex-col items-center justify-center py-12 opacity-40">
+            <Search size={48} className="text-slate-300 mb-2" />
+            <p className="text-[10px] font-black uppercase">No protocols found</p>
+          </div>
+        )}
+      </div>
+
+      {/* Ad Space Placement */}
+      <div className="mt-auto w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-[2rem] border-2 border-dashed border-slate-200 flex items-center justify-center shrink-0"></div>
     </div>
   );
 }
