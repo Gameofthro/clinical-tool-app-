@@ -6,7 +6,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Search, Pill, AlertTriangle, ChevronRight } from 'lucide-react';
-import MonographModal from './MonographModal'; 
+import MonographModal from '../components/MonographModal'; 
 // Ensure your database is exported correctly from this path
 import { drugDatabase } from '../data/drug_database';
 
