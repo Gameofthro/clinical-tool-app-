@@ -7,11 +7,15 @@
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
-  background-color: #f8fafc; /* Light slate background */
+  background-color: #f8fafc;
+
+  /* SAFE AREA VARIABLES */
+  --sat: env(safe-area-inset-top);
+  --sab: env(safe-area-inset-bottom);
 }
 
 .dark body {
-  background-color: #020617; /* Dark slate background */
+  background-color: #020617;
   color: rgba(255, 255, 255, 0.87);
 }
 
@@ -19,4 +23,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  
+  /* APPLY SAFE AREA PADDING */
+  padding-top: var(--sat);
+  padding-bottom: var(--sab);
 }
