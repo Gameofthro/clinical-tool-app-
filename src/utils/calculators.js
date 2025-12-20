@@ -19,7 +19,7 @@ export const calculatePediatricDose = (weight, age, unit = 'kg') => {
     if (unit === 'lbs') w /= 2.205;
 
     // Logic: Adjusts factor if patient is a neonate (<28 days / approx 1 month)
-    const isNeonatal = !isNaN(a) && a <= 0.08; // approx 1 month in years
+    const isNeonatal = !isNaN(a) && a <= 0.08; 
     const standardFactor = isNeonatal ? 5 : 10; 
     const dose = w * standardFactor;
     
@@ -129,7 +129,7 @@ export const calculateIVFluidRate = ({ baseRate, fluidType, glucoseMgDl, sbp }) 
     if (['NS', 'RL'].includes(fluidType)) {
         if (s && s < 90) {
             finalRate = rate * 1.5;
-            rationale.push("Hypotension detected (SBP < 90). Rate increased for volume resuscitation.");
+            rationale.push("Hypotension detected (SBP < 90). Rate increased for resuscitation.");
             risk.push("Monitor for fluid overload (lung crackles, edema).");
             pearls.push("Isotonic crystalloids are first-line for shock.");
         } else { rationale.push("Isotonic maintenance for euvolemic patient."); }

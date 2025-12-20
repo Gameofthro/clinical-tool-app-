@@ -10,7 +10,7 @@ export default function CalculatorFeature() {
 
   const [calcState, setCalcState] = useState({
     weight: "", age: "", height: "", creatinine: "", sbp: "", dbp: "", glucose: "",
-    unit: "kg", hUnit: "cm", wUnit: "kg", gender: "male", fluidType: "421"
+    unit: "kg", hUnit: "cm", gender: "male", fluidType: "421"
   });
 
   const update = (key, val) => setCalcState(prev => ({ ...prev, [key]: val }));
@@ -30,18 +30,17 @@ export default function CalculatorFeature() {
   };
 
   const requiresBP = ['NS', 'RL'].includes(calcState.fluidType);
-  const requiresGlucose = ['D5NS'].includes(calcState.fluidType);
 
   return (
     <div className="space-y-4 pb-10">
-      {/* 1. COMPACT NAVIGATION STRIP */}
-      <div className="grid grid-cols-5 gap-1 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-2xl shadow-inner">
+      {/* 1. COMPACT 5-COLUMN NAVIGATION */}
+      <div className="grid grid-cols-5 gap-1 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-2xl shadow-inner shrink-0">
         {[
-          { id: 'pediatric', icon: Baby, label: 'Dosing', color: 'bg-purple-600' },
-          { id: 'fluid', icon: Droplet, label: 'Fluids', color: 'bg-blue-600' },
+          { id: 'pediatric', icon: Baby, label: 'Dose', color: 'bg-purple-600' },
+          { id: 'fluid', icon: Droplet, label: 'Fluid', color: 'bg-blue-600' },
           { id: 'gfr', icon: Activity, label: 'Renal', color: 'bg-red-600' },
           { id: 'bmi', icon: Scale, label: 'BMI', color: 'bg-orange-600' },
-          { id: 'map', icon: Heart, label: 'Vitals', color: 'bg-rose-600' },
+          { id: 'map', icon: Heart, label: 'MAP', color: 'bg-rose-600' },
         ].map(t => (
           <button key={t.id} onClick={() => { setActiveTool(t.id); setResults({}); }}
             className={`flex flex-col items-center justify-center py-2 rounded-xl transition-all
@@ -57,7 +56,6 @@ export default function CalculatorFeature() {
 
         <div className="space-y-4 mt-4">
           <div className="grid grid-cols-1 gap-3">
-            {/* SHARED INPUTS */}
             {['pediatric', 'bmi', 'fluid'].includes(activeTool) && (
               <div className="flex gap-2">
                 <Input field="Weight" value={calcState.weight} onChange={v => update('weight', v)} />
@@ -81,17 +79,16 @@ export default function CalculatorFeature() {
                 <Input field="Creatinine" value={calcState.creatinine} onChange={v => update('creatinine', v)} />
                 <div className="grid grid-cols-2 gap-2 p-1 bg-slate-50 dark:bg-slate-800 rounded-2xl">
                   {['male', 'female'].map(g => (
-                    <button key={g} onClick={() => update('gender', g)} className={`py-2 rounded-xl font-bold capitalize text-xs ${calcState.gender === g ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-400'}`}>{g}</button>
+                    <button key={g} onClick={() => update('gender', g)} className={`py-2 rounded-xl font-black capitalize text-[10px] ${calcState.gender === g ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-400'}`}>{g}</button>
                   ))}
                 </div>
               </>
             )}
 
-            {/* MAP TOOL: FIXED GRID TO PREVENT OVERFLOW */}
             {(activeTool === 'map' || (activeTool === 'fluid' && requiresBP)) && (
               <div className="p-4 bg-blue-50 dark:bg-blue-900/10 rounded-2xl border border-blue-100">
-                <p className="text-[9px] font-black text-blue-600 uppercase mb-2 flex items-center gap-1"><Stethoscope size={12}/> Hemodynamics</p>
-                <div className="grid grid-cols-2 gap-2">
+                <p className="text-[9px] font-black text-blue-600 uppercase mb-2 flex items-center gap-1"><Stethoscope size={12}/> Vitals Input</p>
+                <div className="grid grid-cols-2 gap-2 w-full">
                   <Input field="Systolic" value={calcState.sbp} onChange={v => update('sbp', v)} />
                   <Input field="Diastolic" value={calcState.dbp} onChange={v => update('dbp', v)} />
                 </div>
@@ -101,15 +98,15 @@ export default function CalculatorFeature() {
             {activeTool === 'fluid' && (
               <div className="space-y-3">
                 <select className="w-full p-3 bg-slate-100 dark:bg-slate-800 rounded-xl font-bold text-xs" value={calcState.fluidType} onChange={e => update('fluidType', e.target.value)}>
-                  <option value="421">4-2-1 Maintenance</option>
+                  <option value="421">Maintenance Only</option>
                   <option value="NS">Normal Saline (NS)</option>
                   <option value="RL">Lactated Ringer's (RL)</option>
                   <option value="D5NS">D5 / 0.9% NS</option>
                 </select>
-                {requiresGlucose && (
+                {calcState.fluidType === 'D5NS' && (
                    <div className="p-4 bg-orange-50 dark:bg-orange-900/10 rounded-2xl border border-orange-100">
-                     <p className="text-[9px] font-black text-orange-600 uppercase mb-2">Glucose Status</p>
-                     <Input field="Glucose (mg/dL)" value={calcState.glucose} onChange={v => update('glucose', v)} />
+                     <p className="text-[9px] font-black text-orange-600 uppercase mb-2">Glycemic Status</p>
+                     <Input field="Blood Glucose" value={calcState.glucose} onChange={v => update('glucose', v)} />
                    </div>
                 )}
               </div>
@@ -118,36 +115,28 @@ export default function CalculatorFeature() {
 
           <CalcButton onClick={handleCalculate} label="Calculate Strategy" color="bg-blue-600" />
 
-          {/* RESULTS */}
+          {/* RESULTS AREA */}
           <div className="mt-4">
-            {activeTool === 'pediatric' && results.dose && (
-              <ResultBox value={`${results.dose.value} mg`} label="Dose" pearl={results.dose.pearl} alert={Logic.NARROW_THERAPEUTIC_INDEX_WARNINGS} />
-            )}
-            {activeTool === 'bmi' && results.bmi && (
-              <ResultBox value={results.bmi.value} label={results.bmi.category} pearl={results.bmi.pearl}>
-                <p className={`text-[9px] font-black mt-1 uppercase ${results.bmi.color}`}>Risk: {results.bmi.risk}</p>
-              </ResultBox>
-            )}
-            {activeTool === 'gfr' && results.gfr && (
-              <ResultBox value={results.gfr.value} label={results.gfr.stage} pearl={results.gfr.pearl}>
-                <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100">
-                  <p className="text-[9px] font-black text-red-600 uppercase">Adjustment:</p>
-                  <p className="text-[10px] font-bold text-red-800 dark:text-red-300">{results.gfr.adjustment}</p>
-                </div>
-              </ResultBox>
-            )}
-            {activeTool === 'map' && results.map && (
-              <ResultBox value={`${results.map.value} mmHg`} label={results.map.status} pearl={results.map.pearl} />
-            )}
-            {activeTool === 'fluid' && results.fluid && (
-              <ResultBox value={`${results.fluid.rate} mL/hr`} label={`Rate (${calcState.fluidType})`} pearl={results.fluid.basePearl}>
-                <div className="mt-2 border-t pt-2">
-                  <p className="text-[10px] text-blue-600 font-bold">Rationale: <span className="text-slate-500 font-medium">{results.fluid.rationale}</span></p>
-                </div>
+            {results[activeTool] && (
+              <ResultBox value={results[activeTool].value || results[activeTool].rate} label={results[activeTool].category || results[activeTool].status || "Result"} pearl={results[activeTool].pearl || results[activeTool].basePearl}>
+                {results[activeTool].adjustment && (
+                  <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100">
+                    <p className="text-[9px] font-black text-red-600 uppercase">Adjustment Required:</p>
+                    <p className="text-[10px] font-bold text-red-800 dark:text-red-300">{results[activeTool].adjustment}</p>
+                  </div>
+                )}
+                {results[activeTool].risk && <p className="mt-2 text-[9px] bg-red-50 text-red-700 p-2 rounded-lg font-bold">⚠️ {results[activeTool].risk}</p>}
+                {activeTool === 'pediatric' && <div className="mt-3 grid gap-1">
+                  {Logic.NARROW_THERAPEUTIC_INDEX_WARNINGS.map(w => <div key={w.drug} className="text-[9px] p-2 bg-slate-100 dark:bg-slate-800 rounded-lg text-slate-600"><b>{w.drug}:</b> {w.caution}</div>)}
+                </div>}
               </ResultBox>
             )}
           </div>
         </div>
+
+        <p className="mt-6 text-[9px] text-slate-400 text-center italic border-t pt-4">
+          For educational purposes only. Reconsult with a physician before implementation.
+        </p>
       </div>
     </div>
   );
@@ -162,30 +151,30 @@ const HeaderSection = ({ title }) => (
 
 const Input = ({ field, value, onChange }) => (
   <input type="number" placeholder={field} value={value} onChange={e => onChange(e.target.value)}
-    className="w-full min-w-0 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold text-sm outline-none border border-transparent focus:border-blue-500/20 shadow-inner" />
+    className="w-full min-w-0 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold text-sm outline-none border border-transparent focus:border-blue-500 shadow-inner text-blue-600 dark:text-blue-400 placeholder:text-slate-400" />
 );
 
 const UnitSelect = ({ value, onChange, options }) => (
   <select value={value} onChange={e => onChange(e.target.value)}
-    className="bg-slate-100 dark:bg-slate-800 rounded-xl px-2 font-black text-[10px] uppercase outline-none shrink-0">
+    className="bg-slate-100 dark:bg-slate-800 rounded-xl px-2 font-black text-[10px] uppercase outline-none text-slate-500 shrink-0">
     {options.map(o => <option key={o} value={o}>{o}</option>)}
   </select>
 );
 
 const CalcButton = ({ onClick, label, color }) => (
-  <button onClick={onClick} className={`w-full py-3 ${color} text-white font-black rounded-xl shadow-lg active:scale-95 transition-all uppercase tracking-widest text-[10px]`}>
+  <button onClick={onClick} className={`w-full py-3.5 ${color} text-white font-black rounded-xl shadow-lg active:scale-95 transition-all uppercase tracking-widest text-[10px]`}>
     {label} <ChevronRight className="inline" size={14} />
   </button>
 );
 
-const ResultBox = ({ value, label, pearl, alert, children }) => (
+const ResultBox = ({ value, label, pearl, children }) => (
   <div className="p-5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 animate-in zoom-in-95">
-    <p className="text-3xl font-black text-blue-600">{value}</p>
+    <p className="text-4xl font-black text-blue-600">{value}</p>
     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</p>
     {pearl && (
-      <div className="mt-3 flex gap-2 items-start text-[10px] text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 p-2 rounded-lg border">
-        <Info size={14} className="text-blue-500 shrink-0" />
-        <p><b>Pearl:</b> {pearl}</p>
+      <div className="mt-4 flex gap-2 items-start text-[10px] bg-amber-50 dark:bg-amber-900/30 p-2 rounded-lg border border-amber-200 dark:border-amber-800/50 shadow-sm">
+        <Info size={14} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+        <p className="text-amber-900 dark:text-amber-200 font-medium leading-tight"><b>Pearl:</b> {pearl}</p>
       </div>
     )}
     {children}
