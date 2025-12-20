@@ -1,4 +1,3 @@
-/* src/index.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,39 +13,40 @@
   --sab: env(safe-area-inset-bottom, 0px);
 }
 
-/* MOBILE OPTIMIZATION:
-   Ensures the app behaves like a native mobile tool 
-*/
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  overflow-x: hidden;
-  -webkit-tap-highlight-color: transparent; /* Removes blue box on tap */
-  -webkit-text-size-adjust: 100%;           /* Prevents font scaling bugs */
-  background-color: #f8fafc;                /* Light Mode Bg */
+  overflow: hidden; /* Prevents double scrolling */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+  background-color: #f8fafc;
 }
 
 .dark body {
-  background-color: #020617;                /* Dark Mode Bg */
+  background-color: #020617;
 }
 
-/* THE EDGE-TO-EDGE FIX:
-   We apply the safe area padding to the #root container.
-   This pushes the Header below the clock/status bar.
-*/
 #root {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  height: 100%; /* Use 100% of the viewport height */
   padding-top: var(--sat);
   padding-bottom: var(--sab);
-  user-select: none;         /* Prevent accidental text selection (Mobile feel) */
-  touch-action: manipulation; /* Faster taps */
+  user-select: none;
+  touch-action: manipulation;
 }
 
-/* Ensure images and icons don't distort */
+/* Scrollbar hiding for mobile clean look */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 img, svg {
   display: block;
   max-width: 100%;
