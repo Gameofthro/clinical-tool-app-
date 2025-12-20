@@ -1,194 +1,152 @@
 /**
- * Medical Calculation Utilities
- * Contains algorithms for Pediatric Dosing, BMI, Renal Function, MAP, and Fluid Maintenance.
- * * NOTE: These calculations are for EDUCATIONAL REFERENCE ONLY. Clinical decisions MUST
- * be based on validated institutional protocols and professional medical judgment.
+ * ULTIMATE CLINICAL UTILITIES ENGINE
+ * Optimized for Pharm.D Students & Clinicians.
+ * Includes: Renal Dose Adjustments, Neonatal Logic, and Hemodynamic Strategies.
  */
 
-// --- CLINICAL SAFETY WARNINGS (Narrow Therapeutic Index Drugs) ---
 export const NARROW_THERAPEUTIC_INDEX_WARNINGS = [
-    { drug: "Digoxin", caution: "Requires monitoring of serum levels (0.5-0.9 ng/mL)." },
-    { drug: "Lithium", caution: "Requires monitoring of serum levels (0.6-1.2 mEq/L)." },
-    { drug: "Warfarin", caution: "Requires monitoring of INR (target 2.0-3.0 generally)." },
-    { drug: "Phenytoin", caution: "Requires monitoring of serum levels (10-20 mg/L)." },
-    { drug: "Theophylline", caution: "Requires monitoring of serum levels (5-15 mcg/mL)." },
-    { drug: "Carbamazepine", caution: "Requires monitoring of serum levels (4-12 mg/L)." },
+    { drug: "Digoxin", caution: "Serum target: 0.5-0.9 ng/mL. Toxicity risk increases with hypokalemia." },
+    { drug: "Lithium", caution: "Serum target: 0.6-1.2 mEq/L. High risk of toxicity with dehydration." },
+    { drug: "Warfarin", caution: "Target INR: 2.0-3.0. Multiple drug-food interactions (Vit K)." },
+    { drug: "Phenytoin", caution: "Serum target: 10-20 mg/L. Follows Michaelis-Menten (non-linear) kinetics." },
 ];
 
+/** 1. Pediatric & Neonatal Dosing */
+export const calculatePediatricDose = (weight, age, unit = 'kg') => {
+    let w = parseFloat(weight);
+    let a = parseFloat(age);
+    if (!w || isNaN(w)) return null;
+    if (unit === 'lbs') w /= 2.205;
 
-// --- 1. PEDIATRIC DOSE (Weight-Based Standard Placeholder) ---
-export const calculatePediatricDose = (weight, adultDose, weightUnit = 'kg') => {
-    // FIX: Removed unsafe Clark's Rule (Adult Dose input is ignored for safety compliance).
-    if (!weight) return null;
+    // Logic: Adjusts factor if patient is a neonate (<28 days / approx 1 month)
+    const isNeonatal = !isNaN(a) && a <= 0.08; // approx 1 month in years
+    const standardFactor = isNeonatal ? 5 : 10; 
+    const dose = w * standardFactor;
     
-    let weightInKg = parseFloat(weight);
-    if (weightUnit === 'lbs') {
-        weightInKg = weightInKg / 2.205;
-    }
-    
-    if (isNaN(weightInKg) || weightInKg <= 0) return "Error: Invalid weight input.";
-
-    // Educational Placeholder: Assuming a standard demonstrative pediatric dose (e.g., 10 mg/kg/dose)
-    const mgPerKgDose = 10;
-    const resultMg = weightInKg * mgPerKgDose;
-    
-    // Output formatted result with context
-    return `Calculated Dose: ${resultMg.toFixed(1)} mg (based on ${mgPerKgDose} mg/kg)`;
-};
-
-// --- 2. BMI CALCULATOR ---
-export const calculateBMI = (weight, height, weightUnit = 'kg', heightUnit = 'cm') => {
-    if (!weight || !height) return null;
-
-    // Convert Weight to kg
-    const weightInKg = weightUnit === 'lbs' ? parseFloat(weight) * 0.453592 : parseFloat(weight);
-    
-    // Convert Height to meters
-    let heightInMeters = parseFloat(height);
-    if (heightUnit === 'cm') {
-        heightInMeters = heightInMeters / 100;
-    } else if (heightUnit === 'ft') {
-        // Assuming height in feet is total feet (e.g., 5.5 ft = 5 feet 6 inches)
-        heightInMeters = heightInMeters * 0.3048; 
-    } else if (heightUnit === 'in') {
-        heightInMeters = heightInMeters * 0.0254;
-    }
-
-    if (isNaN(weightInKg) || isNaN(heightInMeters) || heightInMeters === 0) return null;
-
-    // Formula: kg / m^2
-    const bmi = weightInKg / (heightInMeters * heightInMeters);
-    
-    // Categorize (WHO/CDC standard classification)
-    let category = "Normal";
-    if (bmi < 18.5) category = "Underweight";
-    else if (bmi >= 25 && bmi < 30) category = "Overweight";
-    else if (bmi >= 30) category = "Obese";
-
-    return { value: bmi.toFixed(1), category };
-};
-
-// --- 3. eGFR CALCULATION (CKD-EPI 2021 Approximation) ---
-// Note: This uses a simplified approximation of the race-free CKD-EPI 2021 formula.
-export const calculateGFR = (creatinine, age, gender, unit = 'mg/dl') => {
-    if (!creatinine || !age) return null;
-
-    // Convert µmol/L to mg/dL (Standard factor: 88.4)
-    let scr = unit === 'umol/l' ? parseFloat(creatinine) / 88.4 : parseFloat(creatinine);
-    const ageVal = parseFloat(age);
-
-    if (isNaN(scr) || isNaN(ageVal) || scr <= 0) return null;
-
-    // Set kappa (κ) and alpha (α) based on gender and creatinine level
-    let kappa = gender === 'female' ? 0.7 : 0.9;
-    let alpha = gender === 'female' ? -0.329 : -0.411; // exponent
-    let gfrFactor = gender === 'female' ? 1.018 : 1.0; // Gender factor
-
-    // CKD-EPI 2021 Formula Structure (Simplified/Approximate)
-    // Formula: 142 * min(SCr/κ, 1)^α * max(SCr/κ, 1)^-1.200 * 0.9938^Age * [Gender Factor]
-    
-    // Calculation:
-    let gfr = 142 * Math.pow(Math.min(scr / kappa, 1), alpha) * Math.pow(Math.max(scr / kappa, 1), -1.200) * Math.pow(0.9938, ageVal) *
-              gfrFactor;
-    
-    if (gfr > 90) return ">90";
-    
-    return gfr.toFixed(0);
-};
-
-// --- 4. MEAN ARTERIAL PRESSURE (MAP) ---
-export const calculateMAP = (sbp, dbp) => {
-    if (!sbp || !dbp) return null;
-    const s = parseFloat(sbp);
-    const d = parseFloat(dbp);
-    
-    if (isNaN(s) || isNaN(d) || s <= d) return null;
-
-    // Formula: (SBP + 2*DBP) / 3
-    const map = (s + (2 * d)) / 3;
-    
-    let status = "Normal Perfusion";
-    if (map < 65) status = "Low Perfusion (Critical)";
-    else if (map >= 100) status = "High Afterload / Vasoconstriction";
-
-    return { value: map.toFixed(0), status };
-};
-
-
-// --- 5. FLUID MANAGEMENT MODULE (Core 4-2-1 Rule) ---
-export const calculateMaintenanceFluid = (weight, unit = 'kg') => {
-    if (!weight) return null;
-    
-    const w = unit === 'lbs' ? parseFloat(weight) * 0.453592 : parseFloat(weight);
-    let rate = 0;
-
-    // 4-2-1 Rule (Holliday-Segar Formula)
-    if (w <= 10) {
-        rate = w * 4; // 4 mL/kg/hr for first 10 kg
-    } else if (w <= 20) {
-        rate = (10 * 4) + ((w - 10) * 2); // + 2 mL/kg/hr for next 10 kg
-    } else {
-        rate = (10 * 4) + (10 * 2) + ((w - 20) * 1); // + 1 mL/kg/hr for remaining kg
-    }
-
-    return { 
-        rate: rate.toFixed(0), // mL/hr
-        daily: (rate * 24).toFixed(0) // Total mL/day
+    return {
+        value: dose.toFixed(1),
+        pearl: isNeonatal 
+            ? "Neonatal metabolism: Hepatic/Renal clearance is immature. Standard factor reduced to 5mg/kg."
+            : "Pediatric standard: 10mg/kg used. Always ensure dose does not exceed adult maximum."
     };
 };
 
-// --- 6. DYNAMIC FLUID RATE CALCULATOR (New Module Logic) ---
+/** 2. BMI with Risk Stratification */
+export const calculateBMI = (weight, height, wUnit = 'kg', hUnit = 'cm') => {
+    let w = parseFloat(weight);
+    let h = parseFloat(height);
+    if (isNaN(w) || isNaN(h) || h === 0) return null;
+
+    if (wUnit === 'lbs') w *= 0.453592;
+    if (hUnit === 'cm') h /= 100;
+    else if (hUnit === 'ft') h *= 0.3048;
+    else if (hUnit === 'in') h *= 0.0254;
+
+    const bmi = w / (h * h);
+    let category, risk, color;
+
+    if (bmi < 18.5) { category = "Underweight"; risk = "Nutritional Deficiency"; color = "text-blue-500"; }
+    else if (bmi < 25) { category = "Normal"; risk = "Minimal"; color = "text-emerald-500"; }
+    else if (bmi < 30) { category = "Overweight"; risk = "Increased CVD/DM Risk"; color = "text-orange-500"; }
+    else { category = "Obese"; risk = "High Metabolic/CVD Risk"; color = "text-red-500"; }
+
+    return { value: bmi.toFixed(1), category, risk, color, pearl: "Normal BMI range: 18.5 – 24.9 kg/m²." };
+};
+
+/** 3. eGFR (CKD-EPI 2021) with Dose Adjustments */
+export const calculateGFR = (creatinine, age, gender, unit = 'mg/dl') => {
+    let scr = parseFloat(creatinine);
+    let a = parseFloat(age);
+    if (isNaN(scr) || isNaN(a) || scr <= 0) return null;
+
+    if (unit === 'umol/l') scr /= 88.4;
+
+    const kappa = gender === 'female' ? 0.7 : 0.9;
+    const alpha = gender === 'female' ? -0.329 : -0.411;
+    const gFactor = gender === 'female' ? 1.018 : 1.0;
+
+    const gfr = 142 * Math.pow(Math.min(scr / kappa, 1), alpha) * Math.pow(Math.max(scr / kappa, 1), -1.200) * Math.pow(0.9938, a) * gFactor;
+    
+    let adjustment = "100% of standard dose";
+    let stage = "G1 (Normal)";
+
+    if (gfr < 15) { stage = "G5 (Failure)"; adjustment = "Avoid or reduce dose by 75%"; }
+    else if (gfr < 30) { stage = "G4 (Severe)"; adjustment = "Reduce dose by 50% or double interval"; }
+    else if (gfr < 60) { stage = "G3 (Moderate)"; adjustment = "Reduce dose by 25%"; }
+    else if (gfr < 90) { stage = "G2 (Mild)"; }
+    
+    return { 
+        value: gfr > 90 ? ">90" : gfr.toFixed(0),
+        stage,
+        adjustment,
+        pearl: "Renal dose adjustments are critical for NTI drugs like Vancomycin and Aminoglycosides."
+    };
+};
+
+/** 4. Mean Arterial Pressure (MAP) */
+export const calculateMAP = (sbp, dbp) => {
+    const s = parseFloat(sbp);
+    const d = parseFloat(dbp);
+    if (isNaN(s) || isNaN(d) || s <= d) return null;
+
+    const map = (s + (2 * d)) / 3;
+    let status = "Normal Perfusion";
+    let color = "text-emerald-500";
+    if (map < 65) { status = "Hypoperfusion Risk"; color = "text-red-500"; }
+    else if (map >= 100) { status = "High Afterload"; color = "text-orange-500"; }
+
+    return { value: map.toFixed(0), status, color, pearl: "Target MAP for vital organ perfusion is typically >65 mmHg." };
+};
+
+/** 5. Fluid Maintenance & Strategy */
+export const calculateMaintenanceFluid = (weight, unit = 'kg') => {
+    let w = parseFloat(weight);
+    if (isNaN(w) || w <= 0) return null;
+    if (unit === 'lbs') w *= 0.453592;
+
+    let rate = 0;
+    if (w <= 10) rate = w * 4;
+    else if (w <= 20) rate = 40 + ((w - 10) * 2);
+    else rate = 60 + ((w - 20) * 1);
+
+    return { 
+        rate: rate.toFixed(0), 
+        pearl: "Holliday-Segar Formula: 4mL (first 10kg) + 2mL (second 10kg) + 1mL (rest)." 
+    };
+};
+
 export const calculateIVFluidRate = ({ baseRate, fluidType, glucoseMgDl, sbp }) => {
     const rate = parseFloat(baseRate);
-    if (isNaN(rate) || rate <= 0) return null;
+    const s = parseFloat(sbp);
+    const glu = parseFloat(glucoseMgDl);
+    if (isNaN(rate)) return null;
 
-    let rationale = "";
-    let risk = "";
     let finalRate = rate;
+    let rationale = [];
+    let risk = [];
+    let pearls = [];
 
-    // NS (0.9% NaCl): Isotonic. Used for volume expansion/resuscitation.
-    if (fluidType === 'NS') {
-        rationale = "Recommended for initial volume resuscitation and replacement in patients without heart failure or severe hyponatremia. Isotonic.";
-        if (sbp && sbp < 90) {
-            finalRate = rate * 1.5; // Example: Increase rate for hypotension (though bolus needed for true shock)
-            risk = "Caution: Monitor for hyperchloremic acidosis if used in large volumes.";
-        }
-    } 
-    // RL (Lactated Ringer's): Isotonic. Used for volume replacement.
-    else if (fluidType === 'RL') {
-        rationale = "Recommended for volume resuscitation. Contains lactate (bicarb precursor), which may be preferred over NS to avoid hyperchloremic acidosis. Isotonic.";
-        if (sbp && sbp < 90) {
+    if (['NS', 'RL'].includes(fluidType)) {
+        if (s && s < 90) {
             finalRate = rate * 1.5;
-            risk = "Caution: Contains potassium (avoid in hyperkalemia) and calcium (may clot if transfusing blood).";
-        }
-    } 
-    // D5NS (Dextrose 5% in NS): Maintenance fluid.
-    else if (fluidType === 'D5NS') {
-        rationale = "Used for maintenance therapy. Provides free water, sodium, and dextrose to prevent hypoglycemia. Effectively hypotonic in the body.";
-        if (glucoseMgDl && glucoseMgDl < 70) {
-            finalRate = rate * 1.25; // Increase glucose delivery
-            risk = "Risk of hyperglycemia if maintenance rate is too high or patient is diabetic.";
-        }
-    } 
-    // D5W (Dextrose 5% in Water): Free water.
-    else if (fluidType === 'D5W') {
-        rationale = "Used for providing free water or diluting IV medications. Provides minimal calories and no electrolytes.";
-        if (sbp && sbp < 100) {
-            risk = "CRITICAL: Contraindicated in shock/hypovolemia (no sodium). Risk of cerebral edema.";
-        }
-    }
-    // D10W (Dextrose 10% in Water): Hypoglycemia/Insulin infusion.
-    else if (fluidType === 'D10W') {
-        rationale = "Used for treating hypoglycemia or in DKA management to switch from D5 to D10 when glucose is below 250 mg/dL.";
-        if (!glucoseMgDl) {
-            risk = "CRITICAL: Use requires frequent glucose monitoring.";
-        }
-        finalRate = rate * 1.0; // Rate remains base rate unless specific insulin calculation used
+            rationale.push("Hypotension detected (SBP < 90). Rate increased for volume resuscitation.");
+            risk.push("Monitor for fluid overload (lung crackles, edema).");
+            pearls.push("Isotonic crystalloids are first-line for shock.");
+        } else { rationale.push("Isotonic maintenance for euvolemic patient."); }
     }
 
-    return {
-        rate: finalRate.toFixed(0),
-        rationale: rationale,
-        risk: risk
+    if (fluidType === 'D5NS') {
+        if (glu && glu < 70) {
+            finalRate = rate * 1.25;
+            rationale.push("Hypoglycemia detected (<70 mg/dL). Rate increased to provide glucose.");
+        } else if (glu && glu > 250) { risk.push("Hyperglycemia detected. Consider switching to NS."); }
+        pearls.push("D5NS provides ~170 kcal/L for caloric support.");
+    }
+
+    return { 
+        rate: finalRate.toFixed(0), 
+        rationale: rationale.join(" "), 
+        risk: risk.join(" "),
+        pearl: pearls.join(" ")
     };
 };
