@@ -1,6 +1,6 @@
 /**
  * MAIN ENTRY: ClinicalAssist App
- * REFINEMENT: Restored Back Button navigation and Global Search state handling.
+ * REFINEMENT: Integrated Psychological Contact Modal and Balanced Header Logic.
  */
 
 import React, { useState, useEffect } from "react";
@@ -12,6 +12,7 @@ import Footer from "./components/footer";
 import LegalModal from "./components/legalModal";
 import AboutModal from "./components/AboutModal";
 import ReferencesModal from "./components/ReferencesModal";
+import ContactModal from "./components/ContactModal"; // <-- Added Contact Modal
 
 // --- NAVIGATION LAYOUT ---
 import Header from "./components/Navigation/Header";
@@ -33,6 +34,7 @@ export default function ClinicalTool() {
   const [selectedDisease, setSelectedDisease] = useState(null);
   const [showAbout, setShowAbout] = useState(false);
   const [showReferences, setShowReferences] = useState(false);
+  const [showContact, setShowContact] = useState(false); // <-- New State for Contact
 
   // Hardware Back Button & Overlay Interceptor
   useEffect(() => {
@@ -41,11 +43,12 @@ export default function ClinicalTool() {
       if (isDrawerOpen) { setIsDrawerOpen(false); return true; }
       if (showAbout) { setShowAbout(false); return true; }
       if (showReferences) { setShowReferences(false); return true; }
+      if (showContact) { setShowContact(false); return true; } // <-- Intercept Contact Modal
       if (app.showTerms && !app.mandatoryTerms) { app.setShowTerms(false); return true; }
       return false;
     };
     return app.setupBackButton(closeOverlays, activeTab, setActiveTab);
-  }, [selectedDisease, isDrawerOpen, showAbout, showReferences, activeTab, app]);
+  }, [selectedDisease, isDrawerOpen, showAbout, showReferences, showContact, activeTab, app]);
 
   // Auth Guard
   if (!app.user) return <Auth onLogin={app.handleLogin} />;
@@ -65,7 +68,7 @@ export default function ClinicalTool() {
   return (
     <div className="flex flex-col h-screen bg-slate-950 transition-colors duration-300 overflow-hidden">
       
-      {/* 1. STICKY HEADER: Handles Back Button & Search Display */}
+      {/* 1. STICKY HEADER: Branding (Home) or Back Arrow (Tools) */}
       <Header 
         user={app.user} 
         activeTab={activeTab} 
@@ -110,8 +113,16 @@ export default function ClinicalTool() {
         onOpenAbout={() => { setShowAbout(true); setIsDrawerOpen(false); }}
         onOpenTerms={() => { app.setShowTerms(true); setIsDrawerOpen(false); }}
         onOpenReferences={() => { setShowReferences(true); setIsDrawerOpen(false); }}
+        onOpenContact={() => { setShowContact(true); setIsDrawerOpen(false); }} // <-- Link to SideDrawer
         onLogout={app.handleLogout} 
         supportEmail="clinicalassist.center@gmail.com"
+      />
+
+      {/* Psychological Contact Modal */}
+      <ContactModal 
+        isOpen={showContact} 
+        onClose={() => setShowContact(false)} 
+        email="clinicalassist.center@gmail.com" 
       />
 
       <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />

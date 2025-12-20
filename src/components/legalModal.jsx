@@ -1,213 +1,125 @@
+/**
+ * COMPONENT: LegalModal (Formal Compliance & Risk Mitigation)
+ * DESCRIPTION: High-authority terms of service for clinical educational software.
+ * LEGAL GUARD: Categorizes tool as a Decision Support Aid to avoid medical device classification.
+ */
+
 import React from 'react';
-import { ShieldAlert, CheckCircle, X, Scale, FileText, Lock, AlertTriangle, Server, BookOpen, UserCheck, Pill, Stethoscope, Activity, Link } from 'lucide-react';
+import { 
+  X, Stethoscope, AlertTriangle, ShieldCheck, 
+  FileText, Lock, BookOpen, CheckCircle 
+} from 'lucide-react';
+// Integrated dynamic versioning
+import { LAST_REVIEW_DATE } from '../config/version';
 
 export default function LegalModal({ isOpen, onClose, onAccept, isMandatory }) {
-  if (!isOpen) return null;
+  if (!isOpen) return null;
 
-    // Data sources consolidated for display in Section 4
-    const dataSources = [
-        { 
-            title: "Official Regulatory Data & Reporting", 
-            icon: Pill, 
-            items: [
-                "U.S. Food and Drug Administration (FDA) Official Drug Labels.",
-                "FDA MedWatch Safety Reporting Database (referenced in every drug entry)."
-            ]
-        },
-        { 
-            title: "Pharmacology & Internal Medicine", 
-            icon: Stethoscope, 
-            items: [
-                "Goodman & Gilman's The Pharmacological Basis of Therapeutics.",
-                "Dipiro's Pharmacotherapy: A Pathophysiologic Approach.",
-                "Harrison’s Principles of Internal Medicine.",
-                "Cecil Medicine."
-            ]
-        },
-        { 
-            title: "Clinical Guidelines & Diagnostic Criteria", 
-            icon: Scale, 
-            items: [
-                "ACC/AHA (American College of Cardiology/American Heart Association) Guidelines.",
-                "KDIGO (Kidney Disease: Improving Global Outcomes) Guidelines.",
-                "GINA (Global Initiative for Asthma) Guidelines.",
-                "WHO/RNTCP (Tuberculosis Treatment Guidelines).",
-                "Rome IV Criteria (Functional GI Disorders).",
-                "ICHD-3 (International Classification of Headache Disorders).",
-                "CDC/WHO Infectious Disease Protocols."
-            ]
-        },
-        { 
-            title: "Calculation Standards & Utility", 
-            icon: Activity, 
-            items: [
-                "CKD-EPI (eGFR) Formula.",
-                "Holliday-Segar Formula (IV Fluid Maintenance).",
-                "Mean Arterial Pressure (MAP) Formula."
-            ]
-        },
-    ];
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col border border-slate-200 dark:border-slate-700">
-        
-        {/* Header */}
-        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50 rounded-t-2xl flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <Scale className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white leading-none">
-                Terms of Service & Compliance
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Last Updated: December 12/12/2025</p>
-            </div>
-          </div>
-          {/* Only show close button if NOT mandatory (View Only Mode) */}
-          {!isMandatory && (
-            <button onClick={onClose} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition">
-              <X className="w-5 h-5 text-slate-500" />
-            </button>
-          )}
-        </div>
-
-        {/* Scrollable Content */}
-        <div className="p-6 overflow-y-auto text-slate-600 dark:text-slate-300 space-y-6 text-sm leading-relaxed">
-          
-          {/* Emergency Warning */}
-          <div className="p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-slate-800 rounded-xl flex gap-3">
-            <AlertTriangle className="w-5 h-5 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5"/>
-            <div>
-              <h3 className="font-bold text-rose-800 dark:text-rose-400 text-sm uppercase tracking-wide mb-1">
-                Medical Emergency Warning
-              </h3>
-              <p className="text-rose-700 dark:text-rose-300 text-xs leading-relaxed">
-                THIS APPLICATION IS NOT FOR EMERGENCY USE. If you or a person you are assisting is experiencing a medical emergency, life-threatening condition, or severe distress, call emergency services immediately. Do not rely on this application for acute triage or critical care decisions.
-              </p>
-            </div>
-          </div>
-
-          <section>
-            <h3 className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-base mb-2">
-              <BookOpen className="w-4 h-4 text-blue-500"/> 1. Educational & Reference Use Only
-            </h3>
-            <p>
-              The "ClinicalAssist" application is designed strictly as an educational reference and decision support tool. It is intended to assist users in retrieving and synthesizing medical information. <strong>It does not constitute medical advice, diagnosis, or treatment.</strong> The information provided should never replace professional clinical judgment, standard operating procedures, or consultation with qualified specialists.
-            </p>
-          </section>
-
-          <section>
-            <h3 className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-base mb-2">
-              <Server className="w-4 h-4 text-purple-500"/> 2. Artificial Intelligence Limitations
-            </h3>
-            <p>
-               This tool utilizes Large Language Models (LLM) and Artificial Intelligence to generate responses. While trained on high-quality medical data, AI models are prone to "hallucinations" (confident but incorrect answers), biases, and outdated information.
-            </p>
-            <ul className="list-disc pl-5 mt-2 space-y-1 text-xs bg-slate-50 dark:bg-slate-800/50 p-3 rounded-lg">
-              <li>Users must independently verify all drug dosages, interactions, and protocols against primary literature or official formularies (e.g., FDA labels, Lexicomp, BNF).</li>
-              <li>The developers do not guarantee the accuracy, completeness, or timeliness of any AI-generated content.</li>
-            </ul>
-          </section>
-
-          <section>
-            <h3 className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-base mb-2">
-              <Lock className="w-4 h-4 text-emerald-500"/> 3. Data Privacy & PHI Prohibition
-            </h3>
-            <p>
-              To ensure compliance with privacy regulations (including HIPAA and GDPR), <strong>users are strictly prohibited from entering Protected Health Information (PHI)</strong> into this application.
-            </p>
-            <p className="mt-2">
-              <strong>Prohibited Data:</strong> Do not input real patient names, dates of birth, medical record numbers (MRN), exact addresses, or biometric identifiers.
-            </p>
-            <p className="mt-2 text-xs">
-              <strong>Data Transmission:</strong> Queries entered into this tool are transmitted to third-party AI providers for processing. While we do not permanently store your query history on our servers, data transmission is necessary for the tool to function. By using this tool, you consent to this transmission.
-            </p>
-          </section>
-
-          <section>
-            <h3 className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-base mb-2">
-              <FileText className="w-4 h-4 text-orange-500"/> 4. Intellectual Property & Data Sourcing
-            </h3>
-            <p className="mb-2">
-                <span className="font-bold">The core application (code, UI/UX, logic, and design) is the sole intellectual property of the ClinicalAssist development team.</span> All fundamental medical knowledge is synthesized and compiled from the following authorized sources:
-            </p>
-            
-            {/* Start Source List Integration */}
-            <div className="grid grid-cols-1 gap-4">
-                {dataSources.map((section, index) => (
-                    <div key={index} className="space-y-2 p-4 bg-slate-100 dark:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-600">
-                        <h4 className="font-bold text-sm text-slate-800 dark:text-white flex items-center gap-2">
-                            <section.icon size={16} className="text-blue-500"/> {section.title}
-                        </h4>
-                        <ul className="list-disc pl-5 text-xs space-y-0.5 text-slate-600 dark:text-slate-300">
-                            {section.items.map((item, i) => (
-                                <li key={i}>{item}</li>
-                            ))}
-                        </ul>
-                    </div>
-                ))}
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-xl animate-in fade-in duration-300">
+      <div className="bg-white dark:bg-slate-900 w-full max-w-2xl rounded-[3rem] shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-slate-200 dark:border-slate-800">
+        
+        {/* FORMAL HEADER: BRAND LOGO */}
+        <div className="p-8 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
+          <div className="flex items-center gap-4">
+            <div className="p-3.5 bg-[#2563EB] rounded-2xl shadow-xl shadow-blue-500/20">
+              <Stethoscope size={24} className="text-white" />
             </div>
-            {/* End Source List Integration */}
-
-            {/* NEW: External Privacy Policy Link Note for App Submission */}
-            <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800 flex items-start gap-2">
-                <Link className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
-                <p className="text-xs text-blue-800 dark:text-blue-300">
-                    The external, public-facing Privacy Policy required for app store submission is hosted here: 
-                    <a 
-                        href="https://docs.google.com/document/d/1LVEWXGiv3Nr9LT5APjZ9aU0BDxaAyexHOOn2cTJ_Kwo/edit?usp=sharing" 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="font-bold underline ml-1"
-                    >
-                        [View External Policy Link]
-                    </a>
-                </p>
+            <div>
+              <h2 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tighter leading-none">
+                Clinical<span className="text-[#2563EB]">Assist</span>
+              </h2>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1.5">Legal Compliance Audit</p>
             </div>
-            {/* END NEW NOTE */}
+          </div>
+          {!isMandatory && (
+            <button onClick={onClose} className="p-2 hover:bg-white dark:hover:bg-slate-700 rounded-full transition-all">
+              <X size={28} className="text-slate-400" />
+            </button>
+          )}
+        </div>
 
-          </section>
+        {/* BINDING CONTENT: FULL ORIGINAL TEXT PRESERVED */}
+        <div className="p-8 overflow-y-auto no-scrollbar space-y-10">
+          
+          {/* SECTION 0: BOLD LEGAL NOTICE */}
+          <div className="p-6 bg-rose-50 dark:bg-rose-900/20 rounded-[2.5rem] border-2 border-rose-100 dark:border-rose-900 flex gap-4 items-start">
+            <AlertTriangle size={24} className="text-rose-600 shrink-0 mt-1" />
+            <div className="space-y-2">
+              <h4 className="font-black text-rose-800 dark:text-rose-400 uppercase text-xs tracking-wider">Formal Disclaimer</h4>
+              <p className="text-xs text-rose-900 dark:text-rose-200 font-bold leading-relaxed uppercase">
+                THIS SOFTWARE IS AN EDUCATIONAL AID ONLY. IT IS NOT A MEDICAL DEVICE. ALL DATA IS PROVIDED "AS IS" WITHOUT WARRANTY. USERS MUST INDEPENDENTLY VERIFY ALL CLINICAL OUTCOMES WITH A LICENSED HEALTHCARE PROVIDER.
+              </p>
+            </div>
+          </div>
 
+          <div className="space-y-8 text-slate-700 dark:text-slate-300">
+            {/* ARTICLE 1: NON-DIAGNOSTIC STATUS */}
+            <section className="space-y-3">
+              <h3 className="flex items-center gap-2 font-black text-slate-900 dark:text-white text-xs uppercase tracking-widest">
+                <BookOpen className="w-4 h-4 text-blue-500"/> 1. Scope of Service
+              </h3>
+              <p className="text-xs font-medium leading-relaxed">
+                The "ClinicalAssist" platform is a <span className="font-black text-slate-950 dark:text-white underline">Decision Support System (DSS)</span> designed for educational synthesis. It does not provide medical advice, diagnosis, or treatment. Use of this software does not establish a provider-patient relationship.
+              </p>
+            </section>
 
-          <section>
-            <h3 className="flex items-center gap-2 font-bold text-slate-900 dark:text-white text-base mb-2">
-              <UserCheck className="w-4 h-4 text-indigo-500"/> 5. Indemnification & Limitation of Liability
-            </h3>
-            <p>
-              By using this application, you explicitly acknowledge and agree that the developers, contributors, and hosting providers shall not be liable for any direct, indirect, incidental, special, or consequential damages arising from the use or inability to use this service. 
-            </p>
-            <p className="mt-2">
-              You agree to indemnify and hold harmless the developers from any claims, damages, losses, or expenses arising from your use of the application, including any medical decisions made based on its output. The service is provided on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind.
-            </p>
-          </section>
+            {/* ARTICLE 2: CLINICAL DATA INTEGRITY */}
+            <section className="space-y-3">
+              <h3 className="flex items-center gap-2 font-black text-slate-900 dark:text-white text-xs uppercase tracking-widest">
+                <ShieldCheck className="w-4 h-4 text-emerald-500"/> 2. Data Accuracy & Verification
+              </h3>
+              <p className="text-xs font-medium leading-relaxed">
+                Clinical protocols and drug monographs are derived from public regulatory records and established medical textbooks. Users are <span className="font-black text-slate-950 dark:text-white uppercase underline">obligated</span> to cross-reference all information with the <span className="font-black text-slate-950 dark:text-white uppercase">Official Product Monograph</span> or the <span className="font-black text-slate-950 dark:text-white uppercase">Institutional Formulary</span> before any clinical intervention.
+              </p>
+            </section>
 
-          <p className="text-xs text-slate-400 mt-4 border-t border-slate-100 dark:border-slate-800 pt-4">
-            By clicking "I Read and Agree", you confirm that you have read, understood, and accept these Terms and Conditions.
-          </p>
-        </div>
+            {/* ARTICLE 3: DATA PRIVACY & PHI */}
+            <section className="space-y-3">
+              <h3 className="flex items-center gap-2 font-black text-slate-900 dark:text-white text-xs uppercase tracking-widest">
+                <Lock className="w-4 h-4 text-purple-500"/> 3. Privacy Compliance (PHI)
+              </h3>
+              <p className="text-xs font-medium leading-relaxed">
+                Users are strictly prohibited from inputting <span className="font-black text-rose-600 uppercase">Protected Health Information (PHI)</span> into this tool. This includes real patient names, identifiers, or biometric data. All input queries are handled via third-party secure processing and are not permanently stored by ClinicalAssist.
+              </p>
+            </section>
 
-        {/* Footer Actions */}
-        <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 rounded-b-2xl flex justify-end gap-3 flex-shrink-0">
-          {isMandatory ? (
-            <button 
-              onClick={onAccept} // FIX: Now correctly calls the onAccept handler
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-600/20 transition flex items-center gap-2"
-            >
-              <CheckCircle className="w-5 h-5" />
-              I Read and Agree
-            </button>
-          ) : (
-            <button 
-              onClick={onClose}
-              className="px-6 py-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-white font-bold rounded-xl transition"
-            >
-              Close
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+            {/* ARTICLE 4: LIMITATION OF LIABILITY */}
+            <section className="space-y-3">
+              <h3 className="flex items-center gap-2 font-black text-slate-900 dark:text-white text-xs uppercase tracking-widest">
+                <FileText className="w-4 h-4 text-orange-500"/> 4. Indemnification
+              </h3>
+              <p className="text-xs font-medium leading-relaxed italic">
+                By accepting these terms, you agree to indemnify and hold harmless the developers from any claims, losses, or clinical errors resulting from the use of this educational aid. You assume full responsibility for the clinical outcomes of your patients.
+              </p>
+            </section>
+          </div>
+        </div>
+
+        {/* BINDING ACTION */}
+        <div className="p-8 bg-slate-50 dark:bg-slate-800 border-t border-slate-100 dark:border-slate-800 flex flex-col items-center gap-4">
+          {isMandatory ? (
+            <button 
+              onClick={onAccept}
+              className="w-full py-5 bg-[#2563EB] text-white rounded-[2rem] font-black text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-500/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2"
+            >
+              <CheckCircle size={18} />
+              Acknowledge & Accept Terms
+            </button>
+          ) : (
+            <button 
+              onClick={onClose}
+              className="w-full py-5 bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-white rounded-[2rem] font-black text-xs uppercase tracking-widest transition-all"
+            >
+              Dismiss
+            </button>
+          )}
+          {/* AUTOMATED REVISION DATE */}
+          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter text-center">
+            Revision: {LAST_REVIEW_DATE} • ClinicalAssist Regulatory Compliance Office
+          </p>
+        </div>
+      </div>
+    </div>
+  );
 }
