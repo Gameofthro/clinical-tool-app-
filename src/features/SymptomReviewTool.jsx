@@ -207,7 +207,7 @@ export default function SymptomReviewTool() {
                 <div className="p-4 bg-amber-50 dark:bg-amber-900/20 rounded-3xl border border-amber-200 dark:border-amber-800/50 flex gap-3 items-start shrink-0">
                     <Info size={16} className="text-amber-600 shrink-0 mt-0.5" />
                     <p className="text-[10px] text-amber-900 dark:text-amber-200 font-medium leading-tight">
-                        <b className="font-black uppercase text-[8px] block mb-1">Pharm.D Learning Note:</b> 
+                        <b className="font-black uppercase text-[8px] block mb-1">Learning Note:</b> 
                         Correlation is based on feature overlap within this educational database. This is for pattern recognition study only.
                     </p>
                 </div>

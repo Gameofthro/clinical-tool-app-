@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">clinicalassist </string>
-    <string name="title_activity_main">clinicalassist </string>
-    <string name="package_name">com.app.clinicalassist</string>
-    <string name="custom_url_scheme">com.app.clinicalassist</string>
+    <string name="app_name">ClinicalAssist</string>
+    <string name="title_activity_main">ClinicalAssist</string>
+    <string name="package_name">com.clinicalassist.v1</string>
+    <string name="custom_url_scheme">com.clinicalassist.v1</string>
 </resources>

@@ -1,9 +1,11 @@
 /**
  * MAIN ENTRY: ClinicalAssist App
  * MASTER FIX: Unified Theme Injection & High-Contrast Light Mode UI.
+ * UPDATE: Integrated Interactive Clinical Notifications.
  */
 
 import React, { useState, useEffect } from "react";
+import { LocalNotifications } from '@capacitor/local-notifications'; //
 
 // --- SYSTEM LOGIC & STATE ---
 import { useClinicalApp } from "./hooks/useClinicalApp";
@@ -37,8 +39,42 @@ export default function ClinicalTool() {
   const [showContact, setShowContact] = useState(false);
 
   /**
+   * NOTIFICATION ENGINE
+   * Registers interactive clinical actions and listens for user response.
+   */
+  useEffect(() => {
+    const initNotifications = async () => {
+      // Register Action Buttons (Dose Taken / Snooze)
+      await LocalNotifications.registerActionTypes({
+        types: [
+          {
+            id: 'CLINICAL_CARE',
+            actions: [
+              { id: 'thanks', title: '❤️ Got it, thank you', foreground: true },
+              { id: 'remind', title: '⏰ Remind me later', foreground: false }
+            ]
+          }
+        ]
+      });
+    };
+
+    // Listener for when user taps an action button
+    const actionListener = LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
+      console.log('Care message acknowledged:', action.actionId);
+      if (action.actionId === 'thanks') {
+        // You could trigger a small success toast here if needed
+      }
+    });
+
+    initNotifications();
+
+    return () => {
+      actionListener.remove(); // Cleanup to prevent memory leaks
+    };
+  }, []);
+
+  /**
    * GLOBAL THEME ENGINE
-   * Forces the 'dark' class on root and applies global UI overrides for Light Mode.
    */
   useEffect(() => {
     if (app.darkMode) {
@@ -73,7 +109,6 @@ export default function ClinicalTool() {
   return (
     <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 overflow-hidden">
       
-      {/* GLOBAL UI OVERRIDE: Fixes the "Black/Grey Blobs" in Light Mode */}
       <style dangerouslySetInnerHTML={{ __html: `
         .light .bg-slate-900\\/50, 
         .light [class*="bg-slate-"],

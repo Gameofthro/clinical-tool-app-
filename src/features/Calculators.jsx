@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { 
   Baby, Droplet, Scale, Activity, Heart, BookOpen, AlertTriangle, Info, ChevronRight, Stethoscope 
 } from "lucide-react";
+import { LocalNotifications } from '@capacitor/local-notifications';
 import * as Logic from "../utils/calculators";
 
 export default function CalculatorFeature() {
@@ -15,12 +16,81 @@ export default function CalculatorFeature() {
 
   const update = (key, val) => setCalcState(prev => ({ ...prev, [key]: val }));
 
-  const handleCalculate = () => {
+  // --- IMPACTFUL NOTIFICATION LOGIC ---
+  const triggerImpactfulNotification = async (type, data) => {
+    let notifyConfig = null;
+
+    if (type === 'pediatric' && data) {
+      notifyConfig = {
+        title: "Care Alert: Pediatric Safety",
+        body: `We want to ensure this ${data.value}mg dose is given safely. Please double-check your NTI protocols for the patient's well-being.`
+      };
+    }
+
+    if (type === 'bmi' && data) {
+      const val = parseFloat(data.value);
+      let msg = val < 18.5 ? "Your health is our priority. Let's focus on nourishing your body with heavy meals and strength today." :
+                val < 25 ? "You're doing amazing! Your BMI is perfect. Keep up that healthy lifestyle, we're proud of you." :
+                "We're with you on this journey. Let's try some cardio and lighter meals today to feel your best again.";
+      notifyConfig = { title: "ClinicalAssist Health Partner", body: msg };
+    }
+
+    if (type === 'map' && data) {
+      const mapVal = parseFloat(data.value);
+      notifyConfig = {
+        title: "Vital Support Needed",
+        body: mapVal < 65 ? "We're concerned about this MAP result (<65). Please reach out to the medical team immediately to support your patient." : 
+                         "Great news—perfusion looks stable. We'll keep monitoring with you."
+      };
+    }
+
+    if (type === 'gfr' && data) {
+      const gfrVal = parseFloat(data.value === ">90" ? 91 : data.value);
+      notifyConfig = {
+        title: "Renal Health Monitor",
+        body: gfrVal < 60 ? "We want to help you prevent toxicity. Please take a moment to adjust renal-cleared meds for your patient's safety." : 
+                         "Renal clearance looks healthy! We'll stay alert for any changes."
+      };
+    }
+
+    if (notifyConfig) {
+      await LocalNotifications.schedule({
+        notifications: [{
+          id: Date.now(),
+          title: notifyConfig.title,
+          body: notifyConfig.body,
+          schedule: { at: new Date(Date.now() + 1500) },
+          actionTypeId: 'CLINICAL_CARE',
+          smallIcon: 'ic_launcher_foreground'
+        }]
+      });
+    }
+  };
+
+ const handleCalculate = async () => {
+  const perm = await LocalNotifications.requestPermissions();
+  
+  if (perm.display !== 'granted') {
+    console.warn("User denied notification permissions");
+    // Optionally alert the user that notifications won't work
+  }
     let res = {};
-    if (activeTool === 'pediatric') res.dose = Logic.calculatePediatricDose(calcState.weight, calcState.age, calcState.unit);
-    if (activeTool === 'bmi') res.bmi = Logic.calculateBMI(calcState.weight, calcState.height, calcState.unit, calcState.hUnit);
-    if (activeTool === 'gfr') res.gfr = Logic.calculateGFR(calcState.creatinine, calcState.age, calcState.gender);
-    if (activeTool === 'map') res.map = Logic.calculateMAP(calcState.sbp, calcState.dbp);
+    if (activeTool === 'pediatric') {
+        res.pediatric = Logic.calculatePediatricDose(calcState.weight, calcState.age, calcState.unit);
+        triggerImpactfulNotification('pediatric', res.pediatric);
+    }
+    if (activeTool === 'bmi') {
+        res.bmi = Logic.calculateBMI(calcState.weight, calcState.height, calcState.unit, calcState.hUnit);
+        triggerImpactfulNotification('bmi', res.bmi);
+    }
+    if (activeTool === 'gfr') {
+        res.gfr = Logic.calculateGFR(calcState.creatinine, calcState.age, calcState.gender);
+        triggerImpactfulNotification('gfr', res.gfr);
+    }
+    if (activeTool === 'map') {
+        res.map = Logic.calculateMAP(calcState.sbp, calcState.dbp);
+        triggerImpactfulNotification('map', res.map);
+    }
     if (activeTool === 'fluid') {
       const base = Logic.calculateMaintenanceFluid(calcState.weight, calcState.unit);
       const strategy = Logic.calculateIVFluidRate({ baseRate: base.rate, fluidType: calcState.fluidType, glucoseMgDl: calcState.glucose, sbp: calcState.sbp });
@@ -33,7 +103,6 @@ export default function CalculatorFeature() {
 
   return (
     <div className="space-y-4 pb-10">
-      {/* 1. COMPACT 5-COLUMN NAVIGATION */}
       <div className="grid grid-cols-5 gap-1 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-2xl shadow-inner shrink-0">
         {[
           { id: 'pediatric', icon: Baby, label: 'Dose', color: 'bg-purple-600' },
@@ -115,7 +184,6 @@ export default function CalculatorFeature() {
 
           <CalcButton onClick={handleCalculate} label="Calculate Strategy" color="bg-blue-600" />
 
-          {/* RESULTS AREA */}
           <div className="mt-4">
             {results[activeTool] && (
               <ResultBox value={results[activeTool].value || results[activeTool].rate} label={results[activeTool].category || results[activeTool].status || "Result"} pearl={results[activeTool].pearl || results[activeTool].basePearl}>
