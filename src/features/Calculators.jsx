@@ -1,107 +1,14 @@
-import React, { useState } from "react";
-import { 
-  Baby, Droplet, Scale, Activity, Heart 
-} from "lucide-react";
+import React from "react";
+import CalculatorFeature from "./calculators/CalculatorFeature";
 
-// Import Shared UI and Hooks from the new modular directory
-import { HeaderSection, ResultBox } from "./calculators/components/SharedUI";
-import { useClinicalAlerts } from "./calculators/hooks/useClinicalAlerts";
-
-// Import the specific Calculator Tools
-import { PediatricTool } from "./calculators/tools/PediatricTool";
-import { FluidTool } from "./calculators/tools/FluidTool";
-import { RenalTool } from "./calculators/tools/RenalTool";
-import { BMITool } from "./calculators/tools/BMITool";
-import { MAPTool } from "./calculators/tools/MAPTool";
-
-export default function CalculatorFeature() {
-  const [activeTool, setActiveTool] = useState("pediatric");
-  const [results, setResults] = useState({});
-  const { triggerNotification } = useClinicalAlerts();
-
-  // Unified state: persists data when switching between tools (e.g., Weight stays saved)
-  const [calcState, setCalcState] = useState({
-    weight: "", age: "", height: "", creatinine: "", sbp: "", dbp: "", glucose: "",
-    unit: "kg", hUnit: "cm", gender: "male", fluidType: "421"
-  });
-
-  const update = (key, val) => setCalcState(prev => ({ ...prev, [key]: val }));
-
-  const handleResult = (type, data) => {
-    setResults(prev => ({ ...prev, [type]: data }));
-    triggerNotification(type, data);
-  };
-
-  // Tool Selection Logic
-  const renderTool = () => {
-    const props = { calcState, update, onResult: handleResult };
-    switch (activeTool) {
-      case 'pediatric': return <PediatricTool {...props} />;
-      case 'fluid':     return <FluidTool {...props} />;
-      case 'gfr':       return <RenalTool {...props} />;
-      case 'bmi':       return <BMITool {...props} />;
-      case 'map':       return <MAPTool {...props} />;
-      default:          return <PediatricTool {...props} />;
-    }
-  };
-
+/**
+ * ENTRY POINT: CALCULATORS
+ * This file points to the modularized feature directory.
+ */
+export default function Calculators() {
   return (
-    <div className="space-y-4 pb-10">
-      {/* 1. Navigation Grid */}
-      <div className="grid grid-cols-5 gap-1 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-2xl shadow-inner shrink-0">
-        {[
-          { id: 'pediatric', icon: Baby, label: 'Dose', color: 'bg-purple-600' },
-          { id: 'fluid', icon: Droplet, label: 'Fluid', color: 'bg-blue-600' },
-          { id: 'gfr', icon: Activity, label: 'Renal', color: 'bg-red-600' },
-          { id: 'bmi', icon: Scale, label: 'BMI', color: 'bg-orange-600' },
-          { id: 'map', icon: Heart, label: 'MAP', color: 'bg-rose-600' },
-        ].map(t => (
-          <button 
-            key={t.id} 
-            onClick={() => { setActiveTool(t.id); setResults({}); }}
-            className={`flex flex-col items-center justify-center py-2 rounded-xl transition-all
-            ${activeTool === t.id ? `${t.color} text-white shadow-md` : 'text-slate-500'}`}
-          >
-            <t.icon size={16} />
-            <span className="text-[8px] font-black mt-1 uppercase tracking-tighter">{t.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {/* 2. Content Container */}
-      <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-xl border border-slate-100 dark:border-slate-800">
-        <HeaderSection title={activeTool.toUpperCase()} />
-        
-        <div className="mt-4">
-          {renderTool()}
-        </div>
-
-        {/* 3. Global Result Display (renders for any active tool) */}
-        {results[activeTool] && (
-          <ResultBox 
-            value={results[activeTool].value || results[activeTool].rate} 
-            label={results[activeTool].category || results[activeTool].status || "Result"} 
-            pearl={results[activeTool].pearl || results[activeTool].basePearl}
-          >
-            {results[activeTool].adjustment && (
-              <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100">
-                <p className="text-[9px] font-black text-red-600 uppercase">Adjustment Required:</p>
-                <p className="text-[10px] font-bold text-red-800 dark:text-red-300">{results[activeTool].adjustment}</p>
-              </div>
-            )}
-            {results[activeTool].risk && (
-              <p className="mt-2 text-[9px] bg-red-50 text-red-700 p-2 rounded-lg font-bold">⚠️ {results[activeTool].risk}</p>
-            )}
-            {results[activeTool].rationale && (
-              <p className="mt-2 text-[9px] bg-blue-50 text-blue-700 p-2 rounded-lg font-bold">ℹ️ {results[activeTool].rationale}</p>
-            )}
-          </ResultBox>
-        )}
-
-        <p className="mt-6 text-[9px] text-slate-400 text-center italic border-t pt-4">
-          Clinical Decision Support: Verify calculations against local hospital protocols.
-        </p>
-      </div>
+    <div className="p-4 max-w-4xl mx-auto">
+      <CalculatorFeature />
     </div>
   );
 }

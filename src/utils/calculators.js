@@ -1,37 +1,101 @@
 /**
- * ULTIMATE CLINICAL UTILITIES ENGINE
- * Optimized for Pharm.D Students & Clinicians.
- * Includes: Renal Dose Adjustments, Neonatal Logic, and Hemodynamic Strategies.
+ * MASTER MEDICS CLINICAL ENGINE
+ * Unified Medical Decision Support for Clinicians.
+ * Logic: Mandatory + Optional Advanced Parameters.
  */
 
-export const NARROW_THERAPEUTIC_INDEX_WARNINGS = [
-    { drug: "Digoxin", caution: "Serum target: 0.5-0.9 ng/mL. Toxicity risk increases with hypokalemia." },
-    { drug: "Lithium", caution: "Serum target: 0.6-1.2 mEq/L. High risk of toxicity with dehydration." },
-    { drug: "Warfarin", caution: "Target INR: 2.0-3.0. Multiple drug-food interactions (Vit K)." },
-    { drug: "Phenytoin", caution: "Serum target: 10-20 mg/L. Follows Michaelis-Menten (non-linear) kinetics." },
-];
+// Global Reference Data
+export const CLINICAL_CONSTANTS = {
+    NTI_DRUGS: [
+        { drug: "Digoxin", caution: "Target: 0.5-0.9 ng/mL. Monitor K+ levels strictly.", toxicity: "Visual disturbances, bradycardia." },
+        { drug: "Lithium", caution: "Target: 0.6-1.2 mEq/L. Requires euvolemia.", toxicity: "Tremor, ataxia, confusion." },
+        { drug: "Warfarin", caution: "Target INR: 2.0-3.0. Vit-K consistency is key.", toxicity: "Unexplained bruising/bleeding." },
+        { drug: "Phenytoin", caution: "Target: 10-20 mg/L. Non-linear kinetics.", toxicity: "Nystagmus, lethargy." },
+    ]
+};
 
-/** 1. Pediatric & Neonatal Dosing */
-export const calculatePediatricDose = (weight, age, unit = 'kg') => {
+/** 1. PEDIATRIC & NEONATAL MASTERY */
+export const calculatePediatricDose = (weight, age, unit = 'kg', indication = 'general') => {
     let w = parseFloat(weight);
     let a = parseFloat(age);
     if (!w || isNaN(w)) return null;
     if (unit === 'lbs') w /= 2.205;
 
-    // Logic: Adjusts factor if patient is a neonate (<28 days / approx 1 month)
     const isNeonatal = !isNaN(a) && a <= 0.08; 
-    const standardFactor = isNeonatal ? 5 : 10; 
-    const dose = w * standardFactor;
+    const factor = isNeonatal ? 5 : 10; 
+    const dose = w * factor;
     
+    // Mastery Insight based on Neonatal Physiology
+    const insight = isNeonatal 
+        ? "Neonates have a higher % of total body water and immature renal/hepatic clearance. Dosing factors are reduced to prevent accumulation."
+        : "Standard pediatric dosing. Note: Adult maximum doses must never be exceeded regardless of weight-based calculation.";
+
     return {
         value: dose.toFixed(1),
-        pearl: isNeonatal 
-            ? "Neonatal metabolism: Hepatic/Renal clearance is immature. Standard factor reduced to 5mg/kg."
-            : "Pediatric standard: 10mg/kg used. Always ensure dose does not exceed adult maximum."
+        unit: "mg",
+        status: isNeonatal ? "Neonatal Protocol" : "Standard Pediatric",
+        interpretation: `Dose calculated at ${factor}mg/kg for ${indication} use.`,
+        actionPlan: "Verify dose against age-specific maximums and concentrate available.",
+        masteryInsight: insight,
+        isCritical: isNeonatal
     };
 };
 
-/** 2. BMI with Risk Stratification */
+/** 2. RENAL MASTERY (CKD-EPI 2021 + BSA Normalization) */
+export const calculateGFR = (creatinine, age, gender, weight = null, height = null, unit = 'mg/dl') => {
+    let scr = parseFloat(creatinine);
+    let a = parseFloat(age);
+    if (isNaN(scr) || isNaN(a) || scr <= 0) return null;
+
+    if (unit === 'umol/l') scr /= 88.4;
+
+    const kappa = gender === 'female' ? 0.7 : 0.9;
+    const alpha = gender === 'female' ? -0.329 : -0.411;
+    const gFactor = gender === 'female' ? 1.018 : 1.0;
+
+    let gfr = 142 * Math.pow(Math.min(scr / kappa, 1), alpha) * Math.pow(Math.max(scr / kappa, 1), -1.200) * Math.pow(0.9938, a) * gFactor;
+    
+    let result = {
+        value: gfr > 90 ? ">90" : gfr.toFixed(0),
+        unit: "mL/min/1.73m²",
+        masteryInsight: "The CKD-EPI 2021 formula is the current gold standard as it removes race-based coefficients for more equitable care.",
+    };
+
+    // Advanced: BSA Normalization if Ht/Wt provided
+    if (weight && height) {
+        const bsa = Math.sqrt((parseFloat(height) * parseFloat(weight)) / 3600);
+        const absoluteGfr = (gfr * bsa) / 1.73;
+        result.absoluteGfr = absoluteGfr.toFixed(0);
+        result.masteryInsight += ` BSA-Adjusted GFR (${result.absoluteGfr} mL/min) is more accurate for narrow-window drug dosing in non-average body sizes.`;
+    }
+
+    // KDIGO Staging & Action Plan
+    if (gfr < 15) { 
+        result.status = "Critical (G5)"; 
+        result.interpretation = "Kidney Failure / End-Stage Renal Disease.";
+        result.actionPlan = "Emergency: Review all medications. Avoid nephrotoxins. Consult Nephrology for dialysis readiness.";
+        result.isCritical = true;
+    } else if (gfr < 30) { 
+        result.status = "Severe Decrease (G4)"; 
+        result.interpretation = "Severely decreased renal function.";
+        result.actionPlan = "Reduce dose by 50% or double the interval for renal-cleared drugs (e.g., Vancomycin, Enoxaparin).";
+        result.isCritical = true;
+    } else if (gfr < 60) { 
+        result.status = "Moderate Decrease (G3)"; 
+        result.interpretation = "Moderately decreased function. Chronic Kidney Disease likely.";
+        result.actionPlan = "Reduce doses by 25%. Monitor electrolytes (K+, PO4) and blood pressure strictly.";
+        result.isCritical = false;
+    } else {
+        result.status = "Normal/Mildly Decreased (G1-G2)";
+        result.interpretation = "Renal function is within acceptable clinical limits.";
+        result.actionPlan = "Continue standard dosing. Re-evaluate if patient becomes acutely ill or dehydrated.";
+        result.isCritical = false;
+    }
+
+    return result;
+};
+
+/** 3. METABOLIC MASTERY (BMI + Pulse Pressure Insight) */
 export const calculateBMI = (weight, height, wUnit = 'kg', hUnit = 'cm') => {
     let w = parseFloat(weight);
     let h = parseFloat(height);
@@ -43,110 +107,90 @@ export const calculateBMI = (weight, height, wUnit = 'kg', hUnit = 'cm') => {
     else if (hUnit === 'in') h *= 0.0254;
 
     const bmi = w / (h * h);
-    let category, risk, color;
+    let res = { value: bmi.toFixed(1), unit: "kg/m²" };
 
-    if (bmi < 18.5) { category = "Underweight"; risk = "Nutritional Deficiency"; color = "text-blue-500"; }
-    else if (bmi < 25) { category = "Normal"; risk = "Minimal"; color = "text-emerald-500"; }
-    else if (bmi < 30) { category = "Overweight"; risk = "Increased CVD/DM Risk"; color = "text-orange-500"; }
-    else { category = "Obese"; risk = "High Metabolic/CVD Risk"; color = "text-red-500"; }
+    if (bmi < 18.5) { 
+        res.status = "Underweight"; 
+        res.actionPlan = "Evaluate for nutritional deficiencies, malabsorption, or eating disorders.";
+        res.masteryInsight = "Underweight status in the elderly is a high-risk factor for frailty and increased mortality.";
+    } else if (bmi < 25) { 
+        res.status = "Normal"; 
+        res.actionPlan = "Maintain current lifestyle. Focus on balanced nutrition and metabolic health.";
+        res.masteryInsight = "BMI is a population tool; it does not distinguish between muscle mass and adipose tissue.";
+    } else if (bmi < 30) { 
+        res.status = "Overweight"; 
+        res.actionPlan = "Screen for pre-diabetes and hypertension. Suggest increased physical activity.";
+        res.masteryInsight = "Overweight BMI may carry a 'protection paradox' in certain chronic diseases like HF, but increases long-term CVD risk.";
+    } else { 
+        res.status = "Obese"; 
+        res.actionPlan = "High clinical priority. Implement weight management and screen for Sleep Apnea/Metabolic Syndrome.";
+        res.masteryInsight = "Obesity is a pro-inflammatory state that significantly alters the volume of distribution for lipophilic drugs.";
+    }
 
-    return { value: bmi.toFixed(1), category, risk, color, pearl: "Normal BMI range: 18.5 – 24.9 kg/m²." };
+    return res;
 };
 
-/** 3. eGFR (CKD-EPI 2021) with Dose Adjustments */
-export const calculateGFR = (creatinine, age, gender, unit = 'mg/dl') => {
-    let scr = parseFloat(creatinine);
-    let a = parseFloat(age);
-    if (isNaN(scr) || isNaN(a) || scr <= 0) return null;
-
-    if (unit === 'umol/l') scr /= 88.4;
-
-    const kappa = gender === 'female' ? 0.7 : 0.9;
-    const alpha = gender === 'female' ? -0.329 : -0.411;
-    const gFactor = gender === 'female' ? 1.018 : 1.0;
-
-    const gfr = 142 * Math.pow(Math.min(scr / kappa, 1), alpha) * Math.pow(Math.max(scr / kappa, 1), -1.200) * Math.pow(0.9938, a) * gFactor;
-    
-    let adjustment = "100% of standard dose";
-    let stage = "G1 (Normal)";
-
-    if (gfr < 15) { stage = "G5 (Failure)"; adjustment = "Avoid or reduce dose by 75%"; }
-    else if (gfr < 30) { stage = "G4 (Severe)"; adjustment = "Reduce dose by 50% or double interval"; }
-    else if (gfr < 60) { stage = "G3 (Moderate)"; adjustment = "Reduce dose by 25%"; }
-    else if (gfr < 90) { stage = "G2 (Mild)"; }
-    
-    return { 
-        value: gfr > 90 ? ">90" : gfr.toFixed(0),
-        stage,
-        adjustment,
-        pearl: "Renal dose adjustments are critical for NTI drugs like Vancomycin and Aminoglycosides."
-    };
-};
-
-/** 4. Mean Arterial Pressure (MAP) */
+/** 4. HEMODYNAMIC MASTERY (MAP + Pulse Pressure) */
 export const calculateMAP = (sbp, dbp) => {
     const s = parseFloat(sbp);
     const d = parseFloat(dbp);
     if (isNaN(s) || isNaN(d) || s <= d) return null;
 
     const map = (s + (2 * d)) / 3;
-    let status = "Normal Perfusion";
-    let color = "text-emerald-500";
-    if (map < 65) { status = "Hypoperfusion Risk"; color = "text-red-500"; }
-    else if (map >= 100) { status = "High Afterload"; color = "text-orange-500"; }
+    const pulsePressure = s - d;
+    
+    let res = {
+        value: map.toFixed(0),
+        unit: "mmHg",
+        masteryInsight: `Pulse Pressure is ${pulsePressure} mmHg. High pulse pressure (>60) often indicates arterial stiffness or aortic regurgitation.`
+    };
 
-    return { value: map.toFixed(0), status, color, pearl: "Target MAP for vital organ perfusion is typically >65 mmHg." };
+    if (map < 65) { 
+        res.status = "Hypoperfusion Risk"; 
+        res.actionPlan = "CRITICAL: Vital organ perfusion is compromised. Consider fluid bolus or vasopressors.";
+        res.isCritical = true;
+    } else if (map > 100) { 
+        res.status = "High Afterload"; 
+        res.actionPlan = "Increased cardiac workload. Evaluate for hypertensive urgency or pain/distress.";
+        res.isCritical = false;
+    } else {
+        res.status = "Adequate Perfusion";
+        res.actionPlan = "Perfusion is stable. Target MAP achieved for vital organs.";
+        res.isCritical = false;
+    }
+
+    return res;
 };
 
-/** 5. Fluid Maintenance & Strategy */
-export const calculateMaintenanceFluid = (weight, unit = 'kg') => {
+/** 5. FLUID & TONICITY MASTERY */
+export const calculateIVFluidStrategy = (weight, type, glucose = null, sbp = null) => {
     let w = parseFloat(weight);
-    if (isNaN(w) || w <= 0) return null;
-    if (unit === 'lbs') w *= 0.453592;
+    if (isNaN(w)) return null;
 
-    let rate = 0;
-    if (w <= 10) rate = w * 4;
-    else if (w <= 20) rate = 40 + ((w - 10) * 2);
-    else rate = 60 + ((w - 20) * 1);
-
-    return { 
-        rate: rate.toFixed(0), 
-        pearl: "Holliday-Segar Formula: 4mL (first 10kg) + 2mL (second 10kg) + 1mL (rest)." 
+    // Maintenance (4-2-1 Rule)
+    let rate = w <= 10 ? w * 4 : w <= 20 ? 40 + (w - 10) * 2 : 60 + (w - 20) * 1;
+    
+    let res = {
+        value: rate.toFixed(0),
+        unit: "mL/hr",
+        status: "Maintenance Rate",
+        masteryInsight: "The Holliday-Segar rule estimates caloric requirements; 100kcal used = 100mL water required."
     };
-};
 
-export const calculateIVFluidRate = ({ baseRate, fluidType, glucoseMgDl, sbp }) => {
-    const rate = parseFloat(baseRate);
-    const s = parseFloat(sbp);
-    const glu = parseFloat(glucoseMgDl);
-    if (isNaN(rate)) return null;
-
-    let finalRate = rate;
-    let rationale = [];
-    let risk = [];
-    let pearls = [];
-
-    if (['NS', 'RL'].includes(fluidType)) {
-        if (s && s < 90) {
-            finalRate = rate * 1.5;
-            rationale.push("Hypotension detected (SBP < 90). Rate increased for resuscitation.");
-            risk.push("Monitor for fluid overload (lung crackles, edema).");
-            pearls.push("Isotonic crystalloids are first-line for shock.");
-        } else { rationale.push("Isotonic maintenance for euvolemic patient."); }
+    if (type === 'NS' || type === 'RL') {
+        if (sbp && parseFloat(sbp) < 90) {
+            res.value = (rate * 1.5).toFixed(0);
+            res.status = "Resuscitation Strategy";
+            res.actionPlan = "Hypotension detected. Rate increased to support volume. Monitor for lung crackles (fluid overload).";
+        }
     }
 
-    if (fluidType === 'D5NS') {
-        if (glu && glu < 70) {
-            finalRate = rate * 1.25;
-            rationale.push("Hypoglycemia detected (<70 mg/dL). Rate increased to provide glucose.");
-        } else if (glu && glu > 250) { risk.push("Hyperglycemia detected. Consider switching to NS."); }
-        pearls.push("D5NS provides ~170 kcal/L for caloric support.");
+    if (type === 'D5NS' && glucose) {
+        const glu = parseFloat(glucose);
+        if (glu < 70) {
+            res.actionPlan = "Hypoglycemia detected. D5 provides caloric support (170 kcal/L) and prevents ketosis.";
+        }
     }
 
-    return { 
-        rate: finalRate.toFixed(0), 
-        rationale: rationale.join(" "), 
-        risk: risk.join(" "),
-        pearl: pearls.join(" ")
-    };
+    return res;
 };

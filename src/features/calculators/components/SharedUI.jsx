@@ -1,52 +1,117 @@
-import React from 'react';
-import { ChevronRight, Info, Stethoscope } from "lucide-react";
+import React, { useState } from 'react';
+import { 
+  ChevronRight, Info, AlertOctagon, BookOpen, 
+  ChevronDown, ChevronUp, Activity 
+} from "lucide-react";
 
-export const HeaderSection = ({ title }) => (
-  <div className="flex items-center gap-2 mb-4">
-    <div className="w-6 h-1 bg-blue-600 rounded-full"></div>
-    <h2 className="text-[10px] font-black uppercase tracking-widest text-slate-400">{title} TOOL</h2>
+/** 1. Master Header with Tooltip support */
+export const HeaderSection = ({ title, subtitle }) => (
+  <div className="flex flex-col gap-1 mb-6">
+    <div className="flex items-center gap-2">
+      <div className="w-8 h-1.5 bg-blue-600 rounded-full"></div>
+      <h2 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+        {title} MASTER TOOL
+      </h2>
+    </div>
+    {subtitle && <p className="text-[10px] text-slate-400 italic ml-10">{subtitle}</p>}
   </div>
 );
 
-export const Input = ({ field, value, onChange }) => (
-  <input 
-    type="number" 
-    placeholder={field} 
-    value={value} 
-    onChange={e => onChange(e.target.value)}
-    className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl font-bold text-sm outline-none border border-transparent focus:border-blue-500 shadow-inner text-blue-600 dark:text-blue-400 placeholder:text-slate-400" 
-  />
+/** 2. Advanced Parameters Toggle (The "Expert Mode" Switch) */
+export const AdvancedToggle = ({ children, isOpen, onToggle }) => (
+  <div className="mt-2 border-t border-slate-100 dark:border-slate-800 pt-2">
+    <button 
+      onClick={onToggle}
+      className="flex items-center gap-2 text-[9px] font-black uppercase tracking-widest text-blue-500 hover:text-blue-600 transition-colors"
+    >
+      {isOpen ? <ChevronUp size={12}/> : <ChevronDown size={12}/>}
+      {isOpen ? "Hide Advanced Parameters" : "Show Advanced Parameters (Increases Precision)"}
+    </button>
+    {isOpen && <div className="mt-3 grid grid-cols-1 gap-3 animate-in slide-in-from-top-2 duration-300">{children}</div>}
+  </div>
 );
 
-export const UnitSelect = ({ value, onChange, options }) => (
-  <select 
-    value={value} 
-    onChange={e => onChange(e.target.value)}
-    className="bg-slate-100 dark:bg-slate-800 rounded-xl px-2 font-black text-[10px] uppercase outline-none text-slate-500 shrink-0"
-  >
-    {options.map(o => <option key={o} value={o}>{o}</option>)}
-  </select>
+/** 3. Master Interpretation Card (The "Learning" Panel) */
+export const MasteryInterpretationCard = ({ result }) => {
+  if (!result) return null;
+
+  const isCritical = result.isCritical;
+  
+  return (
+    <div className={`mt-6 overflow-hidden rounded-[1.5rem] border-2 transition-all ${
+      isCritical ? 'border-red-500/20 bg-red-50/30' : 'border-blue-500/10 bg-slate-50/50'
+    }`}>
+      {/* Result Value Header */}
+      <div className={`p-5 ${isCritical ? 'bg-red-500' : 'bg-blue-600'}`}>
+        <div className="flex justify-between items-start">
+          <div>
+            <p className="text-[10px] font-black text-white/70 uppercase tracking-widest">Calculated Result</p>
+            <div className="flex items-baseline gap-2">
+              <span className="text-4xl font-black text-white">{result.value}</span>
+              <span className="text-sm font-bold text-white/80">{result.unit}</span>
+            </div>
+          </div>
+          {isCritical && <AlertOctagon className="text-white animate-pulse" size={24} />}
+        </div>
+        <p className="mt-2 text-xs font-black text-white uppercase tracking-wider bg-white/20 inline-block px-2 py-1 rounded">
+          {result.status}
+        </p>
+      </div>
+
+      {/* Clinical Intelligence Sections */}
+      <div className="p-5 space-y-4">
+        {/* Interpretation */}
+        <div className="flex gap-3">
+          <Activity size={16} className="text-blue-500 shrink-0 mt-1" />
+          <div>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Clinical Interpretation</p>
+            <p className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-relaxed">{result.interpretation}</p>
+          </div>
+        </div>
+
+        {/* Action Plan */}
+        <div className="flex gap-3">
+          <AlertOctagon size={16} className="text-orange-500 shrink-0 mt-1" />
+          <div>
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Immediate Action Plan</p>
+            <p className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-relaxed">{result.actionPlan}</p>
+          </div>
+        </div>
+
+        {/* Mastery Insight (The "Educational" Part) */}
+        <div className="mt-4 p-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <BookOpen size={14} className="text-blue-600" />
+            <span className="text-[10px] font-black text-blue-600 uppercase">Mastery Insight</span>
+          </div>
+          <p className="text-[11px] font-medium text-slate-600 dark:text-slate-400 leading-relaxed italic">
+            "{result.masteryInsight}"
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Re-exporting basic components for backward compatibility/simple usage
+export const Input = ({ field, value, onChange, icon: Icon }) => (
+  <div className="relative flex items-center">
+    {Icon && <Icon size={14} className="absolute left-3 text-slate-400" />}
+    <input 
+      type="number" 
+      placeholder={field} 
+      value={value} 
+      onChange={e => onChange(e.target.value)}
+      className={`w-full p-3 ${Icon ? 'pl-10' : 'pl-4'} bg-slate-50 dark:bg-slate-800 rounded-xl font-bold text-sm outline-none border-2 border-transparent focus:border-blue-500/50 shadow-inner text-blue-600 dark:text-blue-400 placeholder:text-slate-400 transition-all`} 
+    />
+  </div>
 );
 
 export const CalcButton = ({ onClick, label, color }) => (
   <button 
     onClick={onClick} 
-    className={`w-full py-3.5 ${color} text-white font-black rounded-xl shadow-lg active:scale-95 transition-all uppercase tracking-widest text-[10px]`}
+    className={`w-full py-4 mt-4 ${color} text-white font-black rounded-2xl shadow-lg active:scale-95 transition-all uppercase tracking-[0.15em] text-[10px] flex items-center justify-center gap-2`}
   >
-    {label} <ChevronRight className="inline ml-1" size={14} />
+    {label} <ChevronRight size={16} />
   </button>
-);
-
-export const ResultBox = ({ value, label, pearl, children }) => (
-  <div className="p-5 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 animate-in zoom-in-95 mt-4">
-    <p className="text-4xl font-black text-blue-600">{value}</p>
-    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</p>
-    {pearl && (
-      <div className="mt-4 flex gap-2 items-start text-[10px] bg-amber-50 dark:bg-amber-900/30 p-2 rounded-lg border border-amber-200 dark:border-amber-800/50 shadow-sm">
-        <Info size={14} className="text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-        <p className="text-amber-900 dark:text-amber-200 font-medium leading-tight"><b>Pearl:</b> {pearl}</p>
-      </div>
-    )}
-    {children}
-  </div>
 );

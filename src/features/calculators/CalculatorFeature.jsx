@@ -1,10 +1,8 @@
 import React, { useState } from "react";
-import { 
-  Baby, Droplet, Scale, Activity, Heart 
-} from "lucide-react";
+import { Baby, Droplet, Scale, Activity, Heart } from "lucide-react";
 
 // 1. Import Foundations
-import { HeaderSection, ResultBox } from "./components/SharedUI";
+import { HeaderSection } from "./components/SharedUI";
 import { useClinicalAlerts } from "./hooks/useClinicalAlerts";
 
 // 2. Import Individual Tools
@@ -16,20 +14,19 @@ import { MAPTool } from "./tools/MAPTool";
 
 export default function CalculatorFeature() {
   const [activeTool, setActiveTool] = useState("pediatric");
-  const [results, setResults] = useState({});
   const { triggerNotification } = useClinicalAlerts();
 
-  // Shared state for all inputs to maintain persistence when switching tools
+  // Unified state: persists data when switching tools (Master Medics consistency)
   const [calcState, setCalcState] = useState({
     weight: "", age: "", height: "", creatinine: "", sbp: "", dbp: "", glucose: "",
-    unit: "kg", hUnit: "cm", gender: "male", fluidType: "421"
+    unit: "kg", hUnit: "cm", gender: "male", fluidType: "421", indication: "general"
   });
 
   const update = (key, val) => setCalcState(prev => ({ ...prev, [key]: val }));
 
-  // Centralized handler for calculations and notifications
+  // Centralized handler for notifications
   const handleResult = (type, data) => {
-    setResults(prev => ({ ...prev, [type]: data }));
+    // Notification triggered here; Tool handles its own UI display
     triggerNotification(type, data);
   };
 
@@ -49,8 +46,8 @@ export default function CalculatorFeature() {
 
   return (
     <div className="space-y-4 pb-10">
-      {/* Tool Navigation Grid */}
-      <div className="grid grid-cols-5 gap-1 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-2xl shadow-inner shrink-0">
+      {/* 1. Navigation Grid */}
+      <div className="grid grid-cols-5 gap-1 bg-slate-100 dark:bg-slate-800/50 p-1.5 rounded-[1.5rem] shadow-inner shrink-0">
         {[
           { id: 'pediatric', icon: Baby, label: 'Dose', color: 'bg-purple-600' },
           { id: 'fluid', icon: Droplet, label: 'Fluid', color: 'bg-blue-600' },
@@ -60,52 +57,32 @@ export default function CalculatorFeature() {
         ].map(t => (
           <button 
             key={t.id} 
-            onClick={() => { setActiveTool(t.id); setResults({}); }}
-            className={`flex flex-col items-center justify-center py-2 rounded-xl transition-all
-            ${activeTool === t.id ? `${t.color} text-white shadow-md` : 'text-slate-500'}`}
+            onClick={() => setActiveTool(t.id)}
+            className={`flex flex-col items-center justify-center py-3 rounded-2xl transition-all duration-300
+            ${activeTool === t.id ? `${t.color} text-white shadow-lg scale-105` : 'text-slate-400 hover:bg-white/50 dark:hover:bg-slate-700/50'}`}
           >
-            <t.icon size={16} />
-            <span className="text-[8px] font-black mt-1 uppercase tracking-tighter">{t.label}</span>
+            <t.icon size={18} strokeWidth={2.5} />
+            <span className="text-[9px] font-black mt-1.5 uppercase tracking-tighter">{t.label}</span>
           </button>
         ))}
       </div>
 
-      {/* Main Tool Interface */}
-      <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-xl border border-slate-100 dark:border-slate-800">
-        <HeaderSection title={activeTool.toUpperCase()} />
+      {/* 2. Main Tool Interface */}
+      <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] p-6 shadow-2xl border border-slate-100 dark:border-slate-800 transition-all duration-500">
+        <HeaderSection 
+          title={activeTool.toUpperCase()} 
+          subtitle="Clinical Decision Support System (CDSS)" 
+        />
         
-        <div className="mt-4">
+        <div className="mt-4 min-h-[300px]">
           {renderTool()}
         </div>
 
-        {/* Dynamic Result Display */}
-        {results[activeTool] && (
-          <ResultBox 
-            value={results[activeTool].value || results[activeTool].rate} 
-            label={results[activeTool].category || results[activeTool].status || "Result"} 
-            pearl={results[activeTool].pearl || results[activeTool].basePearl}
-          >
-            {/* Renal Adjustment Warning */}
-            {results[activeTool].adjustment && (
-              <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100">
-                <p className="text-[9px] font-black text-red-600 uppercase">Adjustment Required:</p>
-                <p className="text-[10px] font-bold text-red-800 dark:text-red-300">{results[activeTool].adjustment}</p>
-              </div>
-            )}
-            
-            {/* Risk/Rationale Alerts */}
-            {results[activeTool].risk && (
-              <p className="mt-2 text-[9px] bg-red-50 text-red-700 p-2 rounded-lg font-bold">⚠️ {results[activeTool].risk}</p>
-            )}
-            {results[activeTool].rationale && (
-              <p className="mt-2 text-[9px] bg-blue-50 text-blue-700 p-2 rounded-lg font-bold">ℹ️ {results[activeTool].rationale}</p>
-            )}
-          </ResultBox>
-        )}
-
-        <p className="mt-6 text-[9px] text-slate-400 text-center italic border-t pt-4">
-          For educational purposes only. Reconsult with a physician before implementation.
-        </p>
+        <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+          <p className="text-[10px] text-slate-400 text-center font-medium leading-relaxed">
+            <b>Disclaimer:</b> This tool is for educational use. Clinical mastery requires correlation with physical assessment and institutional protocols.
+          </p>
+        </div>
       </div>
     </div>
   );
