@@ -3,23 +3,23 @@ import {
   Baby, Droplet, Scale, Activity, Heart 
 } from "lucide-react";
 
-// Import Shared UI and Hooks from the new modular directory
-import { HeaderSection, ResultBox } from "./calculators/components/SharedUI";
-import { useClinicalAlerts } from "./calculators/hooks/useClinicalAlerts";
+// 1. Import Foundations
+import { HeaderSection, ResultBox } from "./components/SharedUI";
+import { useClinicalAlerts } from "./hooks/useClinicalAlerts";
 
-// Import the specific Calculator Tools
-import { PediatricTool } from "./calculators/tools/PediatricTool";
-import { FluidTool } from "./calculators/tools/FluidTool";
-import { RenalTool } from "./calculators/tools/RenalTool";
-import { BMITool } from "./calculators/tools/BMITool";
-import { MAPTool } from "./calculators/tools/MAPTool";
+// 2. Import Individual Tools
+import { PediatricTool } from "./tools/PediatricTool";
+import { FluidTool } from "./tools/FluidTool";
+import { RenalTool } from "./tools/RenalTool";
+import { BMITool } from "./tools/BMITool";
+import { MAPTool } from "./tools/MAPTool";
 
 export default function CalculatorFeature() {
   const [activeTool, setActiveTool] = useState("pediatric");
   const [results, setResults] = useState({});
   const { triggerNotification } = useClinicalAlerts();
 
-  // Unified state: persists data when switching between tools (e.g., Weight stays saved)
+  // Shared state for all inputs to maintain persistence when switching tools
   const [calcState, setCalcState] = useState({
     weight: "", age: "", height: "", creatinine: "", sbp: "", dbp: "", glucose: "",
     unit: "kg", hUnit: "cm", gender: "male", fluidType: "421"
@@ -27,27 +27,29 @@ export default function CalculatorFeature() {
 
   const update = (key, val) => setCalcState(prev => ({ ...prev, [key]: val }));
 
+  // Centralized handler for calculations and notifications
   const handleResult = (type, data) => {
     setResults(prev => ({ ...prev, [type]: data }));
     triggerNotification(type, data);
   };
 
-  // Tool Selection Logic
+  // Tool Switcher Logic
   const renderTool = () => {
-    const props = { calcState, update, onResult: handleResult };
+    const commonProps = { calcState, update, onResult: handleResult };
+    
     switch (activeTool) {
-      case 'pediatric': return <PediatricTool {...props} />;
-      case 'fluid':     return <FluidTool {...props} />;
-      case 'gfr':       return <RenalTool {...props} />;
-      case 'bmi':       return <BMITool {...props} />;
-      case 'map':       return <MAPTool {...props} />;
-      default:          return <PediatricTool {...props} />;
+      case 'pediatric': return <PediatricTool {...commonProps} />;
+      case 'fluid':     return <FluidTool {...commonProps} />;
+      case 'gfr':       return <RenalTool {...commonProps} />;
+      case 'bmi':       return <BMITool {...commonProps} />;
+      case 'map':       return <MAPTool {...commonProps} />;
+      default:          return <PediatricTool {...commonProps} />;
     }
   };
 
   return (
     <div className="space-y-4 pb-10">
-      {/* 1. Navigation Grid */}
+      {/* Tool Navigation Grid */}
       <div className="grid grid-cols-5 gap-1 bg-slate-100 dark:bg-slate-800/50 p-1 rounded-2xl shadow-inner shrink-0">
         {[
           { id: 'pediatric', icon: Baby, label: 'Dose', color: 'bg-purple-600' },
@@ -68,7 +70,7 @@ export default function CalculatorFeature() {
         ))}
       </div>
 
-      {/* 2. Content Container */}
+      {/* Main Tool Interface */}
       <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-6 shadow-xl border border-slate-100 dark:border-slate-800">
         <HeaderSection title={activeTool.toUpperCase()} />
         
@@ -76,19 +78,22 @@ export default function CalculatorFeature() {
           {renderTool()}
         </div>
 
-        {/* 3. Global Result Display (renders for any active tool) */}
+        {/* Dynamic Result Display */}
         {results[activeTool] && (
           <ResultBox 
             value={results[activeTool].value || results[activeTool].rate} 
             label={results[activeTool].category || results[activeTool].status || "Result"} 
             pearl={results[activeTool].pearl || results[activeTool].basePearl}
           >
+            {/* Renal Adjustment Warning */}
             {results[activeTool].adjustment && (
               <div className="mt-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100">
                 <p className="text-[9px] font-black text-red-600 uppercase">Adjustment Required:</p>
                 <p className="text-[10px] font-bold text-red-800 dark:text-red-300">{results[activeTool].adjustment}</p>
               </div>
             )}
+            
+            {/* Risk/Rationale Alerts */}
             {results[activeTool].risk && (
               <p className="mt-2 text-[9px] bg-red-50 text-red-700 p-2 rounded-lg font-bold">⚠️ {results[activeTool].risk}</p>
             )}
@@ -99,7 +104,7 @@ export default function CalculatorFeature() {
         )}
 
         <p className="mt-6 text-[9px] text-slate-400 text-center italic border-t pt-4">
-          Clinical Decision Support: Verify calculations against local hospital protocols.
+          For educational purposes only. Reconsult with a physician before implementation.
         </p>
       </div>
     </div>
