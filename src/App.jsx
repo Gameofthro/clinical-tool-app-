@@ -1,11 +1,12 @@
 /**
  * MAIN ENTRY: ClinicalAssist App
  * MASTER FIX: Unified Theme Injection & High-Contrast Light Mode UI.
- * UPDATE: Integrated Interactive Clinical Notifications.
+ * UPDATE: Web-Safe Integrated Interactive Clinical Notifications.
  */
 
 import React, { useState, useEffect } from "react";
-import { LocalNotifications } from '@capacitor/local-notifications'; //
+import { LocalNotifications } from '@capacitor/local-notifications';
+import { Capacitor } from '@capacitor/core';
 
 // --- SYSTEM LOGIC & STATE ---
 import { useClinicalApp } from "./hooks/useClinicalApp";
@@ -39,37 +40,42 @@ export default function ClinicalTool() {
   const [showContact, setShowContact] = useState(false);
 
   /**
-   * NOTIFICATION ENGINE
-   * Registers interactive clinical actions and listens for user response.
+   * NOTIFICATION ENGINE (Native-First)
+   * Registers actions only on mobile to prevent web-runtime exceptions.
    */
   useEffect(() => {
     const initNotifications = async () => {
-      // Register Action Buttons (Dose Taken / Snooze)
-      await LocalNotifications.registerActionTypes({
-        types: [
-          {
-            id: 'CLINICAL_CARE',
-            actions: [
-              { id: 'thanks', title: '❤️ Got it, thank you', foreground: true },
-              { id: 'remind', title: '⏰ Remind me later', foreground: false }
+      if (Capacitor.isNativePlatform()) {
+        try {
+          // Register Action Buttons (Dose Taken / Snooze)
+          await LocalNotifications.registerActionTypes({
+            types: [
+              {
+                id: 'CLINICAL_CARE',
+                actions: [
+                  { id: 'thanks', title: '❤️ Got it, thank you', foreground: true },
+                  { id: 'remind', title: '⏰ Remind me later', foreground: false }
+                ]
+              }
             ]
-          }
-        ]
-      });
+          });
+        } catch (e) {
+          console.warn("Notification registration skipped: Environment non-native.");
+        }
+      }
     };
 
-    // Listener for when user taps an action button
-    const actionListener = LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
-      console.log('Care message acknowledged:', action.actionId);
-      if (action.actionId === 'thanks') {
-        // You could trigger a small success toast here if needed
-      }
-    });
+    let actionListener;
+    if (Capacitor.isNativePlatform()) {
+      actionListener = LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
+        console.log('Care message acknowledged:', action.actionId);
+      });
+    }
 
     initNotifications();
 
     return () => {
-      actionListener.remove(); // Cleanup to prevent memory leaks
+      if (actionListener) actionListener.remove(); 
     };
   }, []);
 
@@ -77,16 +83,19 @@ export default function ClinicalTool() {
    * GLOBAL THEME ENGINE
    */
   useEffect(() => {
+    const root = document.documentElement;
     if (app.darkMode) {
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
+      root.classList.add('dark');
+      root.classList.remove('light');
     } else {
-      document.documentElement.classList.add('light');
-      document.documentElement.classList.remove('dark');
+      root.classList.add('light');
+      root.classList.remove('dark');
     }
   }, [app.darkMode]);
 
-  // Hardware Back Button Interceptor
+  /**
+   * HARDWARE BACK BUTTON INTERCEPTOR
+   */
   useEffect(() => {
     const closeOverlays = () => {
       if (selectedDisease) { setSelectedDisease(null); return true; }
@@ -109,7 +118,11 @@ export default function ClinicalTool() {
   return (
     <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 overflow-hidden">
       
+      {/* MASTER MEDICS THEME INJECTION */}
       <style dangerouslySetInnerHTML={{ __html: `
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
         .light .bg-slate-900\\/50, 
         .light [class*="bg-slate-"],
         .light .group { 
@@ -117,8 +130,22 @@ export default function ClinicalTool() {
           border: 1px solid #e2e8f0 !important; 
           box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05) !important;
         }
+        
         .light h1, .light h2, .light h3 { color: #0f172a !important; }
         .light p, .light span { color: #475569 !important; }
+        
+        /* Dropdown Visibility Fix */
+        .light select, .light select option {
+          background-color: #ffffff !important;
+          color: #0f172a !important;
+        }
+        
+        /* Master Input Focus */
+        .light input {
+          color: #0f172a !important;
+          background-color: #ffffff !important;
+        }
+        
         .light .text-blue-500, .light .text-blue-600 { color: #2563eb !important; }
       `}} />
 
