@@ -1,16 +1,18 @@
 import React from 'react';
 import { ChevronRight, BookOpen, Activity, ChevronDown, ChevronUp } from "lucide-react";
 
-export const HeaderSection = ({ title, subtitle }) => (
+/** RESTORED: Professional Master Header with Learning focus */
+export const HeaderSection = ({ title }) => (
   <div className="mb-10 animate-in fade-in slide-in-from-left duration-700">
     <div className="flex items-center gap-4">
       <div className="w-12 h-2 bg-blue-600 rounded-full"></div>
-      <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">{title} MASTER TOOL</h2>
+      <h2 className="text-[12px] font-black uppercase tracking-[0.4em] text-slate-500 dark:text-slate-400">
+        {title} LEARNING TOOL
+      </h2>
     </div>
-    {subtitle && <p className="text-[11px] text-slate-400 font-bold italic ml-16 mt-2">{subtitle}</p>}
+    {/* Subtitle subtitle/CDSS line removed */}
   </div>
 );
-
 export const Input = ({ field, value, onChange, icon: Icon }) => (
   <div className="relative flex items-center w-full group">
     {Icon && <Icon size={18} className="absolute left-5 text-slate-400 group-focus-within:text-blue-500 transition-all" />}
