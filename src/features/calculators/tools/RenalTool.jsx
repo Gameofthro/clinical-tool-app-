@@ -1,51 +1,41 @@
 import React, { useState } from 'react';
-import { Activity, Ruler, Scale } from "lucide-react";
-import { Input, CalcButton, AdvancedToggle, MasteryInterpretationCard } from '../components/SharedUI';
-import * as Logic from "../../../utils/calculators";
+import { Activity, User, Ruler, Scale } from "lucide-react";
+import { InputGroup, CalcButton, MasteryCard, AdvancedToggle } from '../components/SharedUI';
+import { calculateGFR } from "../../../utils/calculators";
 
-export const RenalTool = ({ calcState, update, onResult }) => {
+export const RenalTool = ({ calcState, update }) => {
+  const [result, setResult] = useState(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
-  const [localResult, setLocalResult] = useState(null);
-
-  const handleCalculate = () => {
-    const res = Logic.calculateGFR(
-      calcState.creatinine, calcState.age, calcState.gender,
-      showAdvanced ? calcState.weight : null,
-      showAdvanced ? calcState.height : null
-    );
-    if (res) {
-      setLocalResult(res);
-      onResult('gfr', res);
-    }
-  };
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 gap-4">
-        <Input field="Patient Age" value={calcState.age} onChange={v => update('age', v)} icon={Activity} />
-        <Input field="Serum Creatinine (mg/dL)" value={calcState.creatinine} onChange={v => update('creatinine', v)} icon={Activity} />
-      </div>
+    <div className="space-y-6 w-full animate-in slide-in-from-right duration-500">
+      <InputGroup 
+        field="Serum Creatinine" value={calcState.creatinine} onChange={v => update('creatinine', v)} 
+        unitValue={calcState.unit} onUnitChange={v => update('unit', v)}
+        unitOptions={['mg/dl', 'umol/l']} icon={Activity} 
+      />
+      <InputGroup field="Age" value={calcState.age} onChange={v => update('age', v)} icon={User} />
 
-      <div className="grid grid-cols-2 gap-3 p-2 bg-slate-50 dark:bg-slate-800 rounded-[2rem]">
+      <div className="grid grid-cols-2 gap-4">
         {['male', 'female'].map(g => (
           <button key={g} onClick={() => update('gender', g)}
-            className={`py-3.5 rounded-[1.5rem] font-black capitalize text-[11px] tracking-widest transition-all ${
-              calcState.gender === g ? 'bg-blue-600 text-white shadow-xl' : 'text-slate-400'
-            }`}>
+            className={`py-5 rounded-2xl font-black uppercase text-[12px] transition-all ${calcState.gender === g ? 'bg-blue-600 text-white shadow-lg' : 'bg-slate-100 dark:bg-slate-800 text-slate-400'}`}
+          >
             {g}
           </button>
         ))}
       </div>
 
       <AdvancedToggle isOpen={showAdvanced} onToggle={() => setShowAdvanced(!showAdvanced)}>
-        <div className="flex gap-4">
-          <Input field="Weight (kg)" value={calcState.weight} onChange={v => update('weight', v)} icon={Scale} />
-          <Input field="Height (cm)" value={calcState.height} onChange={v => update('height', v)} icon={Ruler} />
-        </div>
+        <InputGroup field="Height (cm)" value={calcState.height} onChange={v => update('height', v)} icon={Ruler} />
+        <InputGroup field="Weight (kg)" value={calcState.weight} onChange={v => update('weight', v)} icon={Scale} />
       </AdvancedToggle>
 
-      <CalcButton onClick={handleCalculate} label="Run Mastery Analysis" color="bg-red-600" />
-      {localResult && <MasteryInterpretationCard result={localResult} />}
+      <CalcButton 
+        onClick={() => setResult(calculateGFR(calcState.creatinine, calcState.age, calcState.gender, showAdvanced ? calcState.weight : null, showAdvanced ? calcState.height : null))} 
+        label="Analyze Clearance Model" color="bg-red-600" 
+      />
+      {result && <MasteryCard result={result} />}
     </div>
   );
 };
