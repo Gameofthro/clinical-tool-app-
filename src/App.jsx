@@ -26,7 +26,7 @@ import Dashboard from "./components/Navigation/Dashboard";
 import DiseaseSearch from "./features/DiseaseSearch";
 import CalculatorFeature from "./features/Calculators";
 import DiagnosisTool from "./features/symptoms/SymptomReviewTool"; 
-import DrugDictionaryTool from "./features/DrugDictionaryTool";
+import DrugDictionaryTool from "./features/drug-index/DrugDictionaryTool";
 import DiseaseModal from "./components/ui/DiseaseModal";
 
 export default function ClinicalTool() {

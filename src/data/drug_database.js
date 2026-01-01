@@ -111,28 +111,31 @@ export const drugDatabase = [
     "adr_reporting_link": "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm"
   },
   {
-    "id": 5,
-    "drug_name": "Acetaminophen (Paracetamol)",
+    "id": 22,
+    "drug_name": "Cannabidiol (Epidiolex)",
     "pharmacologic_class": [
-      "Non-Opioid Analgesic",
-      "Antipyretic"
+      "Anticonvulsant",
+      "Cannabinoid"
     ],
     "indications_and_moa": [
       {
-        "indication": "Analgesia / Antipyresis",
-        "mechanism_of_action": "Inhibits CNS prostaglandin synthesis (COX inhibition); elevates pain threshold; acts on hypothalamic heat-regulating center."
+        "indication": "Lennox-Gastaut syndrome / Dravet syndrome / Tuberous sclerosis complex",
+        "mechanism_of_action": "Precise mechanism unknown; does not bind cannabinoid receptors; may modulate intracellular calcium and adenosine signaling; requires hepatic monitoring."
       }
     ],
     "common_side_effects": [
-      "Nausea (rare)",
-      "Headache (rare)"
+      "Somnolence",
+      "Decreased appetite",
+      "Diarrhea",
+      "Fatigue"
     ],
     "adverse_drug_events": [
-      "Hepatotoxicity (Acute liver failure with overdose due to NAPQI metabolite)",
-      "Severe Skin Reactions (SJS/TEN/AGEP)"
+      "Hepatocellular injury (Elevated transaminases ALT/AST)",
+      "Suicidal behavior and ideation",
+      "Severe somnolence and sedation"
     ],
     "adr_reporting_link": "https://www.accessdata.fda.gov/scripts/medwatch/index.cfm"
-  },
+},
   {
     "id": 6,
     "drug_name": "Acetazolamide",
