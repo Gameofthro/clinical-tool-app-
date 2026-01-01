@@ -1,66 +1,84 @@
 import React, { useState } from 'react';
-import { Baby, Activity, Scale, ShieldAlert } from "lucide-react";
-// FIXED: Importing InputGroup and AdvancedToggle exactly as exported in SharedUI
-import { InputGroup, CalcButton, MasteryCard, AdvancedToggle } from '../components/SharedUI';
-import * as Logic from "../../../utils/calculators";
+import { Baby, Scale } from "lucide-react";
+// Importing perfected UI components from SharedUI
+import { 
+  HeaderSection, 
+  InputGroup, 
+  CalcButton, 
+  MasteryCard, 
+  KnowledgeModal 
+} from '../components/SharedUI';
+// Importing the educational vault
+import { CalculatorLibrary } from '../../../data/CalculatorLibrary';
+// Importing the precision clinical engine
+import { calculatePediatricDose } from "../../../utils/calculators";
 
+/**
+ * PEDIATRIC DOSING MASTER
+ * Optimized for professional pharmaceutical modeling and weight-based safety assessment.
+ */
 export const PediatricTool = ({ calcState, update }) => {
   const [result, setResult] = useState(null);
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
-  const handleCalc = () => {
-    const res = Logic.calculatePediatricDose(
+  /**
+   * Triggers the precision pediatric algorithm.
+   * Logic handles weight conversion and neonatal factor shifting.
+   */
+  const handleCalculation = () => {
+    const res = calculatePediatricDose(
       calcState.weight, 
       calcState.age, 
-      calcState.unit, 
-      calcState.indication
+      calcState.unit
     );
     setResult(res);
   };
 
   return (
-    <div className="space-y-6 w-full animate-in slide-in-from-right duration-500">
-      <InputGroup 
-        field="Patient Weight" 
-        value={calcState.weight} 
-        onChange={v => update('weight', v)} 
-        unitValue={calcState.unit}
-        onUnitChange={v => update('unit', v)}
-        unitOptions={['kg', 'lbs']}
-        icon={Scale} 
+    <div className="w-full animate-in slide-in-from-right duration-500">
+      {/* Professional Header with Knowledge Center Trigger */}
+      <HeaderSection 
+        title="Pediatric Master" 
+        onInfoClick={() => setShowInfo(true)} 
       />
+      
+      <div className="space-y-6">
+        {/* Weight Input: Essential for primary mg/kg calculation */}
+        <InputGroup 
+          field="Patient Weight" 
+          value={calcState.weight} 
+          onChange={(v) => update('weight', v)} 
+          unitValue={calcState.unit} 
+          onUnitChange={(v) => update('unit', v)} 
+          unitOptions={['kg', 'lbs']} 
+          icon={Scale} 
+        />
 
-      <InputGroup 
-        field="Age (Years)" 
-        value={calcState.age} 
-        onChange={v => update('age', v)} 
-        icon={Baby} 
-      />
+        {/* Age Input: Used to determine Neonatal Protocol eligibility (<= 28 days) */}
+        <InputGroup 
+          field="Patient Age (Years - e.g., 0.08 for 1 month)" 
+          value={calcState.age} 
+          onChange={(v) => update('age', v)} 
+          icon={Baby} 
+        />
 
-      {/* FIXED: Integrated AdvancedToggle for learning parameters */}
-      <AdvancedToggle isOpen={showAdvanced} onToggle={() => setShowAdvanced(!showAdvanced)}>
-        <div className="space-y-3">
-          <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 text-center">
-            Theoretical Indication Modeling
-          </p>
-          <select 
-            value={calcState.indication} 
-            onChange={e => update('indication', e.target.value)}
-            className="w-full py-5 px-6 bg-slate-100 dark:bg-slate-800/80 rounded-2xl font-bold text-[15px] outline-none border-2 border-transparent focus:border-blue-500/50 text-slate-900 dark:text-white appearance-none shadow-inner"
-          >
-            <option value="general">General Simulation (10mg/kg)</option>
-            <option value="critical">Maintenance Modeling (Simulation)</option>
-          </select>
-        </div>
-      </AdvancedToggle>
+        {/* High-Impact Clinical Action Bar */}
+        <CalcButton 
+          onClick={handleCalculation} 
+          label="Analyze Safety Protocol" 
+          color="bg-purple-600" 
+        />
+      </div>
 
-      <CalcButton 
-        onClick={handleCalc} 
-        label="Analyze Pediatric Safety Model" 
-        color="bg-purple-600" 
-      />
-
+      {/* Edge-to-Edge Clinical Result Display */}
       {result && <MasteryCard result={result} />}
+
+      {/* Professional Knowledge Center Modal */}
+      <KnowledgeModal 
+        isOpen={showInfo} 
+        onClose={() => setShowInfo(false)} 
+        data={CalculatorLibrary.pediatric} 
+      />
     </div>
   );
 };
