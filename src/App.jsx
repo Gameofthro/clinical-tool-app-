@@ -189,7 +189,9 @@ export default function ClinicalTool() {
       
       {selectedDisease && <DiseaseModal name={selectedDisease.name} data={selectedDisease} onClose={() => setSelectedDisease(null)} />}
       
-      <Footer onOpenTerms={() => app.setShowTerms(true)} />
+      {activeTab === "home" && (
+        <Footer onOpenTerms={() => app.setShowTerms(true)} />
+      )}
     </div>
   );
 }
