@@ -9,8 +9,7 @@ import { MAPTool } from "./tools/MAPTool";
 
 export default function CalculatorFeature() {
   const [activeTool, setActiveTool] = useState(null);
-  // Reference for the scrollable tool container
-  const containerRef = useRef(null); 
+  const containerRef = useRef(null);
 
   const [calcState, setCalcState] = useState({
     weight: "", age: "", height: "", creatinine: "", sbp: "", dbp: "",
@@ -18,14 +17,21 @@ export default function CalculatorFeature() {
   });
 
   /**
-   * CRITICAL FIX: Scroll Reset
-   * This forces the fixed overlay to reset to the top whenever activeTool changes.
-   *
+   * FINAL SCROLL & BODY LOCK FIX
+   * 1. Prevents background scrolling (body lock).
+   * 2. Forces the tool overlay to the absolute top.
    */
   useEffect(() => {
-    if (activeTool && containerRef.current) {
-      containerRef.current.scrollTo(0, 0);
+    if (activeTool) {
+      document.body.style.overflow = 'hidden'; // Lock background
+      if (containerRef.current) {
+        containerRef.current.scrollTop = 0; // Force immediate scroll reset
+      }
+    } else {
+      document.body.style.overflow = 'unset'; // Unlock background
     }
+    
+    return () => { document.body.style.overflow = 'unset'; };
   }, [activeTool]);
 
   const update = (key, val) => setCalcState(prev => ({ ...prev, [key]: val }));
@@ -53,9 +59,7 @@ export default function CalculatorFeature() {
   return (
     <div className="w-full min-h-screen bg-slate-50 dark:bg-slate-950">
       {!activeTool ? (
-        /* TILES VIEW (DASHBOARD) */
         <div className="w-full px-4 py-6 max-w-4xl mx-auto">
-          {/* Header without non-functional knowledge button */}
           <div className="flex items-center gap-4 mb-10">
             <div className="w-10 h-2 bg-blue-600 rounded-full shrink-0"></div>
             <h2 className="text-[14px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
@@ -78,12 +82,12 @@ export default function CalculatorFeature() {
           </div>
         </div>
       ) : (
-        /* FULL-SCREEN TOOL OVERLAY (FLEX CONTAINER) */
+        /* THE FIXED SCROLLABLE OVERLAY */
         <div 
           ref={containerRef} 
-          className="fixed inset-0 z-[100] bg-white dark:bg-slate-900 flex flex-col animate-in slide-in-from-right duration-300 overflow-y-auto no-scrollbar scroll-smooth"
+          className="fixed inset-0 z-[100] bg-white dark:bg-slate-900 flex flex-col animate-in slide-in-from-right duration-300 overflow-y-scroll"
+          style={{ WebkitOverflowScrolling: 'touch' }}
         >
-          {/* Top Sticky Navigation Header */}
           <div className="w-full px-4 py-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
             <button 
               onClick={() => setActiveTool(null)}
@@ -99,7 +103,6 @@ export default function CalculatorFeature() {
             </button>
           </div>
           
-          {/* Active Tool Area (Ensured to start at top) */}
           <div className="w-full flex-1 max-w-4xl mx-auto px-4 py-8">
             {renderTool()}
             
