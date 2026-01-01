@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Baby, Droplet, Scale, Activity, Heart, ArrowLeft, X } from "lucide-react";
 import { HeaderSection } from "./components/SharedUI";
 import { PediatricTool } from "./tools/PediatricTool";
@@ -9,14 +9,18 @@ import { MAPTool } from "./tools/MAPTool";
 
 export default function CalculatorFeature() {
   const [activeTool, setActiveTool] = useState(null);
+  const containerRef = useRef(null); // Reference to the scrollable container
+
   const [calcState, setCalcState] = useState({
     weight: "", age: "", height: "", creatinine: "", sbp: "", dbp: "",
     unit: "kg", hUnit: "cm", gender: "male", fluidType: "421", indication: "general"
   });
 
-  // Fix: Force scroll to top whenever the active tool changes
+  // CRITICAL FIX: Resets scroll position of the OVERLAY to the top
   useEffect(() => {
-    window.scrollTo(0, 0);
+    if (activeTool && containerRef.current) {
+      containerRef.current.scrollTo(0, 0);
+    }
   }, [activeTool]);
 
   const update = (key, val) => setCalcState(prev => ({ ...prev, [key]: val }));
@@ -44,9 +48,8 @@ export default function CalculatorFeature() {
   return (
     <div className="w-full min-h-screen bg-slate-50 dark:bg-slate-950">
       {!activeTool ? (
-        /* TILES VIEW: Knowledge button is REMOVED here */
+        /* DASHBOARD TILES */
         <div className="w-full px-4 py-6 max-w-4xl mx-auto">
-          {/* Simple header for dashboard - no info click passed */}
           <div className="flex items-center gap-4 mb-10">
             <div className="w-10 h-2 bg-blue-600 rounded-full shrink-0"></div>
             <h2 className="text-[14px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
@@ -69,9 +72,12 @@ export default function CalculatorFeature() {
           </div>
         </div>
       ) : (
-        /* FULL-SCREEN TOOL VIEW */
-        <div className="fixed inset-0 z-[100] bg-white dark:bg-slate-900 flex flex-col animate-in slide-in-from-right duration-300 overflow-y-auto no-scrollbar">
-          {/* Mobile Sticky Navigation Header */}
+        /* FULL-SCREEN TOOL OVERLAY */
+        <div 
+          ref={containerRef} 
+          className="fixed inset-0 z-[100] bg-white dark:bg-slate-900 flex flex-col animate-in slide-in-from-right duration-300 overflow-y-auto no-scrollbar scroll-smooth"
+        >
+          {/* Navigation Bar */}
           <div className="w-full px-4 py-5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
             <button 
               onClick={() => setActiveTool(null)}
@@ -87,16 +93,13 @@ export default function CalculatorFeature() {
             </button>
           </div>
           
+          {/* Active Content Area */}
           <div className="w-full flex-1 max-w-4xl mx-auto px-4 py-8">
             {renderTool()}
             
-            {/* Professional Legal Footer */}
             <div className="mt-20 border-t border-slate-100 dark:border-slate-800 pt-10 pb-12 text-center">
               <p className="text-[10px] text-slate-400 font-bold tracking-tight uppercase px-6">
-                Clinical Master: For Professional Education Only.
-              </p>
-              <p className="text-[9px] text-slate-300 mt-2">
-                Verify calculations against institutional guidelines.
+                Clinical Master: Professional Medical Education Only.
               </p>
             </div>
           </div>
