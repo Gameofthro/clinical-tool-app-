@@ -25,9 +25,9 @@ import Dashboard from "./components/Navigation/Dashboard";
 // --- FEATURE MODULES ---
 import DiseaseSearch from "./features/DiseaseSearch";
 import CalculatorFeature from "./features/Calculators";
-import DiagnosisTool from "./features/SymptomReviewTool"; 
+import DiagnosisTool from "./features/symptoms/SymptomReviewTool"; 
 import DrugDictionaryTool from "./features/DrugDictionaryTool";
-import DiseaseModal from "./features/DiseaseModal";
+import DiseaseModal from "./components/ui/DiseaseModal";
 
 export default function ClinicalTool() {
   const app = useClinicalApp();
