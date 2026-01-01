@@ -104,14 +104,17 @@ export default function SymptomReviewTool() {
     }), [results]);
 
     return (
-        <div className="flex flex-col h-full space-y-4 animate-in fade-in duration-700 overflow-hidden pb-10">
-            {/* SEARCH PANEL - Optimized for Light/Dark Mode */}
-            <div className="bg-white dark:bg-[#1e293b] p-6 rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-slate-800 shrink-0 transition-colors">
-                <div className="flex justify-between items-center mb-6">
+        /* Removed flex-col and overflow-hidden to allow natural scrolling */
+        <div className="w-full h-full overflow-y-auto no-scrollbar animate-in fade-in duration-700 pb-20">
+            
+            {/* 1. SCROLLABLE INPUT PANEL */}
+            <div className="bg-white dark:bg-[#1e293b] p-6 rounded-[2.5rem] shadow-xl border border-slate-100 dark:border-slate-800 mb-6 transition-colors">
+                <div className="flex justify-between items-center mb-6 px-1">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-1.5 bg-blue-500 rounded-full"></div>
                         <h2 className="text-[11px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-[0.2em]">Diagnostic Triage</h2>
                     </div>
+                    {/* Urgent Filter Button */}
                     <button 
                         onClick={() => setFilterUrgency(p => p === 'critical' ? 'all' : 'critical')}
                         className={`flex items-center gap-2 px-4 py-2 rounded-2xl border transition-all active:scale-95 ${filterUrgency === 'critical' ? 'bg-rose-500 border-rose-400 text-white' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-400'}`}
@@ -134,11 +137,12 @@ export default function SymptomReviewTool() {
                         />
                     </div>
 
+                    {/* Suggestion Dropdown */}
                     {showSuggestions && localSuggestions.length > 0 && (
                         <div className="absolute top-full left-0 right-0 mt-3 bg-white dark:bg-[#0f172a] border border-slate-100 dark:border-slate-800 rounded-[1.5rem] shadow-2xl z-[100] overflow-hidden">
                             {localSuggestions.map((sym, idx) => (
                                 <button key={idx} onClick={() => { setSelectedSymptoms(p => [...p, sym]); setSearchQuery(''); setShowSuggestions(false); }}
-                                    className="w-full text-left px-6 py-4 hover:bg-blue-50 dark:hover:bg-blue-600/10 border-b border-slate-50 dark:border-slate-800/50 last:border-0 text-sm text-slate-700 dark:text-slate-300 flex justify-between items-center">
+                                    className="w-full text-left px-6 py-4 hover:bg-blue-50 dark:hover:bg-blue-600/10 border-b border-slate-50 dark:border-slate-800/50 last:border-0 text-sm text-slate-700 dark:text-slate-300 flex justify-between items-center transition-all">
                                     <span className="capitalize font-semibold">{sym}</span>
                                     <Check className="text-blue-500" size={16}/>
                                 </button>
@@ -146,23 +150,26 @@ export default function SymptomReviewTool() {
                         </div>
                     )}
                 </div>
+
                 <SymptomChips items={selectedSymptoms} onRemove={(s) => setSelectedSymptoms(p => p.filter(i => i !== s))} onClear={() => setSelectedSymptoms([])} />
             </div>
 
-            <div className="flex-1 overflow-y-auto no-scrollbar space-y-8 pr-1">
+            {/* 2. RESULTS SECTION - Follows the search panel in scroll flow */}
+            <div className="space-y-8">
                 {results.length > 0 ? (
-                    <div className="pb-20">
+                    <>
                         <ResultGroup title="Primary Differentials" icon={Zap} results={triageGroups.strong} onSelect={setSelectedDisease} />
                         <ResultGroup title="Secondary Considerations" icon={Microscope} results={triageGroups.moderate} onSelect={setSelectedDisease} />
                         <ResultGroup title="Low Correlation" icon={Activity} results={triageGroups.atypical} onSelect={setSelectedDisease} />
-                    </div>
+                    </>
                 ) : (
-                    <div className="py-32 flex flex-col items-center justify-center opacity-10">
-                        <Stethoscope size={80} strokeWidth={1} />
+                    <div className="py-20 flex flex-col items-center justify-center opacity-10">
+                        <Stethoscope size={80} strokeWidth={1} className="dark:text-white" />
                     </div>
                 )}
             </div>
 
+            {/* Disease Modal */}
             {selectedDisease && (
                 <DiseaseModal 
                     name={selectedDisease.name || "Disease Profile"} 
