@@ -10,7 +10,7 @@ import {
 
 const firebaseConfig = {
   apiKey: "AIzaSyBYvsZoxMO7Sr--WhZvuxz-lt4brKHIzFE",
-  authDomain: "clinical-tool.firebaseapp.com",
+  authDomain: "clinical-tool-app-silk.vercel.app/",
   projectId: "clinical-tool",
   storageBucket: "clinical-tool.firebasestorage.app",
   messagingSenderId: "907026280854",
