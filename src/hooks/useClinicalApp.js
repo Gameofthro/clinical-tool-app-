@@ -1,12 +1,14 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { App } from '@capacitor/app';
+import { auth, getRedirectResult } from "../firebase";
 
 const THEME_KEY = "clinical_theme";
 const TERMS_KEY = "clinical_terms_accepted_v1";
 
 export function useClinicalApp() {
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
     const [darkMode, setDarkMode] = useState(false);
     const [showTerms, setShowTerms] = useState(false);
     const [mandatoryTerms, setMandatoryTerms] = useState(false);
@@ -101,6 +103,7 @@ export function useClinicalApp() {
 
     return {
         user,
+        loading,
         darkMode,
         toggleTheme,
         showTerms,
@@ -109,6 +112,6 @@ export function useClinicalApp() {
         handleLogin,
         handleLogout,
         handleAcceptTerms,
-        setupBackButton // Exported for use in App.jsx
+        setupBackButton 
     };
 }
