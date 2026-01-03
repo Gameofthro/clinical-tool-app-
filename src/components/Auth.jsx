@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Activity, Lock, Mail, User } from "lucide-react";
+import { Activity, Lock, Mail, User, Chrome } from "lucide-react";
 import { auth, googleProvider, signInWithRedirect, getRedirectResult } from "../firebase"; 
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
@@ -8,149 +8,72 @@ export default function Auth({ onLogin }) {
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
 
+  // 1. CAPTURE: Listen for Google returning the user
   useEffect(() => {
-  // This must be present to "catch" the user returning from Google
-  getRedirectResult(auth)
-    .then((result) => {
+    getRedirectResult(auth).then((result) => {
       if (result?.user) {
-        console.log("User captured:", result.user.email);
-        const userData = {
-          name: result.user.displayName,
-          email: result.user.email,
-          isProfileComplete: true
-        };
-        localStorage.setItem("clinical_current_user", JSON.stringify(userData));
-        onLogin(userData); // This triggers the navigation to the Dashboard
+        // Log in immediately if Google returns a user
+        onLogin(result.user);
       }
-    })
-    .catch((error) => {
-      console.error("Redirect Error:", error.code, error.message);
-      setError("Session could not be restored. Please try again.");
-    });
-}, [onLogin]);
-  
-  // --- GOOGLE LOGIN HANDLER ---
-  const handleGoogleLogin = async () => {
-    try {
-      const result = await signInWithRedirect(auth, googleProvider);
-      const user = result.user;
-      
-      const userData = {
-        name: user.displayName,
-        email: user.email,
-        photo: user.photoURL,
-        isProfileComplete: true // Google users often skip manual onboarding
-      };
+    }).catch(err => setError("Auth sync failed. Use manual login."));
+  }, [onLogin]);
 
-      localStorage.setItem("clinical_current_user", JSON.stringify(userData));
-      onLogin(userData);
-    } catch (error) {
-      console.error("Login Failed:", error.message);
-      setError("Google Sign-In failed. Please try again.");
-    }
-  };
+  // 2. TRIGGER: Use Redirect for Mobile/Play Store stability
+  const handleGoogleLogin = () => signInWithRedirect(auth, googleProvider);
 
-  // --- MANUAL FORM HANDLER ---
-  const handleSubmit = (e) => {
+  // 3. SECURE MANUAL SUBMIT: Use Firebase Server, NOT localStorage
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
-    const users = JSON.parse(localStorage.getItem("clinical_users") || "[]");
-
-    if (isLogin) {
-      const user = users.find(u => u.email === formData.email && u.password === formData.password);
-      if (user) {
-        onLogin(user);
+    try {
+      if (isLogin) {
+        const res = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+        onLogin(res.user);
       } else {
-        setError("Invalid credentials or user not found.");
+        const res = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
+        await updateProfile(res.user, { displayName: formData.name });
+        onLogin({ ...res.user, displayName: formData.name });
       }
-    } else {
-      if (users.find(u => u.email === formData.email)) {
-        setError("User already exists");
-        return;
-      }
-      const newUser = { name: formData.name, email: formData.email, password: formData.password };
-      users.push(newUser);
-      localStorage.setItem("clinical_users", JSON.stringify(users));
-      onLogin(newUser);
+    } catch (err) {
+      setError(err.message.replace("Firebase: ", ""));
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl">
-        <div className="text-center mb-6">
-          <div className="inline-flex p-3 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/30 mb-4">
-            <Activity className="h-8 w-8 text-white" />
-          </div>
-          <h1 className="text-2xl font-bold text-slate-800">Clinical<span className="text-blue-600">Assist</span></h1>
-          <p className="text-slate-500 text-sm mt-1">{isLogin ? "Welcome back, Doctor" : "Create your account"}</p>
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
+      <div className="bg-slate-900 border border-slate-800 w-full max-w-md rounded-[2rem] p-8 shadow-2xl">
+        <div className="text-center mb-8">
+          <div className="inline-flex p-3 bg-blue-600 rounded-2xl mb-4"><Activity className="h-8 w-8 text-white" /></div>
+          <h1 className="text-2xl font-black text-white italic">CLINICAL<span className="text-blue-500">ASSIST</span></h1>
+          <p className="text-slate-400 text-xs font-bold uppercase tracking-widest mt-1">
+            {isLogin ? "Secure Access" : "Create Clinical Profile"}
+          </p>
         </div>
 
-        {/* --- GOOGLE BUTTON --- */}
-        <button 
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-3 px-4 rounded-xl transition-all mb-6"
-        >
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-5 h-5" />
-          Continue with Google
+        <button onClick={handleGoogleLogin} className="w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-100 text-slate-900 font-bold py-3.5 rounded-xl mb-6 transition-all">
+          <Chrome className="w-5 h-5" /> Sync with Google
         </button>
 
-        <div className="relative flex items-center justify-center mb-6">
-          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-200"></div></div>
-          <span className="relative bg-white px-4 text-xs text-slate-400 uppercase font-bold">Or continue with email</span>
-        </div>
-
-        {/* --- MANUAL FORM --- */}
         <form onSubmit={handleSubmit} className="space-y-4">
           {!isLogin && (
-            <div className="relative">
-              <User className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
-              <input 
-                required 
-                type="text" 
-                placeholder="Full Name" 
-                className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 text-slate-900 placeholder:text-slate-400"
-                value={formData.name} 
-                onChange={e => setFormData({...formData, name: e.target.value})} 
-              />
-            </div>
+            <input required placeholder="Full Name" className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:border-blue-500"
+              value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
           )}
-          <div className="relative">
-            <Mail className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
-            <input 
-              required 
-              type="email" 
-              placeholder="Email Address" 
-              className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 text-slate-900 placeholder:text-slate-400"
-              value={formData.email} 
-              onChange={e => setFormData({...formData, email: e.target.value})} 
-            />
-          </div>
-          <div className="relative">
-            <Lock className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
-            <input 
-              required 
-              type="password" 
-              placeholder="Password" 
-              className="w-full pl-10 p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:border-blue-500 text-slate-900 placeholder:text-slate-400"
-              value={formData.password} 
-              onChange={e => setFormData({...formData, password: e.target.value})} 
-            />
-          </div>
-
-          {error && <p className="text-red-500 text-sm text-center font-medium">{error}</p>}
-
-          <button type="submit" className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition shadow-lg">
-            {isLogin ? "Sign In" : "Create Account"}
+          <input required type="email" placeholder="Email Address" className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:border-blue-500"
+            value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+          <input required type="password" placeholder="Password" className="w-full p-4 bg-slate-950 border border-slate-800 rounded-xl text-white outline-none focus:border-blue-500"
+            value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+          
+          {error && <p className="text-red-400 text-xs text-center font-bold bg-red-500/10 py-2 rounded-lg">{error}</p>}
+          
+          <button type="submit" className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl shadow-lg transition-all">
+            {isLogin ? "SIGN IN" : "REGISTER"}
           </button>
         </form>
 
-        <div className="mt-6 text-center text-sm">
-          <button onClick={() => setIsLogin(!isLogin)} className="text-slate-500 hover:text-blue-600 font-semibold">
-            {isLogin ? "New User? Sign Up" : "Already have an account? Sign In"}
-          </button>
-        </div>
+        <button onClick={() => setIsLogin(!isLogin)} className="w-full mt-6 text-slate-500 hover:text-white text-xs font-bold uppercase tracking-widest">
+          {isLogin ? "New user? Register" : "Have account? Login"}
+        </button>
       </div>
     </div>
   );

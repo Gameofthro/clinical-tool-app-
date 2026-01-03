@@ -1,16 +1,10 @@
 import { initializeApp } from "firebase/app";
-import { 
-  getAuth, 
-  GoogleAuthProvider, 
-  signInWithPopup, 
-  signInWithRedirect, // Add this
-  getRedirectResult,  // Add this
-  signOut 
-} from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBYvsZoxMO7Sr--WhZvuxz-lt4brKHIzFE",
-  authDomain: "clinical-tool.firebaseapp.com",
+  // CRITICAL: Ensure this matches your Vercel URL in production
+  authDomain: "clinical-tool.firebaseapp.com", 
   projectId: "clinical-tool",
   storageBucket: "clinical-tool.firebasestorage.app",
   messagingSenderId: "907026280854",
@@ -18,8 +12,6 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const googleProvider = new GoogleAuthProvider();
-
-// Export the new functions
-export { auth, googleProvider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut };
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
+export { signInWithRedirect, getRedirectResult, signOut };
