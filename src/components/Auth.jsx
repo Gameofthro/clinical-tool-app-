@@ -7,15 +7,27 @@ export default function Auth({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
+
   useEffect(() => {
-    getRedirectResult(auth).then((result) => {
+  // This must be present to "catch" the user returning from Google
+  getRedirectResult(auth)
+    .then((result) => {
       if (result?.user) {
-        const userData = { name: result.user.displayName, email: result.user.email, isProfileComplete: true };
+        console.log("User captured:", result.user.email);
+        const userData = {
+          name: result.user.displayName,
+          email: result.user.email,
+          isProfileComplete: true
+        };
         localStorage.setItem("clinical_current_user", JSON.stringify(userData));
-        onLogin(userData);
+        onLogin(userData); // This triggers the navigation to the Dashboard
       }
-    }).catch(err => setError("Session recovery failed. Try again."));
-  }, [onLogin]);
+    })
+    .catch((error) => {
+      console.error("Redirect Error:", error.code, error.message);
+      setError("Session could not be restored. Please try again.");
+    });
+}, [onLogin]);
   
   // --- GOOGLE LOGIN HANDLER ---
   const handleGoogleLogin = async () => {
