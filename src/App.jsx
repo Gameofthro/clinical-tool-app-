@@ -109,6 +109,14 @@ export default function ClinicalTool() {
     return app.setupBackButton(closeOverlays, activeTab, setActiveTab);
   }, [selectedDisease, isDrawerOpen, showAbout, showReferences, showContact, activeTab, app]);
 
+  if (app.loading) {
+  return (
+    <div className="h-screen bg-slate-900 flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-4 border-blue-600"></div>
+    </div>
+  );
+}
+
   if (!app.user) return <Auth onLogin={app.handleLogin} />;
   
   if (app.showTerms && app.mandatoryTerms) {

@@ -11,31 +11,41 @@ export function useClinicalApp() {
     const [showTerms, setShowTerms] = useState(false);
     const [mandatoryTerms, setMandatoryTerms] = useState(false);
 
-    // --- 1. INITIALIZATION (Auth & Theme) ---
+   // --- 1. INITIALIZATION (Auth, Redirect Handshake & Theme) ---
     useEffect(() => {
-        // Load User
-        const savedUser = localStorage.getItem("clinical_current_user");
-        if (savedUser) setUser(JSON.parse(savedUser));
-
-        // Load Theme
-        const savedTheme = localStorage.getItem(THEME_KEY);
-        const isDark = savedTheme === "dark" || 
-                      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
-        
-        setDarkMode(isDark);
-        document.documentElement.classList.toggle("dark", isDark);
-    }, []);
-
-    // --- 2. LEGAL COMPLIANCE CHECK ---
-    useEffect(() => {
-        if (user) {
-            const hasAccepted = localStorage.getItem(TERMS_KEY);
-            if (!hasAccepted) {
-                setShowTerms(true);
-                setMandatoryTerms(true);
+        const initializeApp = async () => {
+            // A. Catch Google Redirect Result
+            try {
+                const result = await getRedirectResult(auth);
+                if (result?.user) {
+                    const userData = {
+                        name: result.user.displayName,
+                        email: result.user.email,
+                        photo: result.user.photoURL
+                    };
+                    localStorage.setItem("clinical_current_user", JSON.stringify(userData));
+                    setUser(userData);
+                }
+            } catch (error) {
+                console.error("Redirect check failed:", error);
             }
-        }
-    }, [user]);
+
+            // B. Load Saved User if no redirect found
+            const savedUser = localStorage.getItem("clinical_current_user");
+            if (savedUser && !user) setUser(JSON.parse(savedUser));
+
+            // C. Load Theme
+            const savedTheme = localStorage.getItem(THEME_KEY);
+            const isDark = savedTheme === "dark" || 
+                          (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
+            setDarkMode(isDark);
+            document.documentElement.classList.toggle("dark", isDark);
+
+            setLoading(false); // --- FINISHED BOOTING ---
+        };
+
+        initializeApp();
+    }, []);
 
     // --- 3. HARDWARE BACK BUTTON INTERFACE ---
     /**
