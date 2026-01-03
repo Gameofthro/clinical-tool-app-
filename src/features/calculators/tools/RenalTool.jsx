@@ -61,7 +61,7 @@ export const RenalTool = ({ calcState, update }) => {
 
         {/* Age: Critical for CKD-EPI coefficient application */}
         <InputGroup 
-          field="Patient Age" 
+          field="Age" 
           value={calcState.age} 
           onChange={(v) => update('age', v)} 
           icon={User} 

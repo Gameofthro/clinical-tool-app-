@@ -2,10 +2,10 @@ import React from 'react';
 import { Search, Pill, ClipboardList, Calculator, ArrowUpRight } from 'lucide-react';
 
 const tiles = [
-  { id: "search", label: "Global Search", icon: Search, desc: "1,000+ Evidence-based Protocols", color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20" },
+  { id: "search", label: "disease Search", icon: Search, desc: "1,000+ Peer-Reviewed Monographs", color: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/20" },
   { id: "drug-index", label: "Drug Index", icon: Pill, desc: "FDA Monograms & Dosing Guides", color: "text-emerald-500", bg: "bg-emerald-500/10", border: "border-emerald-500/20" },
-  { id: "diagnosis", label: "Symptom Review", icon: ClipboardList, desc: "Correlation & Differential Engine", color: "text-purple-500", bg: "bg-purple-500/10", border: "border-purple-500/20" },
-  { id: "tools", label: "Calculators", icon: Calculator, desc: "Renal, Pediatric & Fluid Metrics", color: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/20" }
+  { id: "clinical-index", label: "DIFFERENTIAL REFERENCE", icon: ClipboardList, desc: "Academic Database for Study & Research", color: "text-purple-500", bg: "bg-purple-500/10", border: "border-purple-500/20" },
+  { id: "tools", label: "Calculators", icon: Calculator, desc: "Academic Metric Simulations", color: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/20" }
 ];
 
 export default function Dashboard({ onNavigate }) {

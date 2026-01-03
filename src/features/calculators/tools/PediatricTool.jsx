@@ -45,7 +45,7 @@ export const PediatricTool = ({ calcState, update }) => {
       <div className="space-y-6">
         {/* Weight Input: Essential for primary mg/kg calculation */}
         <InputGroup 
-          field="Patient Weight" 
+          field="Weight" 
           value={calcState.weight} 
           onChange={(v) => update('weight', v)} 
           unitValue={calcState.unit} 
@@ -56,7 +56,7 @@ export const PediatricTool = ({ calcState, update }) => {
 
         {/* Age Input: Used to determine Neonatal Protocol eligibility (<= 28 days) */}
         <InputGroup 
-          field="Patient Age (Years - e.g., 0.08 for 1 month)" 
+          field="Age (Years - e.g., 0.08 for 1 month)" 
           value={calcState.age} 
           onChange={(v) => update('age', v)} 
           icon={Baby} 

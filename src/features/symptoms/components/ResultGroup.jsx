@@ -50,7 +50,7 @@ export const ResultGroup = ({ title, results, onSelect }) => {
                                 <div className="flex items-center gap-2">
                                     <Zap size={14} className="text-amber-500 fill-amber-500/20" />
                                     <span className="text-[10px] font-black text-slate-400 uppercase tracking-tight">
-                                        {r.matchedFeatures.length} Markers
+                                        {r.matchedFeatures.length} correlations
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-2 border-l border-slate-800 pl-4">

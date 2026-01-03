@@ -112,15 +112,14 @@ export default function SymptomReviewTool() {
                 <div className="flex justify-between items-center mb-6 px-1">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-1.5 bg-blue-500 rounded-full"></div>
-                        <h2 className="text-[11px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-[0.2em]">Diagnostic Triage</h2>
+                        <h2 className="text-[11px] font-black uppercase text-slate-400 dark:text-slate-500 tracking-[0.2em]">Clinical Associations</h2>
                     </div>
                     {/* Urgent Filter Button */}
                     <button 
                         onClick={() => setFilterUrgency(p => p === 'critical' ? 'all' : 'critical')}
                         className={`flex items-center gap-2 px-4 py-2 rounded-2xl border transition-all active:scale-95 ${filterUrgency === 'critical' ? 'bg-rose-500 border-rose-400 text-white' : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-400'}`}
                     >
-                        <Filter size={12} />
-                        <span className="text-[9px] font-black uppercase tracking-widest">Urgent Only</span>
+
                     </button>
                 </div>
 

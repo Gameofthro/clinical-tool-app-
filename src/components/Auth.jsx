@@ -1,17 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Activity, Lock, Mail, User } from "lucide-react";
-// Import Firebase logic (Ensure src/firebase.js exists!)
-import { auth, googleProvider, signInWithPopup } from "../firebase"; 
+import { auth, googleProvider, signInWithRedirect, getRedirectResult } from "../firebase"; 
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 
 export default function Auth({ onLogin }) {
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
-
+  useEffect(() => {
+    getRedirectResult(auth).then((result) => {
+      if (result?.user) {
+        const userData = { name: result.user.displayName, email: result.user.email, isProfileComplete: true };
+        localStorage.setItem("clinical_current_user", JSON.stringify(userData));
+        onLogin(userData);
+      }
+    }).catch(err => setError("Session recovery failed. Try again."));
+  }, [onLogin]);
+  
   // --- GOOGLE LOGIN HANDLER ---
   const handleGoogleLogin = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      const result = await signInWithRedirect(auth, googleProvider);
       const user = result.user;
       
       const userData = {
@@ -127,7 +136,7 @@ export default function Auth({ onLogin }) {
 
         <div className="mt-6 text-center text-sm">
           <button onClick={() => setIsLogin(!isLogin)} className="text-slate-500 hover:text-blue-600 font-semibold">
-            {isLogin ? "Need an account? Sign Up" : "Already have an account? Sign In"}
+            {isLogin ? "New User? Sign Up" : "Already have an account? Sign In"}
           </button>
         </div>
       </div>

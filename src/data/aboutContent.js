@@ -6,8 +6,8 @@ export const aboutContent = {
     objective: "To empower fellow healthcare professionals and students by reducing time spent searching complex sources, allowing more focus on patient care and advanced learning."
   },
   team: [
-    { name: "Vaidik Gautam", role: "Senior Developer / Pharm.D Candidate" },
-    { name: "Raxit Varun", role: "Support / Pharm.D" }
+    { name: "Vaidik Gautam", role: "Senior Developer / Pharm.D" },
+    { name: "Raxit Varun", role: "Audit / Pharm.D" }
   ],
   sourcing: {
     title: "Educational Use & Data Sourcing",

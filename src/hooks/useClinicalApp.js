@@ -1,11 +1,3 @@
-/**
- * HOOK: Clinical App Controller
- * * DESCRIPTION: 
- * Manages core system states: Authentication, Theme (Dark/Light), 
- * Legal Compliance, and Hardware Intercepts (Back Button).
- * * TECHNICAL NOTE: 
- * Uses Capacitor's App plugin to handle native Android 'Back' events.
- */
 
 import { useState, useEffect, useCallback } from "react";
 import { App } from '@capacitor/app';

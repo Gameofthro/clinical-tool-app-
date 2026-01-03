@@ -48,7 +48,7 @@ export const FluidTool = ({ calcState, update }) => {
       <div className="space-y-6">
         {/* Weight Input: Essential for the 4-2-1 Holliday-Segar calculation */}
         <InputGroup 
-          field="Patient Weight" 
+          field="Weight" 
           value={calcState.weight} 
           onChange={(v) => update('weight', v)} 
           unitValue={calcState.unit} 
