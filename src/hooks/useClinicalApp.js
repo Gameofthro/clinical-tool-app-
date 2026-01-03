@@ -14,40 +14,56 @@ export function useClinicalApp() {
     const [mandatoryTerms, setMandatoryTerms] = useState(false);
 
    // --- 1. INITIALIZATION (Auth, Redirect Handshake & Theme) ---
-    useEffect(() => {
-        const initializeApp = async () => {
-            // A. Catch Google Redirect Result
-            try {
-                const result = await getRedirectResult(auth);
-                if (result?.user) {
-                    const userData = {
-                        name: result.user.displayName,
-                        email: result.user.email,
-                        photo: result.user.photoURL
-                    };
-                    localStorage.setItem("clinical_current_user", JSON.stringify(userData));
-                    setUser(userData);
-                }
-            } catch (error) {
-                console.error("Redirect check failed:", error);
-            }
+  useEffect(() => {
+    // A. The "Catcher" - This stays active to catch the user after the redirect reload
+    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+      try {
+        // First check: Did we just come back from a Google Redirect?
+        const result = await getRedirectResult(auth);
+        
+        let finalUser = null;
 
-            // B. Load Saved User if no redirect found
-            const savedUser = localStorage.getItem("clinical_current_user");
-            if (savedUser && !user) setUser(JSON.parse(savedUser));
+        if (result?.user) {
+          // Case 1: Just finished the redirect
+          finalUser = {
+            name: result.user.displayName,
+            email: result.user.email,
+            photo: result.user.photoURL,
+            isProfileComplete: true
+          };
+        } else if (firebaseUser) {
+          // Case 2: Already logged in from a previous session
+          finalUser = {
+            name: firebaseUser.displayName,
+            email: firebaseUser.email,
+            photo: firebaseUser.photoURL,
+            isProfileComplete: true
+          };
+        }
 
-            // C. Load Theme
-            const savedTheme = localStorage.getItem(THEME_KEY);
-            const isDark = savedTheme === "dark" || 
-                          (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
-            setDarkMode(isDark);
-            document.documentElement.classList.toggle("dark", isDark);
+        if (finalUser) {
+          localStorage.setItem("clinical_current_user", JSON.stringify(finalUser));
+          setUser(finalUser);
+        } else {
+          // Case 3: No user found at all
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Auth Handshake Error:", error);
+      } finally {
+        setLoading(false); // Only stop the spinner AFTER we are 100% sure
+      }
+    });
 
-            setLoading(false); // --- FINISHED BOOTING ---
-        };
+    // B. Load Theme (Static)
+    const savedTheme = localStorage.getItem(THEME_KEY);
+    const isDark = savedTheme === "dark" || 
+                  (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
+    setDarkMode(isDark);
+    document.documentElement.classList.toggle("dark", isDark);
 
-        initializeApp();
-    }, []);
+    return () => unsubscribe(); // Cleanup listener on unmount
+  }, []);
 
     // --- 3. HARDWARE BACK BUTTON INTERFACE ---
     /**
