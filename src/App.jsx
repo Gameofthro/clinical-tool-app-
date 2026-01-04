@@ -1,12 +1,12 @@
 /**
  * MAIN ENTRY: ClinicalAssist App
- * MASTER FIX: Unified Theme Injection & High-Contrast Light Mode UI.
- * UPDATE: Web-Safe Integrated Interactive Clinical Notifications.
+ * MASTER FIX: Unified Theme Injection, Persistence Logic, and Safe-Area UI.
  */
 
 import React, { useState, useEffect } from "react";
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Capacitor } from '@capacitor/core';
+import { StatusBar, Style } from '@capacitor/status-bar';
 
 // --- SYSTEM LOGIC & STATE ---
 import { useClinicalApp } from "./hooks/useClinicalApp";
@@ -40,27 +40,30 @@ export default function ClinicalTool() {
   const [showContact, setShowContact] = useState(false);
 
   /**
-   * NOTIFICATION ENGINE (Native-First)
-   * Registers actions only on mobile to prevent web-runtime exceptions.
+   * 1. SYSTEM UI & NOTIFICATION ENGINE
+   * Configures Status Bar and Local Notifications for Native Platforms.
    */
   useEffect(() => {
-    const initNotifications = async () => {
+    const initHardwareSystems = async () => {
       if (Capacitor.isNativePlatform()) {
         try {
-          // Register Action Buttons (Dose Taken / Snooze)
+          // Status Bar Sync
+          await StatusBar.setOverlaysWebView({ overlay: false });
+          await StatusBar.setStyle({ style: app.darkMode ? Style.Dark : Style.Light });
+          await StatusBar.setBackgroundColor({ color: app.darkMode ? '#020617' : '#f8fafc' });
+
+          // Notification Registration
           await LocalNotifications.registerActionTypes({
-            types: [
-              {
-                id: 'CLINICAL_CARE',
-                actions: [
-                  { id: 'thanks', title: '❤️ Got it, thank you', foreground: true },
-                  { id: 'remind', title: '⏰ Remind me later', foreground: false }
-                ]
-              }
-            ]
+            types: [{
+              id: 'CLINICAL_CARE',
+              actions: [
+                { id: 'thanks', title: '❤️ Got it, thank you', foreground: true },
+                { id: 'remind', title: '⏰ Remind me later', foreground: false }
+              ]
+            }]
           });
         } catch (e) {
-          console.warn("Notification registration skipped: Environment non-native.");
+          console.warn("Hardware initialization skipped.");
         }
       }
     };
@@ -68,33 +71,25 @@ export default function ClinicalTool() {
     let actionListener;
     if (Capacitor.isNativePlatform()) {
       actionListener = LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
-        console.log('Care message acknowledged:', action.actionId);
+        console.log('Action acknowledged:', action.actionId);
       });
     }
 
-    initNotifications();
-
-    return () => {
-      if (actionListener) actionListener.remove(); 
-    };
-  }, []);
-
-  /**
-   * GLOBAL THEME ENGINE
-   */
-  useEffect(() => {
-    const root = document.documentElement;
-    if (app.darkMode) {
-      root.classList.add('dark');
-      root.classList.remove('light');
-    } else {
-      root.classList.add('light');
-      root.classList.remove('dark');
-    }
+    initHardwareSystems();
+    return () => { if (actionListener) actionListener.remove(); };
   }, [app.darkMode]);
 
   /**
-   * HARDWARE BACK BUTTON INTERCEPTOR
+   * 2. GLOBAL THEME ENGINE
+   */
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle('dark', app.darkMode);
+    root.classList.toggle('light', !app.darkMode);
+  }, [app.darkMode]);
+
+  /**
+   * 3. HARDWARE BACK BUTTON INTERCEPTOR
    */
   useEffect(() => {
     const closeOverlays = () => {
@@ -109,16 +104,19 @@ export default function ClinicalTool() {
     return app.setupBackButton(closeOverlays, activeTab, setActiveTab);
   }, [selectedDisease, isDrawerOpen, showAbout, showReferences, showContact, activeTab, app]);
 
+  // Loading State: Prevents Login Flicker
   if (app.loading) {
-  return (
-    <div className="h-screen bg-slate-900 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-4 border-blue-600"></div>
-    </div>
-  );
-}
+    return (
+      <div className="h-screen bg-slate-950 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-4 border-blue-600"></div>
+      </div>
+    );
+  }
 
+  // Auth Guard
   if (!app.user) return <Auth onLogin={app.handleLogin} />;
   
+  // Mandatory Compliance Guard
   if (app.showTerms && app.mandatoryTerms) {
     return <LegalModal isOpen={true} onAccept={app.handleAcceptTerms} isMandatory={true} />;
   }
@@ -126,14 +124,15 @@ export default function ClinicalTool() {
   return (
     <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 overflow-hidden">
       
-      {/* MASTER MEDICS THEME INJECTION */}
+      {/* MASTER UI FIX: Safe-Area Padding & Scrollbar Reset */}
       <style dangerouslySetInnerHTML={{ __html: `
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        .light .bg-slate-900\\/50, 
-        .light [class*="bg-slate-"],
-        .light .group { 
+        /* Safe-Area top padding for the whole app container */
+        .safe-top { padding-top: env(safe-area-inset-top); }
+
+        .light .bg-slate-900\\/50, .light [class*="bg-slate-"], .light .group { 
           background-color: #ffffff !important; 
           border: 1px solid #e2e8f0 !important; 
           box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05) !important;
@@ -141,38 +140,29 @@ export default function ClinicalTool() {
         
         .light h1, .light h2, .light h3 { color: #0f172a !important; }
         .light p, .light span { color: #475569 !important; }
-        
-        /* Dropdown Visibility Fix */
-        .light select, .light select option {
-          background-color: #ffffff !important;
-          color: #0f172a !important;
-        }
-        
-        /* Master Input Focus */
-        .light input {
-          color: #0f172a !important;
-          background-color: #ffffff !important;
-        }
-        
+        .light input { color: #0f172a !important; background-color: #ffffff !important; }
         .light .text-blue-500, .light .text-blue-600 { color: #2563eb !important; }
       `}} />
 
-      <Header 
-        user={app.user} 
-        activeTab={activeTab} 
-        query={query} 
-        setQuery={setQuery} 
-        setActiveTab={setActiveTab} 
-        onGoHome={() => { setActiveTab("home"); setQuery(""); }}
-        onOpenMenu={() => setIsDrawerOpen(true)}
-      />
+      {/* Wrapping Header in safe-top ensures it doesn't overlap the clock */}
+      <div className="safe-top bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+        <Header 
+          user={app.user} 
+          activeTab={activeTab} 
+          query={query} 
+          setQuery={setQuery} 
+          setActiveTab={setActiveTab} 
+          onGoHome={() => { setActiveTab("home"); setQuery(""); }}
+          onOpenMenu={() => setIsDrawerOpen(true)}
+        />
+      </div>
 
       <main className="flex-1 overflow-y-auto px-4 w-full no-scrollbar">
         <div className="max-w-6xl mx-auto h-full py-4">
           {activeTab === "home" && <Dashboard onNavigate={setActiveTab} user={app.user} />}
           {activeTab === "search" && <DiseaseSearch query={query} onSelectDisease={setSelectedDisease} />}
           {activeTab === "drug-index" && <DrugDictionaryTool />}
-          {activeTab === "diagnosis" && <DiagnosisTool />}
+          {activeTab === "clinical-index" && <DiagnosisTool />}
           {activeTab === "tools" && <CalculatorFeature />}
         </div>
       </main>

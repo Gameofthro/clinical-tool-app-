@@ -1,7 +1,15 @@
-
 import { useState, useEffect, useCallback } from "react";
 import { App } from '@capacitor/app';
-import { auth, getRedirectResult } from "../firebase";
+import { 
+    auth, 
+    getRedirectResult 
+} from "../firebase";
+import { 
+    onAuthStateChanged, 
+    setPersistence, 
+    browserLocalPersistence, 
+    signOut 
+} from "firebase/auth";
 
 const THEME_KEY = "clinical_theme";
 const TERMS_KEY = "clinical_terms_accepted_v1";
@@ -13,75 +21,74 @@ export function useClinicalApp() {
     const [showTerms, setShowTerms] = useState(false);
     const [mandatoryTerms, setMandatoryTerms] = useState(false);
 
-   // --- 1. INITIALIZATION (Auth, Redirect Handshake & Theme) ---
-  useEffect(() => {
-    // A. The "Catcher" - This stays active to catch the user after the redirect reload
-    const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
-      try {
-        // First check: Did we just come back from a Google Redirect?
-        const result = await getRedirectResult(auth);
-        
-        let finalUser = null;
+    // --- 1. INITIALIZATION (Auth, Redirect Handshake & Theme) ---
+    useEffect(() => {
+        // Force Persistence to Local so it survives app closure
+        setPersistence(auth, browserLocalPersistence).catch(err => console.error("Persistence Error:", err));
 
-        if (result?.user) {
-          // Case 1: Just finished the redirect
-          finalUser = {
-            name: result.user.displayName,
-            email: result.user.email,
-            photo: result.user.photoURL,
-            isProfileComplete: true
-          };
-        } else if (firebaseUser) {
-          // Case 2: Already logged in from a previous session
-          finalUser = {
-            name: firebaseUser.displayName,
-            email: firebaseUser.email,
-            photo: firebaseUser.photoURL,
-            isProfileComplete: true
-          };
-        }
+        const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+            try {
+                // A. Check for Redirect Result (Crucial for Google Login return)
+                const result = await getRedirectResult(auth);
+                
+                let finalUser = null;
 
-        if (finalUser) {
-          localStorage.setItem("clinical_current_user", JSON.stringify(finalUser));
-          setUser(finalUser);
-        } else {
-          // Case 3: No user found at all
-          setUser(null);
-        }
-      } catch (error) {
-        console.error("Auth Handshake Error:", error);
-      } finally {
-        setLoading(false); // Only stop the spinner AFTER we are 100% sure
-      }
-    });
+                if (result?.user) {
+                    finalUser = {
+                        name: result.user.displayName,
+                        email: result.user.email,
+                        photo: result.user.photoURL,
+                        isProfileComplete: true,
+                        uid: result.user.uid // Keep UID for internal mapping
+                    };
+                } else if (firebaseUser) {
+                    finalUser = {
+                        name: firebaseUser.displayName,
+                        email: firebaseUser.email,
+                        photo: firebaseUser.photoURL,
+                        isProfileComplete: true,
+                        uid: firebaseUser.uid
+                    };
+                }
 
-    // B. Load Theme (Static)
-    const savedTheme = localStorage.getItem(THEME_KEY);
-    const isDark = savedTheme === "dark" || 
-                  (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
-    setDarkMode(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
+                if (finalUser) {
+                    localStorage.setItem("clinical_current_user", JSON.stringify(finalUser));
+                    setUser(finalUser);
 
-    return () => unsubscribe(); // Cleanup listener on unmount
-  }, []);
+                    // Check for mandatory terms on successful session recovery
+                    const hasAccepted = localStorage.getItem(TERMS_KEY);
+                    if (!hasAccepted) {
+                        setShowTerms(true);
+                        setMandatoryTerms(true);
+                    }
+                } else {
+                    setUser(null);
+                }
+            } catch (error) {
+                console.error("Auth Handshake Error:", error);
+            } finally {
+                // Ensure loading is false ONLY after we checked redirect and existing session
+                setLoading(false);
+            }
+        });
+
+        // B. Load Theme (Static)
+        const savedTheme = localStorage.getItem(THEME_KEY);
+        const isDark = savedTheme === "dark" || 
+                      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
+        setDarkMode(isDark);
+        document.documentElement.classList.toggle("dark", isDark);
+
+        return () => unsubscribe();
+    }, []);
 
     // --- 3. HARDWARE BACK BUTTON INTERFACE ---
-    /**
-     * @param {Function} closeOverlays - A function from UI that returns true if it closed a modal.
-     * @param {String} activeTab - Current active navigation tab.
-     * @param {Function} setActiveTab - Function to change tabs.
-     */
     const setupBackButton = useCallback((closeOverlays, activeTab, setActiveTab) => {
         const backListener = App.addListener('backButton', () => {
-            // Priority 1: Close open UI Overlays (Modals, Drawers, About)
             if (closeOverlays()) return;
-
-            // Priority 2: If in a sub-feature, return to Dashboard
             if (activeTab !== "home") {
                 setActiveTab("home");
-            } 
-            // Priority 3: Exit App
-            else {
+            } else {
                 App.exitApp();
             }
         });
@@ -104,11 +111,15 @@ export function useClinicalApp() {
         setUser(userData);
     };
 
-    const handleLogout = () => {
-        localStorage.removeItem("clinical_current_user");
-        // Reset terms on logout to ensure next user accepts fresh
-        localStorage.removeItem(TERMS_KEY); 
-        setUser(null);
+    const handleLogout = async () => {
+        try {
+            await signOut(auth); // Destroy native token session
+            localStorage.removeItem("clinical_current_user");
+            localStorage.removeItem(TERMS_KEY); 
+            setUser(null);
+        } catch (error) {
+            console.error("Logout Error:", error);
+        }
     };
 
     const handleAcceptTerms = () => {

@@ -1,67 +1,66 @@
 import React from 'react';
-import { ChevronRight, ShieldAlert, Zap, Activity } from 'lucide-react';
+import { ChevronRight, BookOpen, GraduationCap } from 'lucide-react';
 
 export const ResultGroup = ({ title, results, onSelect }) => {
     if (!results || results.length === 0) return null;
 
     return (
-        <section className="mb-10">
-            <div className="flex items-center gap-3 mb-5 px-6">
-                <div className="w-1.5 h-1.5 rounded-full bg-slate-700"></div>
-                <h4 className="text-[11px] font-black uppercase text-slate-500 tracking-[0.25em]">{title}</h4>
+        <section className="mb-6">
+            {/* Header with High-Contrast Accent */}
+            <div className="flex items-center gap-2 mb-4 px-2">
+                <div className="w-1.5 h-5 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full shadow-lg shadow-blue-500/20"></div>
+                <h4 className="text-[10px] font-black uppercase text-slate-500 tracking-widest">{title}</h4>
             </div>
-            
-            <div className="space-y-5 px-4">
+
+            {/* High-Density Grid Layout */}
+            <div className="grid grid-cols-1 gap-3">
                 {results.map((r) => (
                     <div 
                         key={r.id} 
-                        onClick={() => onSelect(r)}
-                        className={`w-full text-left bg-[#1e293b] rounded-[2rem] border-2 transition-all active:scale-[0.97] cursor-pointer shadow-xl flex flex-col group overflow-hidden ${r.isCritical ? 'border-rose-500/20' : 'border-slate-800'}`}
+                        onClick={() => onSelect(r)} 
+                        className={`group relative mx-1 bg-white dark:bg-[#1e293b] rounded-2xl border-2 transition-all active:scale-[0.96] hover:border-blue-500/50 cursor-pointer flex flex-col overflow-hidden shadow-sm hover:shadow-xl ${r.isCritical ? 'border-rose-500/10' : 'border-slate-100 dark:border-slate-800'}`}
                     >
-                        <div className="p-7 flex items-start justify-between">
-                            <div className="flex-1 pr-4">
-                                <div className="flex items-center gap-2 mb-4">
-                                    <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest bg-blue-500/10 px-3 py-1.5 rounded-xl border border-blue-500/20">
-                                        {r.category || 'General Clinical'}
-                                    </span>
-                                    {r.isCritical && (
-                                        <span className="text-[9px] font-black text-rose-400 uppercase tracking-widest bg-rose-500/10 px-3 py-1.5 rounded-xl border border-rose-500/20 flex items-center gap-1.5">
-                                            <ShieldAlert size={10} /> Urgent
-                                        </span>
-                                    )}
-                                </div>
-                                
-                                <h3 className="font-black text-xl text-white uppercase tracking-tight group-hover:text-blue-400 transition-colors leading-tight">
-                                    {r.name}
-                                </h3>
+                        {/* Interactive Background Glow */}
+                        <div className="absolute -right-4 -top-4 w-16 h-16 rounded-full bg-blue-500/5 blur-2xl group-hover:bg-blue-500/10 transition-colors"></div>
 
-                                <p className="text-[13px] font-medium text-slate-400 mt-3 line-clamp-2 leading-relaxed opacity-80">
-                                    {r.pathophysiology || "Clinical analysis based on identified feature clusters."}
-                                </p>
+                        <div className="p-4 flex items-center justify-between">
+                            <div className="flex-1 flex items-center gap-3">
+                                {/* Compact Category Icon */}
+                                <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-900 flex items-center justify-center shrink-0 border border-slate-100 dark:border-slate-800 shadow-inner group-hover:bg-blue-600 group-hover:border-blue-500 transition-all duration-300">
+                                    <GraduationCap className="text-slate-400 group-hover:text-white transition-colors" size={20} />
+                                </div>
+
+                                <div className="flex flex-col">
+                                    <span className="text-[7px] font-black text-blue-500 uppercase tracking-tighter mb-0.5">
+                                        {r.category || 'Clinical Module'}
+                                    </span>
+                                    <h3 className="font-black text-sm text-slate-900 dark:text-white uppercase tracking-tight group-hover:text-blue-500 transition-colors leading-none">
+                                        {r.name}
+                                    </h3>
+                                </div>
                             </div>
 
-                            <div className="w-14 h-14 rounded-[1.5rem] bg-slate-900 flex items-center justify-center shrink-0 shadow-inner group-hover:bg-blue-600 transition-all duration-300">
-                                <ChevronRight className="text-slate-400 group-hover:text-white" size={28} />
+                            <div className="flex items-center gap-2">
+                                {/* Status Badge for Critical Cases */}
+                                {r.isCritical && (
+                                    <div className="px-2 py-0.5 rounded-md bg-rose-500/10 border border-rose-500/20">
+                                        <span className="text-[7px] font-bold text-rose-500 uppercase">Priority</span>
+                                    </div>
+                                )}
+                                <ChevronRight className="text-slate-300 group-hover:text-blue-500 transition-all group-hover:translate-x-1" size={18} />
                             </div>
                         </div>
 
-                        <div className="px-7 py-4 bg-slate-900/50 border-t border-slate-800 flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2">
-                                    <Zap size={14} className="text-amber-500 fill-amber-500/20" />
-                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-tight">
-                                        {r.matchedFeatures.length} correlations
-                                    </span>
-                                </div>
-                                <div className="flex items-center gap-2 border-l border-slate-800 pl-4">
-                                    <Activity size={14} className="text-blue-500" />
-                                    <span className={`text-[10px] font-black uppercase tracking-tight ${r.colorClass}`}>
-                                        {r.correlationLevel}
-                                    </span>
-                                </div>
+                        {/* Subtle Academic Footer */}
+                        <div className="px-4 py-2 bg-slate-50/50 dark:bg-slate-900/40 border-t border-slate-100 dark:border-slate-800/60 flex items-center justify-between">
+                            <div className="flex items-center gap-1.5">
+                                <BookOpen size={10} className="text-blue-500 opacity-70" />
+                                <span className="text-[8px] font-bold text-slate-400 uppercase tracking-wide">
+                                    Study Reference Available
+                                </span>
                             </div>
-                            <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest group-hover:translate-x-1 transition-transform">
-                                View Protocol
+                            <span className="text-[8px] font-black text-blue-500 uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
+                                Explore Case
                             </span>
                         </div>
                     </div>
