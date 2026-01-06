@@ -1,6 +1,6 @@
 /**
  * COMPONENT: Header (Navigation & System Status)
- * UPDATED: Integrated dynamic versioning and refined search bar state.
+ * UPDATED: Integrated local identity logic and removed Auth dependencies.
  */
 
 import React from 'react';
@@ -9,13 +9,16 @@ import { Stethoscope, Menu, ArrowLeft, Search, Cpu, Globe } from 'lucide-react';
 import { APP_VERSION } from '../../config/version'; 
 
 export default function Header({ 
-  user, 
+  user, // Receives { displayName: userName } from App.jsx
   activeTab, 
   onGoHome, 
   onOpenMenu, 
   query, 
   setQuery 
 }) {
+  // Use the local name passed down, fallback to Guest
+  const currentIdentity = user?.displayName || "Guest";
+
   return (
     <header className="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-xl border-b border-slate-800 shrink-0 transition-all duration-300">
       <div className="max-w-6xl mx-auto px-6 py-6">
@@ -45,7 +48,8 @@ export default function Header({
                 <div className="flex items-center gap-2 mt-1.5">
                    <div className={`w-1.5 h-1.5 rounded-full animate-pulse ${activeTab === 'home' ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                      {activeTab === "home" ? (user?.name || "Vaidik Gautam") : activeTab.replace('-', ' ')}
+                      {/* Dynamically show name on Home, or module name on sub-pages */}
+                      {activeTab === "home" ? currentIdentity : activeTab.replace('-', ' ')}
                    </p>
                 </div>
              </div>
@@ -53,7 +57,7 @@ export default function Header({
 
           {/* RIGHT: DYNAMIC SYSTEM METRICS & MENU */}
           <div className="flex items-center gap-4 md:gap-8">
-             {/* Dynamic Versioning from config */}
+             {/* Build Status Info */}
              <div className="hidden sm:flex flex-col items-end">
                 <div className="flex items-center gap-1.5 mb-1">
                    <Cpu size={12} className="text-slate-500" />

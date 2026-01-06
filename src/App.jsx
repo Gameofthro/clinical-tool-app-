@@ -1,6 +1,7 @@
 /**
  * MAIN ENTRY: ClinicalAssist App
  * MASTER FIX: Unified Theme Injection, Persistence Logic, and Safe-Area UI.
+ * INTEGRATED: Local Identity & Onboarding (Firebase-Free).
  */
 
 import React, { useState, useEffect } from "react";
@@ -10,12 +11,12 @@ import { StatusBar, Style } from '@capacitor/status-bar';
 
 // --- SYSTEM LOGIC & STATE ---
 import { useClinicalApp } from "./hooks/useClinicalApp";
-import Auth from "./components/Auth";
 import Footer from "./components/footer";
 import LegalModal from "./components/legalModal";
 import AboutModal from "./components/AboutModal";
 import ReferencesModal from "./components/ReferencesModal";
 import ContactModal from "./components/ContactModal";
+import OnboardingModal from "./components/ui/OnboardingModal"; // Added
 
 // --- NAVIGATION LAYOUT ---
 import Header from "./components/Navigation/Header";
@@ -38,21 +39,28 @@ export default function ClinicalTool() {
   const [showAbout, setShowAbout] = useState(false);
   const [showReferences, setShowReferences] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false); // New state
 
   /**
-   * 1. SYSTEM UI & NOTIFICATION ENGINE
-   * Configures Status Bar and Local Notifications for Native Platforms.
+   * 1. ONBOARDING TRIGGER
+   */
+  useEffect(() => {
+    if (!app.loading && app.user && !app.user.hasBeenOnboarded) {
+      setShowOnboarding(true);
+    }
+  }, [app.loading, app.user]);
+
+  /**
+   * 2. SYSTEM UI & NOTIFICATION ENGINE
    */
   useEffect(() => {
     const initHardwareSystems = async () => {
       if (Capacitor.isNativePlatform()) {
         try {
-          // Status Bar Sync
           await StatusBar.setOverlaysWebView({ overlay: false });
           await StatusBar.setStyle({ style: app.darkMode ? Style.Dark : Style.Light });
           await StatusBar.setBackgroundColor({ color: app.darkMode ? '#020617' : '#f8fafc' });
 
-          // Notification Registration
           await LocalNotifications.registerActionTypes({
             types: [{
               id: 'CLINICAL_CARE',
@@ -68,19 +76,11 @@ export default function ClinicalTool() {
       }
     };
 
-    let actionListener;
-    if (Capacitor.isNativePlatform()) {
-      actionListener = LocalNotifications.addListener('localNotificationActionPerformed', (action) => {
-        console.log('Action acknowledged:', action.actionId);
-      });
-    }
-
     initHardwareSystems();
-    return () => { if (actionListener) actionListener.remove(); };
   }, [app.darkMode]);
 
   /**
-   * 2. GLOBAL THEME ENGINE
+   * 3. GLOBAL THEME ENGINE
    */
   useEffect(() => {
     const root = document.documentElement;
@@ -89,7 +89,7 @@ export default function ClinicalTool() {
   }, [app.darkMode]);
 
   /**
-   * 3. HARDWARE BACK BUTTON INTERCEPTOR
+   * 4. HARDWARE BACK BUTTON INTERCEPTOR
    */
   useEffect(() => {
     const closeOverlays = () => {
@@ -104,7 +104,7 @@ export default function ClinicalTool() {
     return app.setupBackButton(closeOverlays, activeTab, setActiveTab);
   }, [selectedDisease, isDrawerOpen, showAbout, showReferences, showContact, activeTab, app]);
 
-  // Loading State: Prevents Login Flicker
+  // Loading State
   if (app.loading) {
     return (
       <div className="h-screen bg-slate-950 flex items-center justify-center">
@@ -113,23 +113,18 @@ export default function ClinicalTool() {
     );
   }
 
-  // Auth Guard
-  if (!app.user) return <Auth onLogin={app.handleLogin} />;
-  
   // Mandatory Compliance Guard
   if (app.showTerms && app.mandatoryTerms) {
     return <LegalModal isOpen={true} onAccept={app.handleAcceptTerms} isMandatory={true} />;
   }
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 overflow-hidden">
+    <div className={`flex flex-col h-screen transition-colors duration-300 overflow-hidden ${app.darkMode ? 'dark bg-slate-950' : 'light bg-slate-50'}`}>
       
-      {/* MASTER UI FIX: Safe-Area Padding & Scrollbar Reset */}
+      {/* GLOBAL CSS - Kept exactly as you requested */}
       <style dangerouslySetInnerHTML={{ __html: `
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Safe-Area top padding for the whole app container */
         .safe-top { padding-top: env(safe-area-inset-top); }
 
         .light .bg-slate-900\\/50, .light [class*="bg-slate-"], .light .group { 
@@ -144,10 +139,10 @@ export default function ClinicalTool() {
         .light .text-blue-500, .light .text-blue-600 { color: #2563eb !important; }
       `}} />
 
-      {/* Wrapping Header in safe-top ensures it doesn't overlap the clock */}
+      {/* Header */}
       <div className="safe-top bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
         <Header 
-          user={app.user} 
+          user={{ displayName: app.user?.name }} 
           activeTab={activeTab} 
           query={query} 
           setQuery={setQuery} 
@@ -159,7 +154,7 @@ export default function ClinicalTool() {
 
       <main className="flex-1 overflow-y-auto px-4 w-full no-scrollbar">
         <div className="max-w-6xl mx-auto h-full py-4">
-          {activeTab === "home" && <Dashboard onNavigate={setActiveTab} user={app.user} />}
+          {activeTab === "home" && <Dashboard onNavigate={setActiveTab} user={{ displayName: app.user?.name }} />}
           {activeTab === "search" && <DiseaseSearch query={query} onSelectDisease={setSelectedDisease} />}
           {activeTab === "drug-index" && <DrugDictionaryTool />}
           {activeTab === "clinical-index" && <DiagnosisTool />}
@@ -172,12 +167,20 @@ export default function ClinicalTool() {
         onClose={() => setIsDrawerOpen(false)} 
         darkMode={app.darkMode} 
         toggleTheme={app.toggleTheme}
+        userName={app.user?.name} 
+        onUpdateName={app.handleUpdateName}
         onOpenAbout={() => { setShowAbout(true); setIsDrawerOpen(false); }}
         onOpenTerms={() => { app.setShowTerms(true); setIsDrawerOpen(false); }}
         onOpenReferences={() => { setShowReferences(true); setIsDrawerOpen(false); }}
         onOpenContact={() => { setShowContact(true); setIsDrawerOpen(false); }} 
-        onLogout={app.handleLogout} 
         supportEmail="clinicalassist.center@gmail.com"
+      />
+
+      {/* Onboarding Modal - Replaces Auth Screen */}
+      <OnboardingModal 
+        isOpen={showOnboarding} 
+        onSave={(name) => { app.handleUpdateName(name); setShowOnboarding(false); }} 
+        onSkip={() => { app.handleUpdateName("Guest"); setShowOnboarding(false); }} 
       />
 
       <ContactModal isOpen={showContact} onClose={() => setShowContact(false)} email="clinicalassist.center@gmail.com" />

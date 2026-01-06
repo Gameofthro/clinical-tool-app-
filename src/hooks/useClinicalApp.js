@@ -1,15 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { App } from '@capacitor/app';
-import { 
-    auth, 
-    getRedirectResult 
-} from "../firebase";
-import { 
-    onAuthStateChanged, 
-    setPersistence, 
-    browserLocalPersistence, 
-    signOut 
-} from "firebase/auth";
+import { UserService } from "../services/UserService";
 
 const THEME_KEY = "clinical_theme";
 const TERMS_KEY = "clinical_terms_accepted_v1";
@@ -21,68 +12,39 @@ export function useClinicalApp() {
     const [showTerms, setShowTerms] = useState(false);
     const [mandatoryTerms, setMandatoryTerms] = useState(false);
 
-    // --- 1. INITIALIZATION (Auth, Redirect Handshake & Theme) ---
     useEffect(() => {
-        // Force Persistence to Local so it survives app closure
-        setPersistence(auth, browserLocalPersistence).catch(err => console.error("Persistence Error:", err));
-
-        const unsubscribe = auth.onAuthStateChanged(async (firebaseUser) => {
+        const initApp = async () => {
             try {
-                // A. Check for Redirect Result (Crucial for Google Login return)
-                const result = await getRedirectResult(auth);
+                const name = await UserService.getName();
+                const asked = await UserService.hasBeenAsked();
                 
-                let finalUser = null;
+                setUser({
+                    name: name,
+                    isGuest: name === 'Guest',
+                    hasBeenOnboarded: asked
+                });
 
-                if (result?.user) {
-                    finalUser = {
-                        name: result.user.displayName,
-                        email: result.user.email,
-                        photo: result.user.photoURL,
-                        isProfileComplete: true,
-                        uid: result.user.uid // Keep UID for internal mapping
-                    };
-                } else if (firebaseUser) {
-                    finalUser = {
-                        name: firebaseUser.displayName,
-                        email: firebaseUser.email,
-                        photo: firebaseUser.photoURL,
-                        isProfileComplete: true,
-                        uid: firebaseUser.uid
-                    };
+                const hasAccepted = localStorage.getItem(TERMS_KEY);
+                if (!hasAccepted) {
+                    setShowTerms(true);
+                    setMandatoryTerms(true);
                 }
 
-                if (finalUser) {
-                    localStorage.setItem("clinical_current_user", JSON.stringify(finalUser));
-                    setUser(finalUser);
-
-                    // Check for mandatory terms on successful session recovery
-                    const hasAccepted = localStorage.getItem(TERMS_KEY);
-                    if (!hasAccepted) {
-                        setShowTerms(true);
-                        setMandatoryTerms(true);
-                    }
-                } else {
-                    setUser(null);
-                }
+                const savedTheme = localStorage.getItem(THEME_KEY);
+                const isDark = savedTheme === "dark" || 
+                              (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
+                
+                setDarkMode(isDark);
+                document.documentElement.classList.toggle("dark", isDark);
             } catch (error) {
-                console.error("Auth Handshake Error:", error);
+                console.error("Init Error:", error);
             } finally {
-                // Ensure loading is false ONLY after we checked redirect and existing session
                 setLoading(false);
             }
-        });
-
-        // B. Load Theme (Static)
-        const savedTheme = localStorage.getItem(THEME_KEY);
-        const isDark = savedTheme === "dark" || 
-                      (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
-        setDarkMode(isDark);
-        document.documentElement.classList.toggle("dark", isDark);
-
-        return () => unsubscribe();
+        };
+        initApp();
     }, []);
 
-    // --- 3. HARDWARE BACK BUTTON INTERFACE ---
     const setupBackButton = useCallback((closeOverlays, activeTab, setActiveTab) => {
         const backListener = App.addListener('backButton', () => {
             if (closeOverlays()) return;
@@ -92,13 +54,9 @@ export function useClinicalApp() {
                 App.exitApp();
             }
         });
-
-        return () => {
-            backListener.then(l => l.remove());
-        };
+        return () => { backListener.then(l => l.remove()); };
     }, []);
 
-    // --- 4. SYSTEM ACTIONS ---
     const toggleTheme = () => {
         const newMode = !darkMode;
         setDarkMode(newMode);
@@ -106,19 +64,33 @@ export function useClinicalApp() {
         document.documentElement.classList.toggle("dark", newMode);
     };
 
-    const handleLogin = (userData) => {
-        localStorage.setItem("clinical_current_user", JSON.stringify(userData));
-        setUser(userData);
+    // FIXED: Correctly updates state and persistence
+    const handleUpdateName = async (newName) => {
+        if (!newName || newName.trim() === "") {
+            await handleLogout(); // Use logout logic if name is empty
+            return;
+        }
+
+        const success = await UserService.setName(newName);
+        if (success) {
+            await UserService.setAsAsked();
+            setUser({
+                name: newName.trim(),
+                isGuest: false,
+                hasBeenOnboarded: true
+            });
+        }
     };
 
+    // FIXED: This now properly resets the onboarding trigger
     const handleLogout = async () => {
-        try {
-            await signOut(auth); // Destroy native token session
-            localStorage.removeItem("clinical_current_user");
-            localStorage.removeItem(TERMS_KEY); 
-            setUser(null);
-        } catch (error) {
-            console.error("Logout Error:", error);
+        const success = await UserService.removeName();
+        if (success) {
+            setUser({
+                name: "Guest",
+                isGuest: true,
+                hasBeenOnboarded: false // Modal will pop up now
+            });
         }
     };
 
@@ -136,7 +108,7 @@ export function useClinicalApp() {
         showTerms,
         setShowTerms,
         mandatoryTerms,
-        handleLogin,
+        handleUpdateName,
         handleLogout,
         handleAcceptTerms,
         setupBackButton 

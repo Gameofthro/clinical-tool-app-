@@ -1,10 +1,17 @@
-import packageInfo from '../../package.json';
-export const APP_VERSION = packageInfo.version; 
-export const BUILD_NUMBER = new Date().toISOString().split('T')[0].replace(/-/g, ''); 
-export const LAST_REVIEW_DATE = new Date().toLocaleDateString('en-US', { 
-  month: 'short', 
-  day: 'numeric', 
-  year: 'numeric' 
-}).toUpperCase();
+/**
+ * CONFIG: version.js
+ * Automatically pulls the version from package.json to ensure 
+ * Single Source of Truth across the Header, Drawer, and About Modals.
+ */
 
-export const APP_ID = "com.clinicalassist.v1";
+import packageJson from '../../package.json';
+
+// Core Versioning
+export const APP_VERSION = packageJson.version;
+
+// Metadata for the About Modal
+export const BUILD_NUMBER = "2026.01.06-STABLE"; 
+export const LAST_REVIEW_DATE = "JAN 2026";
+
+// App Info
+export const APP_NAME = "ClinicalAssist";
