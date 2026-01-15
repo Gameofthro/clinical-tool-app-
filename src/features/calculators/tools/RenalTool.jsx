@@ -13,6 +13,7 @@ import {
 import { CalculatorLibrary } from '../../../data/CalculatorLibrary';
 // Clinical engine implementing 2021 CKD-EPI standards
 import { calculateGFR } from "../../../utils/calculators";
+import { useClinicalAlerts } from "../hooks/useClinicalAlerts";
 
 /**
  * RENAL CLEARANCE MASTER
@@ -22,6 +23,7 @@ export const RenalTool = ({ calcState, update }) => {
   const [result, setResult] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const { triggerNotification } = useClinicalAlerts(calcState.user);
 
   /**
    * Orchestrates the GFR algorithm.
@@ -37,6 +39,7 @@ export const RenalTool = ({ calcState, update }) => {
       calcState.unit
     );
     setResult(res);
+    triggerNotification('renal', res);
   };
 
   return (

@@ -3,11 +3,11 @@ import { Scale, Ruler } from "lucide-react";
 import { HeaderSection, InputGroup, CalcButton, MasteryCard, KnowledgeModal } from '../components/SharedUI';
 import { CalculatorLibrary } from '../../../data/CalculatorLibrary';
 import { calculateBMI } from "../../../utils/calculators";
-
+import { useClinicalAlerts } from "../hooks/useClinicalAlerts";
 export const BMITool = ({ calcState, update }) => {
   const [result, setResult] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
-
+  const { triggerNotification } = useClinicalAlerts(calcState.user);
   const handleCalculation = () => {
     // 1. NORMALIZE HEIGHT: If user is using ft/in, convert to CM first
     let heightInCm = parseFloat(calcState.height);
@@ -25,6 +25,7 @@ export const BMITool = ({ calcState, update }) => {
       calcState.unit // weight unit (kg/lbs)
     );
     setResult(res);
+    triggerNotification('bmi', res);
   };
 
   return (

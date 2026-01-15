@@ -12,7 +12,7 @@ export default function DrugDictionaryTool() {
     const [activeClass, setActiveClass] = useState('All');
     const [selectedDrug, setSelectedDrug] = useState(null);
 
-    // Using the custom hook for search logic
+    // Using the custom hook which now uses our high-performance SearchLogic engine
     const displayDrugs = useDrugSearch(searchTerm, activeClass);
 
     return (
@@ -42,10 +42,13 @@ export default function DrugDictionaryTool() {
 
             {/* 2. DRUG GRID SECTION */}
             <div className="grid grid-cols-2 gap-4 px-1">
-                {displayDrugs.length > 0 ? (
-                    displayDrugs.map(drug => (
+                {displayDrugs && displayDrugs.length > 0 ? (
+                    displayDrugs.map((drug, index) => (
                         <DrugCard 
-                            key={drug.id} 
+                            /** * SENIOR DEV FIX: Using a composite key to stop Error #299.
+                             * This ensures React doesn't crash if your database has duplicate IDs.
+                             */
+                            key={`${drug.drug_name || 'drug'}-${index}`} 
                             drug={drug} 
                             onSelect={setSelectedDrug} 
                         />

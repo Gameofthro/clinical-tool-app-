@@ -12,6 +12,7 @@ import {
 import { CalculatorLibrary } from '../../../data/CalculatorLibrary';
 // Importing the precision clinical engine
 import { calculateIVFluid } from "../../../utils/calculators";
+import { useClinicalAlerts } from "../hooks/useClinicalAlerts";
 
 /**
  * INTRAVENOUS FLUID MASTER
@@ -20,7 +21,7 @@ import { calculateIVFluid } from "../../../utils/calculators";
 export const FluidTool = ({ calcState, update }) => {
   const [result, setResult] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
-
+  const { triggerNotification } = useClinicalAlerts(calcState.user);
   // Logic to determine if hemodynamic monitoring (SBP) is required for the protocol
   const isResuscitationFluid = calcState.fluidType === 'NS' || calcState.fluidType === 'RL';
 
@@ -35,6 +36,7 @@ export const FluidTool = ({ calcState, update }) => {
       calcState.sbp
     );
     setResult(res);
+    triggerNotification('fluid', { indication: calcState.indication });
   };
 
   return (

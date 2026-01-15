@@ -70,6 +70,43 @@ export const CLINICAL_KNOWLEDGE = {
       }
     }
   },
+  crcl: {
+    title: "Creatinine Clearance (CrCl)",
+    description: "The gold-standard estimation for renal drug dosing adjustments based on the Cockcroft-Gault equation.",
+    mastery: {
+      low: {
+        label: "Renal Impairment",
+        pathophysiology: "Decreased clearance of creatinine indicates a reduction in the number of functional nephrons or decreased blood flow (perfusion) to the kidneys.",
+        management: "Mandatory dose reduction or interval extension for renally cleared drugs (e.g., Gabapentin, Digoxin, DOACs). Avoid nephrotoxins.",
+        education: "CrCl < 30 mL/min is a high-risk threshold for toxicity; CrCl < 15 often requires dialysis evaluation."
+      },
+      normal: {
+        label: "Adequate Renal Clearance",
+        pathophysiology: "Creatinine production (from muscle mass) is effectively balanced by glomerular filtration and minimal tubular secretion.",
+        management: "Standard dosing protocols. Re-evaluate if serum creatinine increases by >0.3 mg/dL from baseline.",
+        education: "Calculation must use Ideal Body Weight (IBW) for accurate dosing unless the patient is underweight or significantly obese."
+      }
+    }
+  },
+
+  infusion: {
+    title: "Infusion & Drip Mechanics",
+    description: "Calculations for precise delivery of intravenous fluids and vasoactive medications.",
+    mastery: {
+      gravity: {
+        label: "Manual Drip Rate",
+        pathophysiology: "Flow is determined by hydrostatic pressure and resistance within the IV tubing, measured in drops per minute (gtt/min).",
+        management: "Ensure the correct Drop Factor (e.g., 20 gtt/mL) is set on the tubing package. Monitor for site infiltration.",
+        education: "Microdrip (60 gtt/mL) is standard for pediatric or high-potency drugs; Macrodrip (10-20 gtt/mL) is for rapid fluid resuscitation."
+      },
+      pump: {
+        label: "Electronic Infusion Pump",
+        pathophysiology: "Positive pressure delivery ensures a constant, linear flow rate (mL/hr) independent of bag height or patient movement.",
+        management: "Verify the 'Concentration' (mg/mL) in the bag matches the pump settings. Always use weight-based dosing for vasopressors.",
+        education: "For high-alert meds (Heparin, Insulin), 'Smart Pumps' with built-in dose-error reduction systems are the standard of care."
+      }
+    }
+  },
   pediatric: {
     title: "Weight-Based Dosing",
     description: "Calculation of drug doses based on pediatric/neonatal weight and physiological development.",

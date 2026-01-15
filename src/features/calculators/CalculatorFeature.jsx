@@ -4,17 +4,20 @@ import { HeaderSection } from "./components/SharedUI";
 import { PediatricTool } from "./tools/PediatricTool";
 import { FluidTool } from "./tools/FluidTool";
 import { RenalTool } from "./tools/RenalTool";
+import { RenalDosingTool } from "./tools/CrClTool";
+import { InfusionTool } from "./tools/InfusionTool";
 import { BMITool } from "./tools/BMITool";
 import { MAPTool } from "./tools/MAPTool";
 
-export default function CalculatorFeature() {
+export default function CalculatorFeature({ user }) { // Fixed: added { user }
   const [activeTool, setActiveTool] = useState(null);
   const containerRef = useRef(null);
 
-  const [calcState, setCalcState] = useState({
-    weight: "", age: "", height: "", creatinine: "", sbp: "", dbp: "",
-    unit: "kg", hUnit: "cm", gender: "male", fluidType: "421", indication: "general"
-  });
+const [calcState, setCalcState] = useState({
+  weight: "", age: "", height: "", creatinine: "", sbp: "", dbp: "",
+  heightFt: "", heightIn: "", totalVolume: "", timeMinutes: "", dropFactor: "20",
+  unit: "kg", hUnit: "cm", gender: "male", fluidType: "421", indication: "general"
+});
 
   /**
    * FINAL SCROLL & BODY LOCK FIX
@@ -40,21 +43,28 @@ export default function CalculatorFeature() {
     { id: 'pediatric', icon: Baby, label: 'Pediatric Dose', desc: 'Weight-based Protocols', color: 'from-purple-600 to-indigo-600' },
     { id: 'fluid', icon: Droplet, label: 'Fluid Strategy', desc: 'Maintenance & Resuscitation', color: 'from-blue-600 to-cyan-600' },
     { id: 'renal', icon: Activity, label: 'Renal Master', desc: 'eGFR CKD-EPI 2021', color: 'from-red-600 to-rose-600' },
+    { id: 'crcl', icon: Activity, label: 'Renal Dosing', desc: 'Cockcroft-Gault (CrCl)', color: 'from-emerald-600 to-teal-600' },
+    { id: 'infusion', icon: Droplet, label: 'Infusion Master', desc: 'Drip & Pump Rate Calc', color: 'from-blue-700 to-indigo-800' },
     { id: 'bmi', icon: Scale, label: 'Metabolic BMI', desc: 'Adiposity Distribution', color: 'from-orange-500 to-amber-600' },
     { id: 'map', icon: Heart, label: 'Hemodynamics', desc: 'Perfusion Pressure', color: 'from-rose-600 to-pink-600' },
   ];
 
-  const renderTool = () => {
-    const props = { calcState, update };
-    switch (activeTool) {
-      case 'pediatric': return <PediatricTool {...props} />;
-      case 'fluid': return <FluidTool {...props} />;
-      case 'renal': return <RenalTool {...props} />;
-      case 'bmi': return <BMITool {...props} />;
-      case 'map': return <MAPTool {...props} />;
-      default: return null;
-    }
-  };
+const renderTool = () => {
+const props = { 
+      calcState: { ...calcState, user: user }, 
+      update 
+    };
+  switch (activeTool) {
+    case 'pediatric': return <PediatricTool {...props} />;
+    case 'fluid': return <FluidTool {...props} />;
+    case 'renal': return <RenalTool {...props} />;
+    case 'bmi': return <BMITool {...props} />;
+    case 'map': return <MAPTool {...props} />;
+    case 'crcl': return <RenalDosingTool {...props} />;
+    case 'infusion': return <InfusionTool {...props} />;
+    default: return null;
+  }
+};
 
   return (
     <div className="w-full min-h-screen bg-slate-50 dark:bg-slate-950">

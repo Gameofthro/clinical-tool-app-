@@ -12,6 +12,7 @@ import {
 import { CalculatorLibrary } from '../../../data/CalculatorLibrary';
 // Importing the precision clinical engine
 import { calculatePediatricDose } from "../../../utils/calculators";
+import { useClinicalAlerts } from "../hooks/useClinicalAlerts";
 
 /**
  * PEDIATRIC DOSING MASTER
@@ -20,6 +21,7 @@ import { calculatePediatricDose } from "../../../utils/calculators";
 export const PediatricTool = ({ calcState, update }) => {
   const [result, setResult] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
+  const { triggerNotification } = useClinicalAlerts(calcState.user);
 
   /**
    * Triggers the precision pediatric algorithm.
@@ -32,6 +34,7 @@ export const PediatricTool = ({ calcState, update }) => {
       calcState.unit
     );
     setResult(res);
+    triggerNotification('pediatric', res);
   };
 
   return (

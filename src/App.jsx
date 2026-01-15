@@ -1,7 +1,7 @@
 /**
  * MAIN ENTRY: ClinicalAssist App
  * MASTER FIX: Unified Theme Injection, Persistence Logic, and Safe-Area UI.
- * INTEGRATED: Local Identity & Onboarding (Firebase-Free).
+ * INTEGRATED: Local Identity, Onboarding, and Final Safe-Area Logic.
  */
 
 import React, { useState, useEffect } from "react";
@@ -16,7 +16,7 @@ import LegalModal from "./components/legalModal";
 import AboutModal from "./components/AboutModal";
 import ReferencesModal from "./components/ReferencesModal";
 import ContactModal from "./components/ContactModal";
-import OnboardingModal from "./components/ui/OnboardingModal"; // Added
+import OnboardingModal from "./components/ui/OnboardingModal";
 
 // --- NAVIGATION LAYOUT ---
 import Header from "./components/Navigation/Header";
@@ -39,7 +39,7 @@ export default function ClinicalTool() {
   const [showAbout, setShowAbout] = useState(false);
   const [showReferences, setShowReferences] = useState(false);
   const [showContact, setShowContact] = useState(false);
-  const [showOnboarding, setShowOnboarding] = useState(false); // New state
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   /**
    * 1. ONBOARDING TRIGGER
@@ -49,18 +49,26 @@ export default function ClinicalTool() {
       setShowOnboarding(true);
     }
   }, [app.loading, app.user]);
-
-  /**
-   * 2. SYSTEM UI & NOTIFICATION ENGINE
+/**
+   * SYSTEM UI & NOTIFICATION ENGINE
+   * Handles Status Bar, Notification Permissions, and Remote Pull Trigger.
    */
   useEffect(() => {
     const initHardwareSystems = async () => {
       if (Capacitor.isNativePlatform()) {
         try {
-          await StatusBar.setOverlaysWebView({ overlay: false });
+          // 1. UI SETUP: Status Bar Fix
+          await StatusBar.setOverlaysWebView({ overlay: false }); 
           await StatusBar.setStyle({ style: app.darkMode ? Style.Dark : Style.Light });
-          await StatusBar.setBackgroundColor({ color: app.darkMode ? '#020617' : '#f8fafc' });
+          await StatusBar.setBackgroundColor({ color: app.darkMode ? '#020617' : '#ffffff' });
 
+          // 2. INITIAL PERMISSION CHECK: Asks on first app open
+          let permStatus = await LocalNotifications.checkPermissions();
+          if (permStatus.display === 'prompt') {
+            permStatus = await LocalNotifications.requestPermissions();
+          }
+
+          // 3. REGISTER ACTION TYPES
           await LocalNotifications.registerActionTypes({
             types: [{
               id: 'CLINICAL_CARE',
@@ -70,15 +78,79 @@ export default function ClinicalTool() {
               ]
             }]
           });
+          // 1. CREATE CLINICAL CHANNELS (Required for Android)
+if (Capacitor.getPlatform() === 'android') {
+  await LocalNotifications.createChannel({
+    id: 'clinical-alerts',
+    name: 'Clinical Alerts',
+    description: 'Critical patient care and calculation alerts',
+    importance: 5, // Importance.HIGH (Shows as banner)
+    visibility: 1, // Visibility.PUBLIC
+    vibration: true,
+    lights: true,
+    lightColor: '#ef4444' // Red for medical urgency
+  });
+}
+
+// 2. REGISTER ACTION TYPES (Keep your existing logic here)
+await LocalNotifications.registerActionTypes({
+  types: [{
+    id: 'CLINICAL_CARE',
+    actions: [
+      { id: 'thanks', title: '❤️ Got it, thank you', foreground: true },
+      { id: 'remind', title: '⏰ Remind me later', foreground: false }
+    ]
+  }]
+});
+
+          // 4. REMOTE TRIGGER ENGINE: Checks for your "wish"
+          const checkRemotePush = async () => {
+            try {
+              const REMOTE_URL = 'https://gist.githubusercontent.com/Gameofthro/e7b61a7d8222208a2293e218ac4fca53/raw/push.json'; 
+              const response = await fetch(REMOTE_URL, { cache: "no-store" });
+              const remoteData = await response.json();
+              const lastId = localStorage.getItem('last_notified_id');
+
+              // If a new update ID is found...
+              if (remoteData.active && remoteData.id > (parseInt(lastId) || 0)) {
+                
+                // RE-PROMPT LOGIC: If they previously said "No", ask again now
+                let currentPerm = await LocalNotifications.checkPermissions();
+                if (currentPerm.display !== 'granted') {
+                  currentPerm = await LocalNotifications.requestPermissions();
+                }
+
+                // If we finally have permission, show the notification
+                if (currentPerm.display === 'granted') {
+                  await LocalNotifications.schedule({
+                    notifications: [{
+                      id: remoteData.id,
+                      title: remoteData.title,
+                      body: remoteData.body,
+                      channelId: 'clinical-alerts',
+                      actionTypeId: 'CLINICAL_CARE',
+                      schedule: { at: new Date(Date.now() + 1000) },
+                      importance: 5
+                    }]
+                  });
+                  localStorage.setItem('last_notified_id', remoteData.id.toString());
+                }
+              }
+            } catch (err) {
+              console.warn("Remote sync failed or device offline.");
+            }
+          };
+
+          await checkRemotePush();
+
         } catch (e) {
-          console.warn("Hardware initialization skipped.");
+          console.warn("Hardware initialization failed.");
         }
       }
     };
 
     initHardwareSystems();
-  }, [app.darkMode]);
-
+  }, [app.darkMode]); // Re-runs on theme change to keep Status Bar synced
   /**
    * 3. GLOBAL THEME ENGINE
    */
@@ -104,7 +176,6 @@ export default function ClinicalTool() {
     return app.setupBackButton(closeOverlays, activeTab, setActiveTab);
   }, [selectedDisease, isDrawerOpen, showAbout, showReferences, showContact, activeTab, app]);
 
-  // Loading State
   if (app.loading) {
     return (
       <div className="h-screen bg-slate-950 flex items-center justify-center">
@@ -113,7 +184,6 @@ export default function ClinicalTool() {
     );
   }
 
-  // Mandatory Compliance Guard
   if (app.showTerms && app.mandatoryTerms) {
     return <LegalModal isOpen={true} onAccept={app.handleAcceptTerms} isMandatory={true} />;
   }
@@ -121,11 +191,15 @@ export default function ClinicalTool() {
   return (
     <div className={`flex flex-col h-screen transition-colors duration-300 overflow-hidden ${app.darkMode ? 'dark bg-slate-950' : 'light bg-slate-50'}`}>
       
-      {/* GLOBAL CSS - Kept exactly as you requested */}
+      {/* 1. STATUS BAR GUARD: Solves the Browser Gap vs Mobile Overlap */}
+      <div className="h-[env(safe-area-inset-top)] bg-white dark:bg-slate-900 w-full shrink-0" />
+
+      {/* GLOBAL CSS */}
       <style dangerouslySetInnerHTML={{ __html: `
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .safe-top { padding-top: env(safe-area-inset-top); }
+        
+        /* Removed .safe-top as the Guard Div handles the spacing now */
 
         .light .bg-slate-900\\/50, .light [class*="bg-slate-"], .light .group { 
           background-color: #ffffff !important; 
@@ -140,7 +214,7 @@ export default function ClinicalTool() {
       `}} />
 
       {/* Header */}
-      <div className="safe-top bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
+      <div className="bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800">
         <Header 
           user={{ displayName: app.user?.name }} 
           activeTab={activeTab} 
@@ -152,13 +226,13 @@ export default function ClinicalTool() {
         />
       </div>
 
-      <main className="flex-1 overflow-y-auto px-4 w-full no-scrollbar">
+      <main className="flex-1 overflow-y-auto px-4 w-full no-scrollbar pb-safe">
         <div className="max-w-6xl mx-auto h-full py-4">
           {activeTab === "home" && <Dashboard onNavigate={setActiveTab} user={{ displayName: app.user?.name }} />}
           {activeTab === "search" && <DiseaseSearch query={query} onSelectDisease={setSelectedDisease} />}
           {activeTab === "drug-index" && <DrugDictionaryTool />}
           {activeTab === "clinical-index" && <DiagnosisTool />}
-          {activeTab === "tools" && <CalculatorFeature />}
+          {activeTab === "tools" && <CalculatorFeature user={app.user} />}
         </div>
       </main>
 
@@ -176,7 +250,6 @@ export default function ClinicalTool() {
         supportEmail="clinicalassist.center@gmail.com"
       />
 
-      {/* Onboarding Modal - Replaces Auth Screen */}
       <OnboardingModal 
         isOpen={showOnboarding} 
         onSave={(name) => { app.handleUpdateName(name); setShowOnboarding(false); }} 

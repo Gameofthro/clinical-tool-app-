@@ -12,6 +12,7 @@ import {
 import { CalculatorLibrary } from '../../../data/CalculatorLibrary';
 // Importing the precision clinical engine
 import { calculateMAP } from "../../../utils/calculators";
+import { useClinicalAlerts } from "../hooks/useClinicalAlerts";
 
 /**
  * HEMODYNAMIC MAP MASTER
@@ -20,6 +21,8 @@ import { calculateMAP } from "../../../utils/calculators";
 export const MAPTool = ({ calcState, update }) => {
   const [result, setResult] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
+  const { triggerNotification } = useClinicalAlerts(calcState.user);
+  
 
   /**
    * Triggers the precision hemodynamic algorithm.
@@ -31,6 +34,7 @@ export const MAPTool = ({ calcState, update }) => {
       calcState.dbp
     );
     setResult(res);
+    triggerNotification('map', resData);
   };
 
   return (

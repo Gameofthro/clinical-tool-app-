@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from "react";
-import { Search, AlertCircle, ChevronRight, LayoutGrid } from "lucide-react";
+import { Search, ChevronRight } from "lucide-react";
 import { diseaseDatabase } from "../data/diseases";
+// Path: Step out of features/ to src/ then into search/tools/
+import { performClinicalSearch } from "./search/tools/SearchLogic"; 
 
 const CATEGORIES = ["All", "Respiratory", "Cardiology", "Gastroenterology", "Neurology", "Infectious"];
 
@@ -8,14 +10,22 @@ export default function DiseaseSearch({ query, onSelectDisease }) {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   const filteredResults = useMemo(() => {
-    const lowerQ = query.toLowerCase().trim();
-    return Object.entries(diseaseDatabase || {})
-      .filter(([key, data]) => {
-        const matchesQuery = !query || key.toLowerCase().includes(lowerQ) || data.category?.toLowerCase().includes(lowerQ);
-        const matchesCategory = selectedCategory === "All" || data.category === selectedCategory;
-        return matchesQuery && matchesCategory;
-      })
-      .map(([key, data]) => ({ name: key, ...data }))
+    const searchResults = performClinicalSearch(query, diseaseDatabase, {
+      nameKey: 'name',
+      categoryKey: 'category',
+      secondaryFields: ['clinicalFeatures']
+    });
+
+    // If query is empty, use standard object mapping
+    if (!query.trim()) {
+      return Object.entries(diseaseDatabase)
+        .map(([key, data]) => ({ name: key, ...data }))
+        .filter(d => selectedCategory === "All" || d.category === selectedCategory)
+        .slice(0, 15);
+    }
+
+    return searchResults
+      .filter(d => selectedCategory === "All" || d.category === selectedCategory)
       .slice(0, 15);
   }, [query, selectedCategory]);
 
@@ -26,7 +36,7 @@ export default function DiseaseSearch({ query, onSelectDisease }) {
         {CATEGORIES.map(cat => (
           <button key={cat} onClick={() => setSelectedCategory(cat)}
             className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all border shrink-0
-            ${selectedCategory === cat ? 'bg-blue-600 text-white' : 'bg-white dark:bg-slate-900 text-slate-400'}`}>
+            ${selectedCategory === cat ? 'bg-blue-600 text-white border-blue-600' : 'bg-white dark:bg-slate-900 text-slate-400 border-slate-200 dark:border-slate-800'}`}>
             {cat}
           </button>
         ))}
@@ -38,12 +48,12 @@ export default function DiseaseSearch({ query, onSelectDisease }) {
           <div className="grid grid-cols-1 gap-3">
             {filteredResults.map((disease) => (
               <button key={disease.name} onClick={() => onSelectDisease(disease)}
-                className="w-full text-left bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-all group flex items-center justify-between relative overflow-hidden">
+                className="w-full text-left bg-white dark:bg-slate-900 p-4 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all group flex items-center justify-between relative overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-600/10 group-hover:bg-blue-600 transition-colors"></div>
                 <div className="pl-2">
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="font-black text-sm text-slate-800 dark:text-white uppercase tracking-tight">{disease.name}</h3>
-                    <span className="text-[8px] font-black px-2 py-0.5 rounded-lg uppercase bg-blue-50 text-blue-600 border border-blue-100">
+                    <span className="text-[8px] font-black px-2 py-0.5 rounded-lg uppercase bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800">
                       {disease.category}
                     </span>
                   </div>
@@ -61,7 +71,7 @@ export default function DiseaseSearch({ query, onSelectDisease }) {
       </div>
 
       {/* Ad Space Placement */}
-      <div className="mt-auto w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-[2rem] border-2 border-dashed border-slate-200 flex items-center justify-center shrink-0"></div>
+      <div className="mt-auto w-full h-24 bg-slate-100 dark:bg-slate-800 rounded-[2rem] border-2 border-dashed border-slate-200 dark:border-slate-700 flex items-center justify-center shrink-0"></div>
     </div>
   );
 }
