@@ -45,15 +45,14 @@ useLayoutEffect(() => {
   const update = (key, val) => setCalcState(prev => ({ ...prev, [key]: val }));
 
 const tools = [
-  { id: 'bmi', icon: Scale, label: 'BMI', desc: 'Metabolic', color: 'from-orange-500 to-amber-600' },
-  { id: 'infusion', icon: Droplet, label: 'Infusion', desc: 'Drip/Pump', color: 'from-blue-700 to-indigo-800' },
-  { id: 'crcl', icon: Activity, label: 'CrCl', desc: 'Clearance', color: 'from-emerald-600 to-teal-600' },
-  { id: 'map', icon: Heart, label: 'MAP', desc: 'Perfusion', color: 'from-rose-600 to-pink-600' },
-  { id: 'pediatric', icon: Baby, label: 'Pediatric', desc: 'Dosing', color: 'from-purple-600 to-indigo-600' },
-  { id: 'fluid', icon: Droplet, label: 'Fluids', desc: 'Strategy', color: 'from-blue-600 to-cyan-600' },
-  { id: 'renal', icon: Activity, label: 'eGFR', desc: 'Function', color: 'from-red-600 to-rose-600' },
+  { id: 'bmi', icon: Scale, label: 'BMI', desc: 'Metabolic', color: 'from-slate-700 to-slate-900' },
+  { id: 'infusion', icon: Droplet, label: 'Infusion', desc: 'Drip/Pump', color: 'from-blue-600 to-indigo-900' },
+  { id: 'crcl', icon: Activity, label: 'CrCl', desc: 'Clearance', color: 'from-emerald-500 to-teal-800' },
+  { id: 'map', icon: Heart, label: 'MAP', desc: 'Perfusion', color: 'from-rose-500 to-pink-900' },
+  { id: 'pediatric', icon: Baby, label: 'Pediatric', desc: 'Dosing', color: 'from-purple-500 to-violet-900' },
+  { id: 'fluid', icon: Droplet, label: 'Fluids', desc: 'Strategy', color: 'from-cyan-500 to-blue-800' },
+  { id: 'renal', icon: Activity, label: 'eGFR', desc: 'Function', color: 'from-red-600 to-red-950' },
 ];
-
 const renderTool = () => {
   const props = { 
     calcState: { ...calcState, user: user }, 
@@ -91,26 +90,29 @@ return (
             </h2>
           </div>
 
-{/* COMPACT SQUARE GRID */}
+{/* PREMIUM SQUARE GRID */}
 <div className="grid grid-cols-2 gap-4 animate-in fade-in duration-500">
   {tools.map((t) => (
     <button
       key={t.id}
       onClick={() => setActiveTool(t.id)}
-      className={`relative aspect-square flex flex-col items-center justify-center p-4 rounded-[2rem] bg-gradient-to-br ${t.color} text-white shadow-md active:scale-95 transition-all group`}
+      className={`relative aspect-square flex flex-col items-center justify-center p-4 rounded-[1.8rem] bg-gradient-to-br ${t.color} text-white shadow-xl shadow-slate-200 dark:shadow-none active:scale-95 transition-all group`}
     >
-      {/* Symbolic Icon - Centered */}
-      <t.icon size={32} className="mb-2 opacity-90 group-hover:scale-110 transition-transform" />
+      {/* Symbolic Icon with Glow Effect */}
+      <t.icon size={30} className="mb-3 opacity-90 group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)] transition-all" />
       
-      {/* Ultra-Short Label */}
-      <h3 className="text-[13px] font-black uppercase tracking-widest text-center">
+      {/* Short Symbolic Label */}
+      <h3 className="text-[14px] font-black uppercase tracking-[0.15em] text-center drop-shadow-sm">
         {t.label}
       </h3>
       
-      {/* Micro-Description */}
-      <p className="text-[8px] font-bold opacity-60 uppercase tracking-tighter text-center">
+      {/* Micro-Desc for context */}
+      <p className="text-[8px] font-bold opacity-60 uppercase tracking-widest text-center mt-0.5">
         {t.desc}
       </p>
+
+      {/* Aesthetic Highlight - Subtle shine overlay */}
+      <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none rounded-[1.8rem]" />
     </button>
   ))}
 </div>
