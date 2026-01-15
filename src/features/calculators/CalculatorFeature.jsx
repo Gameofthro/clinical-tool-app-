@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useLayoutEffect, useRef } from "react";
 import { Baby, Droplet, Scale, Activity, Heart, ArrowLeft, X } from "lucide-react";
 import { HeaderSection } from "./components/SharedUI";
 import { PediatricTool } from "./tools/PediatricTool";
@@ -19,40 +19,40 @@ const [calcState, setCalcState] = useState({
   unit: "kg", hUnit: "cm", gender: "male", fluidType: "421", indication: "general"
 });
 
-useEffect(() => {
+useLayoutEffect(() => {
     if (activeTool) {
+      // 1. Lock body scroll immediately
       document.body.style.overflow = 'hidden'; 
       
-      // The browser needs a tiny delay to render the overlay before we scroll it
-      const timer = setTimeout(() => {
-        if (containerRef.current) {
-          containerRef.current.scrollTo({
-            top: 0,
-            left: 0,
-            behavior: 'instant' // Ensures no weird scrolling animation
-          });
-        }
-      }, 0);
+      // 2. Immediate reset of the overlay container
+      if (containerRef.current) {
+        containerRef.current.scrollTop = 0;
+      }
 
-      return () => clearTimeout(timer);
+      // 3. Fallback for mobile browsers/Capacitor lag
+      const frame = requestAnimationFrame(() => {
+        if (containerRef.current) {
+          containerRef.current.scrollTo(0, 0);
+        }
+      });
+
+      return () => cancelAnimationFrame(frame);
     } else {
       document.body.style.overflow = 'unset';
     }
-    
-    return () => { document.body.style.overflow = 'unset'; };
   }, [activeTool]);
 
   const update = (key, val) => setCalcState(prev => ({ ...prev, [key]: val }));
 
 const tools = [
-    { id: 'bmi', icon: Scale, label: 'Metabolic BMI', desc: 'Body Composition', color: 'from-orange-500 to-amber-600' },
-    { id: 'infusion', icon: Droplet, label: 'Infusion Master', desc: 'Drip & Pump Rates', color: 'from-blue-700 to-indigo-800' },
-    { id: 'crcl', icon: Activity, label: 'Dose Clearance', desc: 'Medication Safety (CrCl)', color: 'from-emerald-600 to-teal-600' },
-    { id: 'map', icon: Heart, label: 'Hemodynamics', desc: 'Perfusion (MAP)', color: 'from-rose-600 to-pink-600' },
-    { id: 'pediatric', icon: Baby, label: 'Pediatric Dose', desc: 'Weight-based safety', color: 'from-purple-600 to-indigo-600' },
-    { id: 'fluid', icon: Droplet, label: 'Fluid Strategy', desc: 'Hydration Protocols', color: 'from-blue-600 to-cyan-600' },
-    { id: 'renal', icon: Activity, label: 'Kidney Health', desc: 'eGFR Filtration (CKD)', color: 'from-red-600 to-rose-600' },
-  ];
+  { id: 'bmi', icon: Scale, label: 'BMI', desc: 'Metabolic', color: 'from-orange-500 to-amber-600' },
+  { id: 'infusion', icon: Droplet, label: 'Infusion', desc: 'Drip/Pump', color: 'from-blue-700 to-indigo-800' },
+  { id: 'crcl', icon: Activity, label: 'CrCl', desc: 'Clearance', color: 'from-emerald-600 to-teal-600' },
+  { id: 'map', icon: Heart, label: 'MAP', desc: 'Perfusion', color: 'from-rose-600 to-pink-600' },
+  { id: 'pediatric', icon: Baby, label: 'Pediatric', desc: 'Dosing', color: 'from-purple-600 to-indigo-600' },
+  { id: 'fluid', icon: Droplet, label: 'Fluids', desc: 'Strategy', color: 'from-blue-600 to-cyan-600' },
+  { id: 'renal', icon: Activity, label: 'eGFR', desc: 'Function', color: 'from-red-600 to-rose-600' },
+];
 
 const renderTool = () => {
   const props = { 
@@ -91,27 +91,29 @@ return (
             </h2>
           </div>
 
-          {/* MASTER GRID: Fixed 2-column layout for mobile efficiency */}
-          <div className="grid grid-cols-2 gap-3 animate-in fade-in duration-500">
-            {tools.map((t) => (
-              <button
-                key={t.id}
-                onClick={() => setActiveTool(t.id)}
-                className={`relative overflow-hidden p-5 rounded-[2rem] bg-gradient-to-br ${t.color} text-white shadow-md active:scale-95 transition-all text-left group`}
-              >
-                {/* Scaled down icon for grid balance */}
-                <t.icon size={24} className="mb-3 group-hover:scale-110 transition-transform" />
-                
-                {/* Tightened typography for 2-column spacing */}
-                <h3 className="text-sm font-black uppercase tracking-wider leading-tight">
-                  {t.label}
-                </h3>
-                <p className="text-[9px] font-bold opacity-75 mt-1 uppercase tracking-widest">
-                  {t.desc}
-                </p>
-              </button>
-            ))}
-          </div>
+{/* COMPACT SQUARE GRID */}
+<div className="grid grid-cols-2 gap-4 animate-in fade-in duration-500">
+  {tools.map((t) => (
+    <button
+      key={t.id}
+      onClick={() => setActiveTool(t.id)}
+      className={`relative aspect-square flex flex-col items-center justify-center p-4 rounded-[2rem] bg-gradient-to-br ${t.color} text-white shadow-md active:scale-95 transition-all group`}
+    >
+      {/* Symbolic Icon - Centered */}
+      <t.icon size={32} className="mb-2 opacity-90 group-hover:scale-110 transition-transform" />
+      
+      {/* Ultra-Short Label */}
+      <h3 className="text-[13px] font-black uppercase tracking-widest text-center">
+        {t.label}
+      </h3>
+      
+      {/* Micro-Description */}
+      <p className="text-[8px] font-bold opacity-60 uppercase tracking-tighter text-center">
+        {t.desc}
+      </p>
+    </button>
+  ))}
+</div>
         </div>
       ) : (
         /* THE FIXED SCROLLABLE OVERLAY */
