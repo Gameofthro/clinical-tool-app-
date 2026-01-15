@@ -39,54 +39,71 @@ const [calcState, setCalcState] = useState({
 
   const update = (key, val) => setCalcState(prev => ({ ...prev, [key]: val }));
 
-  const tools = [
-    { id: 'pediatric', icon: Baby, label: 'Pediatric Dose', desc: 'Weight-based Protocols', color: 'from-purple-600 to-indigo-600' },
-    { id: 'fluid', icon: Droplet, label: 'Fluid Strategy', desc: 'Maintenance & Resuscitation', color: 'from-blue-600 to-cyan-600' },
-    { id: 'renal', icon: Activity, label: 'Renal Master', desc: 'eGFR CKD-EPI 2021', color: 'from-red-600 to-rose-600' },
-    { id: 'crcl', icon: Activity, label: 'Renal Dosing', desc: 'Cockcroft-Gault (CrCl)', color: 'from-emerald-600 to-teal-600' },
-    { id: 'infusion', icon: Droplet, label: 'Infusion Master', desc: 'Drip & Pump Rate Calc', color: 'from-blue-700 to-indigo-800' },
-    { id: 'bmi', icon: Scale, label: 'Metabolic BMI', desc: 'Adiposity Distribution', color: 'from-orange-500 to-amber-600' },
-    { id: 'map', icon: Heart, label: 'Hemodynamics', desc: 'Perfusion Pressure', color: 'from-rose-600 to-pink-600' },
+const tools = [
+    { id: 'bmi', icon: Scale, label: 'Metabolic BMI', desc: 'Body Composition', color: 'from-orange-500 to-amber-600' },
+    { id: 'infusion', icon: Droplet, label: 'Infusion Master', desc: 'Drip & Pump Rates', color: 'from-blue-700 to-indigo-800' },
+    { id: 'crcl', icon: Activity, label: 'Dose Clearance', desc: 'Medication Safety (CrCl)', color: 'from-emerald-600 to-teal-600' },
+    { id: 'map', icon: Heart, label: 'Hemodynamics', desc: 'Perfusion (MAP)', color: 'from-rose-600 to-pink-600' },
+    { id: 'pediatric', icon: Baby, label: 'Pediatric Dose', desc: 'Weight-based safety', color: 'from-purple-600 to-indigo-600' },
+    { id: 'fluid', icon: Droplet, label: 'Fluid Strategy', desc: 'Hydration Protocols', color: 'from-blue-600 to-cyan-600' },
+    { id: 'renal', icon: Activity, label: 'Kidney Health', desc: 'eGFR Filtration (CKD)', color: 'from-red-600 to-rose-600' },
   ];
 
 const renderTool = () => {
-const props = { 
-      calcState: { ...calcState, user: user }, 
-      update 
-    };
+  const props = { 
+    calcState: { ...calcState, user: user }, 
+    update 
+  };
+
   switch (activeTool) {
-    case 'pediatric': return <PediatricTool {...props} />;
-    case 'fluid': return <FluidTool {...props} />;
-    case 'renal': return <RenalTool {...props} />;
-    case 'bmi': return <BMITool {...props} />;
-    case 'map': return <MAPTool {...props} />;
-    case 'crcl': return <RenalDosingTool {...props} />;
-    case 'infusion': return <InfusionTool {...props} />;
-    default: return null;
+    case 'bmi': 
+      return <BMITool {...props} />;
+    case 'infusion': 
+      return <InfusionTool {...props} />;
+    case 'crcl': 
+      return <RenalDosingTool {...props} />;
+    case 'map': 
+      return <MAPTool {...props} />;
+    case 'pediatric': 
+      return <PediatricTool {...props} />;
+    case 'fluid': 
+      return <FluidTool {...props} />;
+    case 'renal': 
+      return <RenalTool {...props} />;
+    default: 
+      return null;
   }
 };
 
-  return (
+return (
     <div className="w-full min-h-screen bg-slate-50 dark:bg-slate-950">
       {!activeTool ? (
         <div className="w-full px-4 py-6 max-w-4xl mx-auto">
-          <div className="flex items-center gap-4 mb-10">
+          <div className="flex items-center gap-4 mb-8">
             <div className="w-10 h-2 bg-blue-600 rounded-full shrink-0"></div>
-            <h2 className="text-[14px] font-black uppercase tracking-[0.3em] text-slate-500 dark:text-slate-400">
+            <h2 className="text-[12px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
               Clinical Calculators
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in duration-500">
+          {/* MASTER GRID: Fixed 2-column layout for mobile efficiency */}
+          <div className="grid grid-cols-2 gap-3 animate-in fade-in duration-500">
             {tools.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setActiveTool(t.id)}
-                className={`relative overflow-hidden p-6 rounded-[2.5rem] bg-gradient-to-br ${t.color} text-white shadow-lg active:scale-95 transition-all text-left group`}
+                className={`relative overflow-hidden p-5 rounded-[2rem] bg-gradient-to-br ${t.color} text-white shadow-md active:scale-95 transition-all text-left group`}
               >
-                <t.icon size={32} className="mb-4 group-hover:scale-110 transition-transform" />
-                <h3 className="text-xl font-black uppercase tracking-wider">{t.label}</h3>
-                <p className="text-[10px] font-bold opacity-80 mt-1 uppercase tracking-widest">{t.desc}</p>
+                {/* Scaled down icon for grid balance */}
+                <t.icon size={24} className="mb-3 group-hover:scale-110 transition-transform" />
+                
+                {/* Tightened typography for 2-column spacing */}
+                <h3 className="text-sm font-black uppercase tracking-wider leading-tight">
+                  {t.label}
+                </h3>
+                <p className="text-[9px] font-bold opacity-75 mt-1 uppercase tracking-widest">
+                  {t.desc}
+                </p>
               </button>
             ))}
           </div>
