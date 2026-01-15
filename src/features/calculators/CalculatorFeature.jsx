@@ -19,19 +19,24 @@ const [calcState, setCalcState] = useState({
   unit: "kg", hUnit: "cm", gender: "male", fluidType: "421", indication: "general"
 });
 
-  /**
-   * FINAL SCROLL & BODY LOCK FIX
-   * 1. Prevents background scrolling (body lock).
-   * 2. Forces the tool overlay to the absolute top.
-   */
-  useEffect(() => {
+useEffect(() => {
     if (activeTool) {
-      document.body.style.overflow = 'hidden'; // Lock background
-      if (containerRef.current) {
-        containerRef.current.scrollTop = 0; // Force immediate scroll reset
-      }
+      document.body.style.overflow = 'hidden'; 
+      
+      // The browser needs a tiny delay to render the overlay before we scroll it
+      const timer = setTimeout(() => {
+        if (containerRef.current) {
+          containerRef.current.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'instant' // Ensures no weird scrolling animation
+          });
+        }
+      }, 0);
+
+      return () => clearTimeout(timer);
     } else {
-      document.body.style.overflow = 'unset'; // Unlock background
+      document.body.style.overflow = 'unset';
     }
     
     return () => { document.body.style.overflow = 'unset'; };
